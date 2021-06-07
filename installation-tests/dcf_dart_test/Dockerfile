@@ -4,8 +4,6 @@ RUN useradd -ms /bin/bash user
 USER user
 WORKDIR /home/user
 
-COPY wait-for-it.sh /wait-for-it.sh
-
 #Installing Android SDK
 RUN mkdir -p Android/sdk
 ENV ANDROID_SDK_ROOT /home/user/Android/sdk
