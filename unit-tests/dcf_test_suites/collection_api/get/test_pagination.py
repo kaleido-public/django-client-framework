@@ -193,6 +193,23 @@ class TestPagination(TestCase):
             objects[2], {"id": 98, "barcode": "product_98", "brand_id": None}
         )
 
+    def test_order_multiple_keys_v2(self):
+        resp = self.superuser_client.get(
+            "/product", {"_order_by": "-barcode,-id", "_limit": 3}
+        )
+        data = resp.json()
+        objects = data["objects"]
+        self.assertEquals(3, len(objects))
+        self.assertDictEqual(
+            objects[0], {"id": 101, "barcode": "product_99", "brand_id": None}
+        )
+        self.assertDictEqual(
+            objects[1], {"id": 99, "barcode": "product_99", "brand_id": 99}
+        )
+        self.assertDictEqual(
+            objects[2], {"id": 98, "barcode": "product_98", "brand_id": None}
+        )
+
     def test_order_malformed(self):
         resp = self.superuser_client.get("/product?_order_by=bracode")
         self.assertEquals(400, resp.status_code)
