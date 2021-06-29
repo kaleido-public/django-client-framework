@@ -1,0 +1,13 @@
+version: "3"
+services:
+  dart_test_server:
+    build:
+      context: ../
+      dockerfile: dart-client-tests/dart_server.dockerfile
+    network_mode: host
+
+  dart_test_app:
+    build:
+      context: ../
+      dockerfile: dart-client-tests/Dockerfile
+    network_mode: host

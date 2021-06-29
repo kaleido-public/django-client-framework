@@ -1,27 +1,19 @@
 version: "3"
 services:
-  dcf-install-test-ubuntu:
+  dcf-installation-tests-ubuntu-base:
     build:
       context: .
       dockerfile: ubuntu-base.dockerfile
-    image: dcf-install-test-ubuntu
+    image: dcf-installation-tests-ubuntu-base
 
-  dcf-test-example:
-    image: dcf-install-test-ubuntu
-    volumes:
-      - ./dcf-backend-example/overwrite:/_overwrite:ro
-      - ./dcf-backend-example/entrypoint.py:/entrypoint.py:ro
-      - ./dcf-backend-example/_out:/_out # build output
-      - ../:/django_client_framework:ro
-    command: ["python3", /entrypoint.py]
+  backend-example:
+    image: dcf-installation-tests-backend-example
+    build:
+      context: ../
+      dockerfile: ./installation-tests/backend-example/Dockerfile
 
-  dcf-test-example-ts:
-    image: dcf-install-test-ubuntu
-    volumes:
-      - ../:/django_client_framework:ro
-      - ../clients/django-client-framework-typescript:/django-client-framework-typescript:ro
-      - ./dcf-backend-example/_out/dcf-backend-example.tar.gz:/dcf-backend-example.tar.gz:ro
-      - ./dcf-client-typescript-example/proj:/proj:ro
-      - ./dcf-client-typescript-example/entrypoint.py:/entrypoint.py:ro
-      - ./dcf-client-typescript-example/_out:/_out # build output
-    command: ["python3", /entrypoint.py]
+  ts-example:
+    image: dcf-installation-tests-ts-example
+    build:
+      context: ../
+      dockerfile: ./installation-tests/ts-example/Dockerfile

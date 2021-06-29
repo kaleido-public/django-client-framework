@@ -39,7 +39,7 @@ def django_runserver() -> Popen:
 def installation():
     for cmd in [
         "cp /proj/* /_out",
-        "yarn add file:///django-client-framework-typescript",
+        "yarn add https://github.com/kaleido-public/django-client-framework-typescript.git#release",
         "yarn install --dev",
     ]:
         shell(cmd, cwd=PROJ)
