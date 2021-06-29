@@ -1,21 +1,16 @@
+.PHONY: all
+all: backend-example ts-example
+
 .PHONY: ubuntu-base
 ubuntu-base:
-	docker-compose build dcf-install-test-ubuntu
+	docker-compose build dcf-installation-tests-ubuntu-base
 
 
 .PHONY: example
-example: ubuntu-base
-	docker-compose run dcf-test-example
+backend-example: ubuntu-base
+	docker-compose build backend-example
 
-
-.PHONY: example-ts
-example-ts: example
-	docker-compose run dcf-test-example-ts
-
-.PHONY: format
-format:
-	sudo chmod a+w -R ..
-	black ..
-
-.PHONY: all
-all: example example-ts format
+.PHONY: ts-example
+ts-example: backend-example
+	docker-compose build ts-example
+	docker-compose run --rm ts-example

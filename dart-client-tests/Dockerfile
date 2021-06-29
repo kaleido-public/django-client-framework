@@ -25,3 +25,5 @@ RUN git clone https://github.com/kaleido-public/flutter_dcf_test.git
 RUN git clone https://github.com/kaleido-public/Dart-Django-Client-Library.git
 WORKDIR /home/user/flutter_dcf_test
 RUN flutter pub get
+
+CMD flutter test test/all_tests.dart
