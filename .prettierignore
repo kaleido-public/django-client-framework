@@ -1,1 +1,12 @@
+*.html
+.build/
+**/collectstatic/
 dist/
+**/deps/repo/wdio-video-reporter/
+project/site/deps/json-schema-to-typescript/
+*.md
+ios/
+docs/
+deps/
+.yarn/
+.mypy_cache/
