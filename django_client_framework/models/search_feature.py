@@ -27,6 +27,5 @@ def auto_update_search_vector(sender, instance, *args, **kwargs):
     """Keep the index up-to-date automatically"""
     LOG.debug(f"{sender=} {instance=}")
     sender.objects.filter(pk=instance.pk).update(
-        # use jiebaqry to maximize number of terms
-        search_vector=s.SearchVector("text_feature", config="jiebaqry")
+        search_vector=s.SearchVector("text_feature")
     )
