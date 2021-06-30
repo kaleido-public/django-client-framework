@@ -47,7 +47,7 @@ class Searchable(m.Model):
                 content_type=ContentType.objects.get_for_model(cls)
             )
             .filter(
-                m.Q(search_vector=SearchQuery(search_text, config="jiebacfg"))
+                m.Q(search_vector=SearchQuery(search_text))
                 | m.Q(text_feature__icontains=search_text)
             )
             .values_list("object_id", flat=True)
