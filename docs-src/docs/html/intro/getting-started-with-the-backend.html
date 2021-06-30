@@ -1,0 +1,632 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Getting Started with the Backend &mdash; Django Client Framework  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Django Client Framework
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction to the Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend-refs/index.html">Backend API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../client-refs/index.html">Client Libraries Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modify-this-document.html">Modify this documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Django Client Framework</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content style-external-links">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Getting Started with the Backend</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/intro/getting-started-with-the-backend.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="getting-started-with-the-backend">
+<h1>Getting Started with the Backend<a class="headerlink" href="#getting-started-with-the-backend" title="Permalink to this headline">¶</a></h1>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>This section assumes that you are familiar with Django. For a beginner’s
+guide for Django, see this link [todo].</p>
+</div>
+<div class="section" id="installation-with-pip3-git">
+<h2>Installation with pip3+git<a class="headerlink" href="#installation-with-pip3-git" title="Permalink to this headline">¶</a></h2>
+<p>Django Client Framework (Django) requires <code class="docutils literal notranslate"><span class="pre">python3.6+</span></code> and <code class="docutils literal notranslate"><span class="pre">Django</span> <span class="pre">3.0+</span></code>. To
+install Django Client Framework from the GitHub repository, run this in your
+shell:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install --user git+https://github.com/cozybearca/django-client-framework.git#egg<span class="o">=</span>django_client_framework
+</pre></div>
+</div>
+</div>
+<div class="section" id="configure-django-s-settings-py-file">
+<h2>Configure Django’s settings.py file<a class="headerlink" href="#configure-django-s-settings-py-file" title="Permalink to this headline">¶</a></h2>
+<p>In <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> for your Django app, simply add at the end of the file:</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>If you are not familiar with <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>, you haven’t completed the basic
+tutorial for Django. See [todo].</p>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">django_client_framework.settings</span>
+<span class="n">django_client_framework</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">install</span><span class="p">(</span>
+    <span class="n">INSTALLED_APPS</span><span class="p">,</span>
+    <span class="n">REST_FRAMEWORK</span><span class="p">,</span>
+    <span class="n">MIDDLEWARE</span><span class="p">,</span>
+    <span class="n">AUTHENTICATION_BACKENDS</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The line must be added after where the <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code>, <code class="docutils literal notranslate"><span class="pre">REST_FRAMEWORK</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MIDDLEWARE</span></code> and <code class="docutils literal notranslate"><span class="pre">AUTHENTICATION_BACKENDS</span></code> global variables are defined,
+because the <code class="docutils literal notranslate"><span class="pre">.install()</span></code> function modifies these variables by reference.</p>
+</div>
+<p>An example of the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file is as follows:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">django_client_framework.settings</span>
+
+<span class="c1"># ... other configs</span>
+
+<span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;django.contrib.admin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sessions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.staticfiles&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;django.middleware.security.SecurityMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sessions.middleware.SessionMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.middleware.common.CommonMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.middleware.csrf.CsrfViewMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.messages.middleware.MessageMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.middleware.clickjacking.XFrameOptionsMiddleware&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">REST_FRAMEWORK</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># .. your settings</span>
+<span class="p">}</span>
+
+<span class="n">AUTHENTICATION_BACKENDS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># .. your settings</span>
+<span class="p">]</span>
+
+<span class="c1"># Add this line</span>
+<span class="n">django_client_framework</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">install</span><span class="p">(</span>
+    <span class="n">INSTALLED_APPS</span><span class="p">,</span>
+    <span class="n">REST_FRAMEWORK</span><span class="p">,</span>
+    <span class="n">MIDDLEWARE</span><span class="p">,</span>
+    <span class="n">AUTHENTICATION_BACKENDS</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="add-routing-handlers-to-urls-py">
+<h2>Add routing handlers to <code class="docutils literal notranslate"><span class="pre">urls.py</span></code><a class="headerlink" href="#add-routing-handlers-to-urls-py" title="Permalink to this headline">¶</a></h2>
+<p>Next, append Django Client Framework’s API route handlers to your app’s
+<code class="docutils literal notranslate"><span class="pre">urls.py</span></code> file:</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>If you are not familiar with <code class="docutils literal notranslate"><span class="pre">urls.py</span></code>, you haven’t completed the basic
+tutorial for Django. See [todo].</p>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">include</span>
+<span class="kn">import</span> <span class="nn">django_client_framework.api.urls</span>
+
+<span class="n">app_name</span> <span class="o">=</span> <span class="s2">&quot;myapp&quot;</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span> <span class="c1"># other routes</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">django_client_framework</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">urls</span><span class="p">))</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.urlpatterns</span></code> variable provided by the Django Client Framework is just
+a list of routes and handlers. You can append this variable to your
+urlpatterns list flexiably. Internally, the <code class="docutils literal notranslate"><span class="pre">.urlpatterns</span></code> is defined as
+follows:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># django_client_framework.api.urls.urlpatterns</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&lt;str:model&gt;&quot;</span><span class="p">,</span> <span class="n">ModelCollectionAPI</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model_collection&quot;</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&lt;str:model&gt;/&lt;int:pk&gt;&quot;</span><span class="p">,</span> <span class="n">ModelObjectAPI</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model_object&quot;</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span>
+        <span class="s2">&quot;&lt;str:model&gt;/&lt;int:pk&gt;/&lt;str:target_field&gt;&quot;</span><span class="p">,</span>
+        <span class="n">ModelFieldAPI</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model_field&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="add-a-serializable-model">
+<h2>Add a Serializable model<a class="headerlink" href="#add-a-serializable-model" title="Permalink to this headline">¶</a></h2>
+<p>To add a model, create a model that extends from
+<code class="docutils literal notranslate"><span class="pre">django_client_framework.models.Serializable</span></code>. For instance:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
+
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">):</span>
+    <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>If you are not familiar with <a class="reference external" href="https://docs.djangoproject.com/en/3.1/ref/models/instances">Model</a>, you haven’t
+completed the basic tutorial for Django. See [todo].</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Serializable</span></code> requires <code class="docutils literal notranslate"><span class="pre">Product</span></code> to implement a class method named
+<code class="docutils literal notranslate"><span class="pre">.serializer_class()</span></code>, which should return a <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code>. This class is
+responsible for converting back and forth betwen a JSON object and a class
+object, ie, serialization and deserialization.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>If you are unfarmiliar with <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> in Django Rest Framework,
+complete this tutorial for Django Rest Framework first. [todo]</p>
+</div>
+<p>To define a <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> for <code class="docutils literal notranslate"><span class="pre">Product</span></code>, we create another class that
+inherits from <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<p>Django Client Framework’s <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> is a subclass of Django Rest
+Framework’s <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> class with some methods overriden. Although
+they mostly have the same syntax and usage, do not confuse them with one
+another! You should always use
+<code class="docutils literal notranslate"><span class="pre">django_client_framework.serializers.ModelSerializer</span></code>. If you use the Django
+Rest Framework’s version of the <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> by mistake, then some of
+our API features won’t work!</p>
+</div>
+<p>Finally, we return this class from the <code class="docutils literal notranslate"><span class="pre">.serializer_class()</span></code> method. The final code
+looks like this:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
+
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">):</span>
+    <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ProductSerializer</span>
+
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>Now you can run migration to apply the new model.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 ./manage.py makemigrations
+python3 ./manage.py migrate
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>If you are not familiar with Django’s migration system, you haven’t
+completed the basic tutorial for Django. See [todo].</p>
+</div>
+</div>
+<div class="section" id="make-an-accesscontrolled-model">
+<h2>Make an AccessControlled model<a class="headerlink" href="#make-an-accesscontrolled-model" title="Permalink to this headline">¶</a></h2>
+<p>Django Client Framework supports both model and object level authorizations. By
+default, all objects are only readable and writable only to superusers. Next, we
+will give the read permission to the anyone user group, so that the product list
+is publically visible to anyone visiting our site.</p>
+<p>To manage model permission, <code class="docutils literal notranslate"><span class="pre">Product</span></code> needs to extend the <cite>AccessControlled</cite>
+class, and overrides a class method named <code class="docutils literal notranslate"><span class="pre">.get_permissionmanager_class()</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">.get_permissionmanager_class()</span></code> class method should return a
+<code class="docutils literal notranslate"><span class="pre">PermissionManager</span></code> class that implements a method named <code class="docutils literal notranslate"><span class="pre">.add_perms(instance)</span></code>.
+The default implementation of <code class="docutils literal notranslate"><span class="pre">.get_permissionmanager_class()</span></code> looks for a class
+named <code class="docutils literal notranslate"><span class="pre">PermissionManager</span></code> in the model class.</p>
+<p>To give anyone the read permission to the Product model, we import the
+<code class="docutils literal notranslate"><span class="pre">default_groups.anyone</span></code> and <code class="docutils literal notranslate"><span class="pre">add_perms_shortcut</span></code> from
+<code class="docutils literal notranslate"><span class="pre">django_client_framework.permissions</span></code> and use them to set the permissions.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span><span class="p">,</span> <span class="n">add_perms_shortcut</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
+
+
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
+    <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ProductSerializer</span>
+
+    <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">add_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">):</span>
+            <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>Now to refresh the permission stored in the database, run this in Django shell:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 ./manage.py shell
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># inside shell</span>
+
+<span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">reset_permissions</span>
+
+<span class="n">reset_permissions</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Consider running <code class="docutils literal notranslate"><span class="pre">reset_permissions()</span></code> during the django migrations whenever
+the permission is changed on a model.</p>
+</div>
+</div>
+<div class="section" id="query-objects-via-http-requests">
+<h2>Query objects via HTTP requests<a class="headerlink" href="#query-objects-via-http-requests" title="Permalink to this headline">¶</a></h2>
+<p>We need to expose the <code class="docutils literal notranslate"><span class="pre">Product</span></code> model to the RESTful API by using the
+<code class="docutils literal notranslate"><span class="pre">&#64;register_api_model</span></code> decorator. Add <code class="docutils literal notranslate"><span class="pre">&#64;register_api_model</span></code> to the <cite>Product</cite>
+class.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span><span class="p">,</span> <span class="n">add_perms_shortcut</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.api</span> <span class="kn">import</span> <span class="n">register_api_model</span>
+
+<span class="nd">@register_api_model</span>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
+    <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ProductSerializer</span>
+
+    <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">add_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">):</span>
+            <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>Now that the <code class="docutils literal notranslate"><span class="pre">Product</span></code> model is correctly configured, you can create a
+<code class="docutils literal notranslate"><span class="pre">Product</span></code> object in Django and visit in via the REST API.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 ./manage.py shell
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># inside shell</span>
+<span class="kn">from</span> <span class="nn">.product</span> <span class="kn">import</span> <span class="n">Product</span>
+
+<span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">barcode</span><span class="o">=</span><span class="s2">&quot;xxyy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Start the django development server:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 ./manage.py runserver <span class="c1"># Starting development server at http://127.0.0.1:8000/</span>
+</pre></div>
+</div>
+<p>To visit the list of products, send a GET request to this url:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/product/
+
+<span class="c1">#   {</span>
+<span class="c1">#       total: 1,</span>
+<span class="c1">#       limit: 50,</span>
+<span class="c1">#       page: 1,</span>
+<span class="c1">#       objects: [ {id: 1, barcode: &quot;xxyy&quot;} ],</span>
+<span class="c1">#       next:null,</span>
+<span class="c1">#       previous:null</span>
+<span class="c1">#   }</span>
+</pre></div>
+</div>
+<p>To visit the specific product, send a GET request to this url:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/product/1
+
+<span class="c1"># {id: 1, barcode: &quot;xxyy&quot;}</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Besides retrieving the object, creation, deleting, and modifications are
+also supported through POST, DELETE, PUT RESTful requests respectively. See
+this link for more details. [todo]</p>
+</div>
+</div>
+<div class="section" id="query-relational-objects-via-http">
+<h2>Query relational objects via HTTP<a class="headerlink" href="#query-relational-objects-via-http" title="Permalink to this headline">¶</a></h2>
+<p>The Django model system allows you to define relational data. For instance, we
+can add the <code class="docutils literal notranslate"><span class="pre">Brand</span></code> class in Django. A brand can have multiple products.
+Conversely, a product is made by one brand.</p>
+<p>Therefore, we define the two classes as follows:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span><span class="p">,</span> <span class="n">add_perms_shortcut</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.api</span> <span class="kn">import</span> <span class="n">register_api_model</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">CASCADE</span>
+
+
+<span class="nd">@register_api_model</span>
+<span class="k">class</span> <span class="nc">Brand</span><span class="p">(</span><span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">BrandSerializer</span>
+
+    <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">add_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">brand</span><span class="p">):</span>
+            <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">brand</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">BrandSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Brand</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="nd">@register_api_model</span>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
+    <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+    <span class="n">brand</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;Brand&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;products&quot;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ProductSerializer</span>
+
+    <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">add_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">):</span>
+            <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Don’t forget to apply migrations whenever the models are changed.</p>
+</div>
+<p>After applying migrations, add a <code class="docutils literal notranslate"><span class="pre">Product</span></code> object, and a <code class="docutils literal notranslate"><span class="pre">Brand</span></code> object:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">nike</span> <span class="o">=</span> <span class="n">Brand</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nike&quot;</span><span class="p">)</span>
+<span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">barcode</span><span class="o">=</span><span class="s2">&quot;xxyy&quot;</span><span class="p">,</span> <span class="n">brand</span><span class="o">=</span><span class="n">nike</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now to retrieve the <code class="docutils literal notranslate"><span class="pre">Product</span></code> object, send a GET request:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/product/1
+<span class="c1"># {id: 1, barcode: &quot;xxyy&quot;, brand_id: 1}</span>
+</pre></div>
+</div>
+<p>Now to query the product’s brand, send a GET request to this url:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/product/1/brand
+<span class="c1"># {id: 1, name: &quot;nike&quot;}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since the product’s <code class="docutils literal notranslate"><span class="pre">brand_id</span></code> field has value 1, the above query is the
+same as the query below, which returns the same brand object.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/brand/1
+<span class="c1"># {id: 1, name: &quot;nike&quot;}</span>
+</pre></div>
+</div>
+</div>
+<p>Conversely, we can retrieve all products under the brand:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/brand/1/products
+
+<span class="c1">#   {</span>
+<span class="c1">#       total: 1,</span>
+<span class="c1">#       limit: 50,</span>
+<span class="c1">#       page: 1,</span>
+<span class="c1">#       objects: [ {id: 1, barcode: &quot;xxyy&quot;} ],</span>
+<span class="c1">#       next:null,</span>
+<span class="c1">#       previous:null</span>
+<span class="c1">#   }</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The last part of the url, <code class="docutils literal notranslate"><span class="pre">/products</span></code>, comes from the
+<code class="docutils literal notranslate"><span class="pre">related_name=&quot;products&quot;</span></code> argument when defining the brand <cite>ForeignKey</cite>
+field on <code class="docutils literal notranslate"><span class="pre">Product</span></code>. This is the same <code class="docutils literal notranslate"><span class="pre">.related_name</span></code> in Django that allows
+you to write</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">Brand</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">products__in</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yu.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

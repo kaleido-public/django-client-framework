@@ -1,0 +1,5 @@
+{
+  "entryPoints": ["/libs/django-client-framework-typescript/src/index.ts"],
+  "out": "/docs/html/ts",
+  "tsconfig": "/libs/django-client-framework-typescript/tsconfig.json"
+}
