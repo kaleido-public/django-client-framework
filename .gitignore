@@ -68,9 +68,6 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# Sphinx documentation
-docs/_build/
-
 # PyBuilder
 target/
 
@@ -135,3 +132,7 @@ node_modules/
 
 _out/
 .DS_Store
+
+docs/doctrees/
+docs/html/.buildinfo
+docs/html/_sources

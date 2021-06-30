@@ -1,0 +1,3 @@
+[submodule "libs/django-client-framework-typescript"]
+	path = libs/django-client-framework-typescript
+	url = https://github.com/cozybearca/django-client-framework-typescript.git
