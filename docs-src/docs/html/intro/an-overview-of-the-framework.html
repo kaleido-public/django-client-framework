@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>An Overview of the Framework &mdash; Django Client Framework  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/tabs.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Django Client Framework
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction to the Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend-refs/index.html">Backend API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../client-refs/index.html">Client Libraries Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modify-this-document.html">Modify this documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Django Client Framework</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content style-external-links">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>An Overview of the Framework</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/intro/an-overview-of-the-framework.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="an-overview-of-the-framework">
+<h1>An Overview of the Framework<a class="headerlink" href="#an-overview-of-the-framework" title="Permalink to this headline">¶</a></h1>
+<p>Django Client Framework is meant to work with the famous python server framework
+<a class="reference external" href="https://www.djangoproject.com">Django</a>, and its popular REST API library,
+<a class="reference external" href="https://www.django-rest-framework.org">Django Rest Framework</a>.</p>
+<p>The Django Client Framework includes client libraries in multiple languages,
+which enables frontend developers to query the database using native programming
+languages, without having to worry about the communication details at the REST
+API level.</p>
+<p>For instance, when a <cite>Product</cite> model is defined in Django:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+   <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>With the Django Client Framework, a corresponding model in the frontend language
+is defined.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button><button aria-controls="panel-0-S290bGlu" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-S290bGlu" name="S290bGlu" role="tab" tabindex="-1">Kotlin</button><button aria-controls="panel-0-U3dpZnQ=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-U3dpZnQ=" name="U3dpZnQ=" role="tab" tabindex="-1">Swift</button></div><div aria-labelledby="tab-0-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+   <span class="nx">barcode</span>: <span class="kt">str</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-S290bGlu" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-S290bGlu" name="S290bGlu" role="tabpanel" tabindex="0"><div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">Product</span><span class="p">(</span>
+   <span class="kd">val</span> <span class="nv">barcode</span><span class="p">:</span> <span class="kt">String</span>
+<span class="p">):</span> <span class="n">Model</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-U3dpZnQ=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-U3dpZnQ=" name="U3dpZnQ=" role="tabpanel" tabindex="0"><div class="highlight-swift notranslate"><div class="highlight"><pre><span></span><span class="kd">struct</span> <span class="nc">Product</span><span class="p">:</span> <span class="n">Model</span> <span class="p">{</span>
+   <span class="kd">var</span> <span class="nv">barcode</span><span class="p">:</span> <span class="nb">String</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></div>
+<p>Then to query get a Product object in the frontend, you can use the API provided
+by the Django Client Framework, which is extremely similar to the Django’s:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-1-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button><button aria-controls="panel-1-S290bGlu" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-1-S290bGlu" name="S290bGlu" role="tab" tabindex="-1">Kotlin</button><button aria-controls="panel-1-U3dpZnQ=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-1-U3dpZnQ=" name="U3dpZnQ=" role="tab" tabindex="-1">Swift</button></div><div aria-labelledby="tab-1-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-1-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">results</span>: <span class="kt">PageResult</span><span class="o">&lt;</span><span class="nx">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">page</span><span class="p">()</span>
+<span class="kd">let</span> <span class="nx">product</span>: <span class="kt">Product</span> <span class="o">=</span> <span class="nx">results</span><span class="p">[</span><span class="mf">0</span><span class="p">]</span>
+<span class="nx">product</span><span class="p">.</span><span class="nx">barcode</span> <span class="o">=</span> <span class="s2">&quot;xxyy&quot;</span>
+<span class="k">await</span> <span class="nx">product</span><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-S290bGlu" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-1-S290bGlu" name="S290bGlu" role="tabpanel" tabindex="0"><div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="kd">val</span> <span class="nv">result</span><span class="p">:</span> <span class="n">PageResult</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">Product</span><span class="p">.</span><span class="na">objects</span><span class="p">.</span><span class="na">page</span><span class="p">()</span>
+<span class="kd">val</span> <span class="nv">product</span><span class="p">:</span> <span class="n">Product</span> <span class="o">=</span> <span class="n">results</span><span class="o">[</span><span class="m">0</span><span class="o">]</span>
+<span class="n">product</span><span class="p">.</span><span class="na">barcode</span> <span class="o">=</span> <span class="s">&quot;xxyy&quot;</span>
+<span class="n">product</span><span class="p">.</span><span class="na">save</span><span class="p">()</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-U3dpZnQ=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-1-U3dpZnQ=" name="U3dpZnQ=" role="tabpanel" tabindex="0"><div class="highlight-swift notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nv">results</span><span class="p">:</span> <span class="n">PageResult</span><span class="p">&lt;</span><span class="n">Product</span><span class="p">&gt;</span> <span class="p">=</span> <span class="k">try</span> <span class="n">Product</span><span class="p">.</span><span class="n">objects</span><span class="p">.</span><span class="n">page</span><span class="p">().</span><span class="n">await</span><span class="p">()</span>
+<span class="kd">let</span> <span class="nv">product</span><span class="p">:</span> <span class="n">Product</span> <span class="p">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">product</span><span class="p">.</span><span class="n">barcode</span> <span class="p">=</span> <span class="s">&quot;xxyy&quot;</span>
+<span class="n">product</span><span class="p">.</span><span class="n">save</span><span class="p">().</span><span class="n">await</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Django Client Framework has two components, the frontend libraries,
+and the backend API server based on Django. You need to install both components
+into your project.</p>
+</div>
+<p>Internally, a communication protocol based on RESTful API is used between the
+frontend and the backend. The protocol is considered an internal detail of the
+Django Client Framework, and you should not need to worry about it.</p>
+<img alt="../_images/overview1.jpg" src="../_images/overview1.jpg" />
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yu.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
