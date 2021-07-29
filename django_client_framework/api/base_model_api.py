@@ -209,7 +209,7 @@ class BaseModelAPI(GenericAPIView):
         else:
             raise e.PermissionDenied(f"You have no {action} permission on {target}.")
 
-    @cached_property
+    @property
     def user_object(self) -> User:
         """
         DRF does not know about django-guardian's Anynymous user instance.
@@ -217,9 +217,13 @@ class BaseModelAPI(GenericAPIView):
         instances.
         """
         if self.request.user.is_anonymous:
-            return get_user_model().get_anonymous()
+            return self.__anonymous_user
         else:
             return self.request.user
+
+    @cached_property
+    def __anonymous_user(self):
+        return get_user_model().get_anonymous()
 
     def assert_pks_exist_or_raise_404(self, model: Type[Model], pks: List[int]):
         queryset = model.objects.filter(pk__in=pks)
