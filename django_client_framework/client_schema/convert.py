@@ -51,7 +51,7 @@ def get_field(model, field_name, default=None):
 
 def to_jsonschema(serializer):
     try:
-        properties = {}
+        properties = {"id": "integer"}  # assume there is always an id field
         required_fields = []
         for name, field in serializer.fields.items():
             properties[name] = field_to_jsonschema(field)
