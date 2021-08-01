@@ -15,7 +15,7 @@ class DelegateSerializer(Serializer):
     def __init__(self, instance=None, data=None, **kwargs):
         self.__delegate = None
         self.read_delegate = None
-        self.is_create = self.is_update = False
+        self.is_read = self.is_create = self.is_update = False
         self.kwargs = kwargs
         self.instance = instance
         self.initial_data = data
