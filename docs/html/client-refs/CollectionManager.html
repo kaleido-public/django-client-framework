@@ -205,6 +205,7 @@ of ids as the value) are supported. See <a class="reference external" href="http
 </div>
 <p>will be encoded as
 <code class="docutils literal notranslate"><span class="pre">?id__in[]=1&amp;id__in[]=2&amp;barcode=xxyy&amp;price__gt=12.00</span></code>.</p>
+<p>An empy array such as <code class="docutils literal notranslate"><span class="pre">{&quot;id__in&quot;:</span> <span class="pre">[]}</span></code> is encoded as <code class="docutils literal notranslate"><span class="pre">?id__in[]=</span></code>.</p>
 <dl class="simple">
 <dt>Suppoted keys</dt><dd><p>Any property name of the model, or any <a class="reference external" href="https://docs.djangoproject.com/en/3.1/ref/models/querysets/#field-lookups">Django’s Field
 lookup keys</a>.</p>

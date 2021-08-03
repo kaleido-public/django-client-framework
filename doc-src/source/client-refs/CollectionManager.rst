@@ -61,6 +61,8 @@ erased during the runtime.
         will be encoded as
         ``?id__in[]=1&id__in[]=2&barcode=xxyy&price__gt=12.00``.
 
+        An empy array such as ``{"id__in": []}`` is encoded as ``?id__in[]=``.
+
         Suppoted keys
             Any property name of the model, or any :django:`Django's Field
             lookup keys <models/querysets/#field-lookups>`.
