@@ -105,7 +105,15 @@ class BaseModelAPI(GenericAPIView):
         querydict = {}
         for key in self.request.query_params:
             if "[]" in key:
-                querydict[key[:-2]] = self.request.query_params.getlist(key, [])
+                querylist = self.request.query_params.getlist(key, [])
+                # "products?id__in[]=" gets translated to <QueryDict:
+                # {'id__in[]': ['']}> this is a compromise we want to make,
+                # because there is no way standard way to represent an empty
+                # list in the query string.
+                if len(querylist) == 1 and querylist[0] == "":
+                    querylist = []
+                querydict[key[:-2]] = querylist
+
             elif key == "_fulltext" and (
                 searchtext := self.request.query_params.get(key)
             ):

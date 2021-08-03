@@ -128,6 +128,12 @@ class TestPagination(TestCase):
         self.assertDictContainsSubset({"page": 1, "limit": 50, "total": 0}, data)
         self.assertEqual(len(data["objects"]), 0)
 
+    def test_key_name_array_but_empty(self):
+        resp = self.superuser_client.get("/product?id__in[]=")
+        data = resp.json()
+        self.assertDictContainsSubset({"page": 1, "limit": 50, "total": 0}, data, data)
+        self.assertEqual(len(data["objects"]), 0)
+
     def test_key_name_array(self):
         resp = self.superuser_client.get(
             "/product?barcode__in[]=product_21&barcode__in[]=product_22"
