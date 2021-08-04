@@ -52,8 +52,8 @@ field``.
     Model field permission
         Instead of assigning permissions to a model, in which case the
         permissions apply to all fields on the model, you can also allow the
-        permission on a particular field of the model. For instance, you may
-        want to give user the read-only permission on a model, except for a
+        permission to a particular field of the model. For instance, you may
+        want to give user the read-only permission to a model, except for a
         particular field, which can be both read and written.
 
     Object field permission
@@ -112,7 +112,7 @@ The permission system has the following designs:
     attributes: the `model`, the `instance`, the `field`, and the `action`,
     depending on the context of what user is accessing. When ``DEBUG=False`` in
     ``settings.py``, if user's modification action raises ``PermissionDenied``
-    and user has no ``read`` permission on the context, the server responds with
+    and user has no ``read`` permission to the context, the server responds with
     a ``404 Not Found`` instead. This is for hiding the existence of an object
     whenever possible.
 
@@ -150,7 +150,7 @@ requests, the handling algorithm is as the following:
     ``GET``
         When visiting a model collection, only objects that the authenticated
         user has permission to view are displayed. If the user has no ``read``
-        permission on any object of the model, then the result is an empty list.
+        permission to any object of the model, then the result is an empty list.
 
         .. code-block::
 
@@ -166,17 +166,21 @@ requests, the handling algorithm is as the following:
 
     ``POST``
         When creating an object, the authenticated user must have the ``create``
-        permission on the model class; otherwise, the server responses with a
-        ``403 Permission Denied`` error. In addition, if the user has the
-        ``read`` permission on the object created, then the server responses
-        with the ``code 201`` and the created data; otherwise, the server
-        responses with ``code 201`` and a message saying `the object is created
-        but you have no permission to view it`.
+        permission to the model class, and the ``write`` permission to each
+        related object; otherwise, the server responses with a ``403 Permission
+        Denied`` error. In addition, if the user has the ``read`` permission to
+        the object created, then the server responses with the ``code 201`` and
+        the created data; otherwise, the server responses with ``code 201`` and
+        a message saying `the object is created but you have no permission to
+        view it`.
 
         .. code-block::
 
             if user can create object:
-                create object
+                for each relation field of the object being posted:
+                    if user cannot write to the reverse relation field:
+                        raise PermissionDenied(related object, reverse field, "write")
+                create the object
                 if user can read the created object:
                     respond 201 OK with the created object
                 else:
@@ -248,7 +252,7 @@ requests, the handling algorithm is as the following:
         permissions for the parent object (ie, being able to write to the
         brand's ``.products`` field). In addition, for each related objects
         being posted, the user must have the `object-field-level` ``write``
-        permission on the reverse field. (eg, being able to write to each
+        permission to the reverse field. (eg, being able to write to each
         product's ``.brand`` field.) When the object relations are created, the
         result is displayed following the ``GET`` algorithm.
 
