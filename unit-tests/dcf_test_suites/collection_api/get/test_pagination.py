@@ -11,10 +11,14 @@ class TestPagination(TestCase):
         self.superuser = User.objects.create_superuser(username="testuser")
         self.superuser_client = APIClient()
         self.superuser_client.force_authenticate(self.superuser)
-        self.brands = [Brand.objects.create(name=f"name_{i+1}") for i in range(100)]
+        self.brands = [
+            Brand.objects.create(id=i + 1, name=f"name_{i+1}") for i in range(100)
+        ]
         self.products = [
             Product.objects.create(
-                barcode=f"product_{i+1}", brand=self.brands[i] if i % 2 == 0 else None
+                id=i + 1,
+                barcode=f"product_{i+1}",
+                brand=self.brands[i] if i % 2 == 0 else None,
             )
             for i in range(100)
         ]
@@ -36,6 +40,19 @@ class TestPagination(TestCase):
             objects[1],
             {"id": 2, "barcode": "product_2", "brand_id": None},
         )
+
+    def test_distict_result(self):
+        """When filtering with a query that results in a left-join operation,
+        make sure the results are distict."""
+        brand = Brand.objects.get(id=1)
+        brand.products.set(Product.objects.filter(id__in=[1, 2, 3]))
+        result = Brand.objects.filter(products__in=[1, 2, 3])
+        self.assertEqual(3, len(result))
+        resp = self.superuser_client.get(
+            "/brand?products__in[]=1&products__in[]=2&products__in[]=3"
+        )
+        data = resp.json()
+        self.assertEqual(1, data["total"], data)
 
     def test_list_next_page(self):
         resp = self.superuser_client.get("/product?_page=2")

@@ -155,7 +155,7 @@ class BaseModelAPI(GenericAPIView):
             self.__filter_queryset_by_param(
                 p.filter_queryset_by_perms_shortcut("r", self.user_object, queryset)
             )
-        )
+        ).distinct()
 
     @cached_property
     def model(self):
