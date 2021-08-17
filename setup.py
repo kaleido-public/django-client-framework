@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="django-client-framework",  # Replace with your own username
-    version="0.0.2",
+    version="0.0.3",
     author="Yu",
     author_email="ylilarry@gmail.com",
     description="Django Client Framework",
