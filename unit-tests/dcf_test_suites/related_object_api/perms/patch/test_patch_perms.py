@@ -110,3 +110,21 @@ class TestPatchPerms(TestCase):
         )
         self.assertEqual(2, Product.objects.get(id=1).brand_id)
         self.assertDictEqual({"id": 2, "name": "br2"}, resp.json())
+
+    def test_assign_from_null(self):
+        """PATCH Product.brand from None to existing"""
+        # brand = Brand.objects.create(pk=11, name="old")
+        # p.set_perms_shortcut(self.user, brand, "rw")
+        product = Product.objects.create()
+        p.set_perms_shortcut(self.user, product, "r")
+        p.set_perms_shortcut(self.user, product, "w", field_name="brand")
+        brand = Brand.objects.create(name="new branch")
+        p.set_perms_shortcut(self.user, brand, "r")
+        p.set_perms_shortcut(self.user, brand, "w", field_name="products")
+        resp = self.user_client.patch(
+            f"/product/{product.id}/brand",
+            data=brand.id,
+            content_type="application/json",
+        )
+        product.refresh_from_db()
+        self.assertEqual(product.brand, brand, resp.json())
