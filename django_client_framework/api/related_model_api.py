@@ -5,7 +5,6 @@ from django.db.models import Model
 from django.db.models.fields import related_descriptors
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.db.models.fields.reverse_related import ManyToManyRel, ManyToOneRel
-from django.db.models.query import QuerySet
 from django.http.response import JsonResponse
 from django.utils.functional import cached_property
 from django_client_framework import exceptions as e
@@ -63,7 +62,7 @@ class RelatedModelAPI(BaseModelAPI):
         """Returns the QuerySet from pks in the request body."""
         if self.is_related_object_api:
             if self.__body_pk is None:
-                queryset = QuerySet(self.field_model)
+                queryset = self.field_model.objects.none()
             else:
                 queryset = self.field_model.objects.filter(pk=self.__body_pk)
         else:
@@ -74,19 +73,19 @@ class RelatedModelAPI(BaseModelAPI):
     def __field_val_queryset(self):
         if self.is_related_object_api:
             if self.field_val is None:
-                return QuerySet(model=self.field_model)
+                return self.field_model.objects.none()
             else:
                 return self.field_model.objects.filter(pk=self.field_val.pk)
         else:
             return self.field_val.all()
 
-    def __assert_write_perm_for_rel_objects(self, queryset=None):
+    def __assert_field_write_perm_for_rel_objects(self, queryset=None):
         find_has_write = p.filter_queryset_by_perms_shortcut(
             "w", self.user_object, queryset, self.reverse_field_name
         )
         find_no_write = queryset.difference(find_has_write).first()
         if find_no_write:
-            raise APIPermissionDenied(find_no_write, "w")
+            raise APIPermissionDenied(find_no_write, "w", self.reverse_field_name)
 
     def __return_get_result_if_permitted(self, request, *args, **kwargs):
         if p.has_perms_shortcut(
@@ -130,15 +129,15 @@ class RelatedModelAPI(BaseModelAPI):
     def post(self, request, *args, **kwargs):
         self.assert_pks_exist_or_raise_404(self.field_model, self.__body_pk_ls)
         self.__assert_object_field_perm(self.model_object, "w", self.field_name)
-        self.__assert_write_perm_for_rel_objects(self.__body_pk_queryset)
+        self.__assert_field_write_perm_for_rel_objects(self.__body_pk_queryset)
         self.field_val.add(*self.__body_pk_queryset)
         return self.__return_get_result_if_permitted(request, *args, **kwargs)
 
     def patch_related_object(self, request, *args, **kwargs):
         if self.__body_pk is not None:
             self.assert_pks_exist_or_raise_404(self.field_model, [self.__body_pk])
-        self.__assert_write_perm_for_rel_objects(self.__body_pk_queryset)
-        self.__assert_write_perm_for_rel_objects(self.__field_val_queryset)
+        self.__assert_field_write_perm_for_rel_objects(self.__body_pk_queryset)
+        self.__assert_field_write_perm_for_rel_objects(self.__field_val_queryset)
         setattr(self.model_object, self.field_name, self.__body_pk_queryset.first())
         self.field_val.save()
         self.model_object.save()
@@ -152,7 +151,7 @@ class RelatedModelAPI(BaseModelAPI):
         # .difference()
         symmetric_diff = diff_add.union(diff_remove).values_list("pk")
         queryset = self.field_model.objects.filter(pk__in=symmetric_diff)
-        self.__assert_write_perm_for_rel_objects(queryset)
+        self.__assert_field_write_perm_for_rel_objects(queryset)
         self.field_val.set(self.__body_pk_queryset)
         return self.__return_get_result_if_permitted(request, *args, **kwargs)
 
@@ -165,7 +164,7 @@ class RelatedModelAPI(BaseModelAPI):
 
     def delete(self, request, *args, **kwargs):
         self.__assert_object_field_perm(self.model_object, "w", self.field_name)
-        self.__assert_write_perm_for_rel_objects(self.__body_pk_queryset)
+        self.__assert_field_write_perm_for_rel_objects(self.__body_pk_queryset)
         if not hasattr(self.field_val, "remove"):
             raise e.ValidationError(
                 f"Cannot remove {self.field_name} from {self.model.__name__} due to non-null constraints."
