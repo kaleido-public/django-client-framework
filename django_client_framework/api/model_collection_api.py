@@ -56,7 +56,7 @@ class ModelCollectionAPI(BaseModelAPI):
             return Response(
                 {
                     "success": True,
-                    "info": "The object has been created but you have no permission to view it.",
+                    "detail": "The object has been created but you have no permission to view it.",
                 },
                 status=201,
             )

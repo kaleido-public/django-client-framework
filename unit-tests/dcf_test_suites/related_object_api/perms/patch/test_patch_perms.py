@@ -15,7 +15,6 @@ class TestPatchPerms(TestCase):
         self.br2 = Brand.objects.create(name="br2")
         self.pr1 = Product.objects.create(barcode="pr1", brand=self.br1)
         self.pr2 = Product.objects.create(barcode="pr2", brand=self.br2)
-        p.clear_permissions()
 
     def test_patch_no_permission(self):
         resp = self.user_client.patch(
@@ -53,11 +52,11 @@ class TestPatchPerms(TestCase):
         )
         self.assertEqual(2, Product.objects.get(id=1).brand_id)
         self.assertEqual(resp.status_code, 200)
-        self.assertDictEqual(
-            resp.json(),
+        self.assertDictContainsSubset(
             {
                 "detail": "Action was successful but you have no permission to view the result."
             },
+            resp.json(),
         )
 
     def test_correct_patch_perms_no_read_v2(self):
@@ -68,11 +67,11 @@ class TestPatchPerms(TestCase):
         )
         self.assertEqual(2, Product.objects.get(id=1).brand_id)
         self.assertEqual(resp.status_code, 200)
-        self.assertDictEqual(
-            resp.json(),
+        self.assertDictContainsSubset(
             {
                 "detail": "Action was successful but you have no permission to view the result."
             },
+            resp.json(),
         )
 
     def test_correct_patch_perms_can_read(self):
@@ -82,7 +81,7 @@ class TestPatchPerms(TestCase):
             "/product/1/brand", data=2, content_type="application/json"
         )
         self.assertEqual(2, Product.objects.get(id=1).brand_id)
-        self.assertDictEqual({"id": 2, "name": "br2"}, resp.json())
+        self.assertDictContainsSubset({"id": 2, "name": "br2"}, resp.json())
 
     def test_correct_patch_perms_can_read_v2(self):
         p.add_perms_shortcut(self.user, Product.objects.get(id=1), "rw")
@@ -92,7 +91,7 @@ class TestPatchPerms(TestCase):
             "/product/1/brand", data=2, content_type="application/json"
         )
         self.assertEqual(2, Product.objects.get(id=1).brand_id)
-        self.assertDictEqual({"id": 2, "name": "br2"}, resp.json())
+        self.assertDictContainsSubset({"id": 2, "name": "br2"}, resp.json())
 
     def test_correct_patch_perms_can_read_v3(self):
         p.add_perms_shortcut(
@@ -109,7 +108,7 @@ class TestPatchPerms(TestCase):
             "/product/1/brand", data=2, content_type="application/json"
         )
         self.assertEqual(2, Product.objects.get(id=1).brand_id)
-        self.assertDictEqual({"id": 2, "name": "br2"}, resp.json())
+        self.assertDictContainsSubset({"id": 2, "name": "br2"}, resp.json())
 
     def test_assign_from_null(self):
         """PATCH Product.brand from None to existing"""

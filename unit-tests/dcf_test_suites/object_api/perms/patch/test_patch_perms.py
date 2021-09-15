@@ -39,7 +39,7 @@ class TestPatchPerms(TestCase):
             data,
             {
                 "success": True,
-                "info": "The object has been updated but you have no permission to view it.",
+                "detail": "The object has been updated but you have no permission to view it.",
             },
         )
         self.assertEquals(Product.objects.get(id=1).barcode, "po1")
@@ -52,7 +52,7 @@ class TestPatchPerms(TestCase):
             data,
             {
                 "success": True,
-                "info": "The object has been updated but you have no permission to view it.",
+                "detail": "The object has been updated but you have no permission to view it.",
             },
         )
         self.assertEquals(Product.objects.get(id=1).barcode, "po1")
@@ -89,7 +89,7 @@ class TestPatchPerms(TestCase):
             data,
             {
                 "success": True,
-                "info": "The object has been updated but you have no permission to view it.",
+                "detail": "The object has been updated but you have no permission to view it.",
             },
         )
         self.assertEquals(Product.objects.get(id=1).brand_id, 2)
