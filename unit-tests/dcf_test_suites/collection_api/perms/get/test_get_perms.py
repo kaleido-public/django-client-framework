@@ -25,14 +25,14 @@ class GetPerms(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_incorrect_permissions(self):
-        p.set_perms_shortcut(self.user, Product, "wcd")
+        p.add_perms_shortcut(self.user, Product, "wcd")
         resp = self.user_client.get("/product")
         data = resp.json()
         self.assertDictContainsSubset({"total": 0, "objects": []}, data)
         self.assertEqual(resp.status_code, 200)
 
     def test_get_all_with_model_permissions(self):
-        p.set_perms_shortcut(self.user, Product, "r")
+        p.add_perms_shortcut(self.user, Product, "r")
         resp = self.user_client.get("/product")
         data = resp.json()
 
@@ -41,7 +41,7 @@ class GetPerms(TestCase):
         self.assertDictEqual(objects[0], {"barcode": "pr1", "brand_id": 1, "id": 1})
 
     def test_get_r_on_object(self):
-        p.set_perms_shortcut(self.user, self.pr2, "r")
+        p.add_perms_shortcut(self.user, self.pr2, "r")
         resp = self.user_client.get("/product")
         data = resp.json()
         self.assertDictContainsSubset({"page": 1, "limit": 50, "total": 1}, data)

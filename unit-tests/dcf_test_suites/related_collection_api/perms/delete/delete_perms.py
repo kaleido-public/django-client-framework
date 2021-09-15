@@ -30,38 +30,38 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(404, resp.status_code)
 
     def test_delete_incorrect_parent_permissions(self):
-        p.set_perms_shortcut(self.user, Brand, "r", field_name="products")
+        p.add_perms_shortcut(self.user, Brand, "r", field_name="products")
         resp = self.user_client.delete(
             "/brand/1/products", data=[99], content_type="application/json"
         )
         self.assertEquals(404, resp.status_code)
 
     def test_delete_correct_parent_perms(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
         resp = self.user_client.delete(
             "/brand/1/products", data=[99], content_type="application/json"
         )
         self.assertEquals(404, resp.status_code)
 
     def test_delete_correct_parent_incorrect_reverse_field_perms(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Product, "r", field_name="brand")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Product, "r", field_name="brand")
         resp = self.user_client.delete(
             "/brand/1/products", data=[99], content_type="application/json"
         )
         self.assertEquals(404, resp.status_code)
 
     def test_delete_correct_parent_incorrect_reverse_field_perms_ver_2(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Product, "r")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Product, "r")
         resp = self.user_client.delete(
             "/brand/1/products", data=[99], content_type="application/json"
         )
         self.assertEquals(403, resp.status_code)
 
     def test_delete_correct_parent_and_reverse_perms(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Product, "w")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Product, "w")
         resp = self.user_client.delete(
             "/brand/1/products", data=[99], content_type="application/json"
         )
@@ -71,8 +71,8 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(99, Product.objects.filter(brand_id=1).count())
 
     def test_delete_correct_parent_and_reverse_perms_ver_2(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
         resp = self.user_client.delete(
             "/brand/1/products", data=[99], content_type="application/json"
         )
@@ -82,10 +82,10 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(99, Product.objects.filter(brand_id=1).count())
 
     def test_delete_correct_parent_and_reverse_perms_with_correct_read_perms(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Brand, "r")
-        p.set_perms_shortcut(self.user, Product, "r")
-        p.set_perms_shortcut(self.user, Product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Brand, "r")
+        p.add_perms_shortcut(self.user, Product, "r")
+        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
         resp = self.user_client.delete(
             "/brand/1/products", data=[99], content_type="application/json"
         )
@@ -98,13 +98,13 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(99, Product.objects.filter(brand_id=1).count())
 
     def test_delete_correct_parent_and_reverse_perms_with_correct_read_perms_v2(self):
-        p.set_perms_shortcut(
+        p.add_perms_shortcut(
             self.user, Brand.objects.get(id=1), "wr", field_name="products"
         )
-        p.set_perms_shortcut(self.user, Product.objects.filter(id=10), "r")
-        p.set_perms_shortcut(self.user, Product.objects.filter(id=9), "r")
-        p.set_perms_shortcut(self.user, Product.objects.filter(id=11), "r")
-        p.set_perms_shortcut(
+        p.add_perms_shortcut(self.user, Product.objects.filter(id=10), "r")
+        p.add_perms_shortcut(self.user, Product.objects.filter(id=9), "r")
+        p.add_perms_shortcut(self.user, Product.objects.filter(id=11), "r")
+        p.add_perms_shortcut(
             self.user, Product.objects.filter(id=99), "w", field_name="brand"
         )
         resp = self.user_client.delete(

@@ -22,70 +22,70 @@ class TestGetPerms(TestCase):
         self.assertEquals(404, resp.status_code)
 
     def test_get_only_incorrect_parent_permission(self):
-        p.set_perms_shortcut(self.user, Product, "wcd", field_name="brand")
+        p.add_perms_shortcut(self.user, Product, "wcd", field_name="brand")
         resp = self.user_client.get("/product/1/brand")
         self.assertEquals(404, resp.status_code)
 
     def test_get_only_parent_permission_correct(self):
-        p.set_perms_shortcut(self.user, Product, "r")
+        p.add_perms_shortcut(self.user, Product, "r")
         resp = self.user_client.get("/product/1/brand")
         self.assertEquals(404, resp.status_code)
 
     def test_get_only_parent_permission_correct_ver_2(self):
-        p.set_perms_shortcut(self.user, Product, "r", field_name="brand")
+        p.add_perms_shortcut(self.user, Product, "r", field_name="brand")
         resp = self.user_client.get("/product/1/brand")
         self.assertEquals(404, resp.status_code)
 
     def test_get_only_parent_permission_incorrect_reverse_perm(self):
-        p.set_perms_shortcut(self.user, Product, "r", field_name="brand")
-        p.set_perms_shortcut(self.user, Brand, "wcd")
+        p.add_perms_shortcut(self.user, Product, "r", field_name="brand")
+        p.add_perms_shortcut(self.user, Brand, "wcd")
         resp = self.user_client.get("/product/1/brand")
         self.assertEquals(404, resp.status_code)
 
     def test_get_only_parent_permission_incorrect_reverse_perm_ver_2(self):
-        p.set_perms_shortcut(self.user, Product, "r")
-        p.set_perms_shortcut(self.user, Brand, "wcd", field_name="name")
+        p.add_perms_shortcut(self.user, Product, "r")
+        p.add_perms_shortcut(self.user, Brand, "wcd", field_name="name")
         resp = self.user_client.get("/product/1/brand")
         self.assertEquals(404, resp.status_code)
 
     def test_get_only_parent_permission_incorrect_reverse_perm_ver_3(self):
-        p.set_perms_shortcut(self.user, Product.objects.get(id=1), "r")
-        p.set_perms_shortcut(self.user, Brand.objects.get(id=2), "r")
+        p.add_perms_shortcut(self.user, Product.objects.get(id=1), "r")
+        p.add_perms_shortcut(self.user, Brand.objects.get(id=2), "r")
         resp = self.user_client.get("/product/1/brand")
         self.assertEquals(404, resp.status_code)
 
     def test_get_only_parent_permission_incorrect_reverse_perm_ver_4(self):
-        p.set_perms_shortcut(self.user, Product.objects.get(id=1), "r")
-        p.set_perms_shortcut(self.user, Brand.objects.get(id=1), "r", field_name="name")
+        p.add_perms_shortcut(self.user, Product.objects.get(id=1), "r")
+        p.add_perms_shortcut(self.user, Brand.objects.get(id=1), "r", field_name="name")
         resp = self.user_client.get("/product/1/brand")
         self.assertEquals(404, resp.status_code)
 
     def test_get_only_parent_permission_correct_reverse_perm(self):
-        p.set_perms_shortcut(self.user, Product, "r", field_name="brand")
-        p.set_perms_shortcut(self.user, Brand, "r")
+        p.add_perms_shortcut(self.user, Product, "r", field_name="brand")
+        p.add_perms_shortcut(self.user, Brand, "r")
         resp = self.user_client.get("/product/1/brand")
         data = resp.json()
         self.assertDictEqual({"id": 1, "name": "br1"}, data)
 
     def test_get_only_parent_permission_correct_reverse_perm_ver_2(self):
-        p.set_perms_shortcut(self.user, Product, "r")
-        p.set_perms_shortcut(self.user, Brand, "r")
+        p.add_perms_shortcut(self.user, Product, "r")
+        p.add_perms_shortcut(self.user, Brand, "r")
         resp = self.user_client.get("/product/1/brand")
         data = resp.json()
         self.assertDictEqual({"id": 1, "name": "br1"}, data)
 
     def test_get_only_parent_permission_correct_reverse_perm_ver_3(self):
-        p.set_perms_shortcut(
+        p.add_perms_shortcut(
             self.user, Product.objects.get(id=1), "r", field_name="brand"
         )
-        p.set_perms_shortcut(self.user, Brand.objects.get(id=1), "r")
+        p.add_perms_shortcut(self.user, Brand.objects.get(id=1), "r")
         resp = self.user_client.get("/product/1/brand")
         data = resp.json()
         self.assertDictEqual({"id": 1, "name": "br1"}, data)
 
     def test_get_only_parent_permission_correct_reverse_perm_ver_4(self):
-        p.set_perms_shortcut(self.user, Product.objects.get(id=1), "r")
-        p.set_perms_shortcut(self.user, Brand.objects.get(id=1), "r")
+        p.add_perms_shortcut(self.user, Product.objects.get(id=1), "r")
+        p.add_perms_shortcut(self.user, Brand.objects.get(id=1), "r")
         resp = self.user_client.get("/product/1/brand")
         data = resp.json()
         self.assertDictEqual({"id": 1, "name": "br1"}, data)

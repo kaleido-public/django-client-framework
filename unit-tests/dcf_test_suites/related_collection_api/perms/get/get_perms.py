@@ -29,7 +29,7 @@ class TestPaginationPerms(TestCase):
 
     # error: needs to only show the "products" that have read-level permission, right now shows all
     def test_only_parent_permissions_get(self):
-        p.set_perms_shortcut(self.user, Brand, "r", field_name="products")
+        p.add_perms_shortcut(self.user, Brand, "r", field_name="products")
         resp = self.user_client.get("/brand/1/products")
         data = resp.json()
         objects = data["objects"]
@@ -37,8 +37,8 @@ class TestPaginationPerms(TestCase):
 
     # error: need to only show product_3
     def test_only_parent_permissions_get_2(self):
-        p.set_perms_shortcut(self.user, Brand, "r", field_name="products")
-        p.set_perms_shortcut(self.user, self.products[2], "r")
+        p.add_perms_shortcut(self.user, Brand, "r", field_name="products")
+        p.add_perms_shortcut(self.user, self.products[2], "r")
         resp = self.user_client.get("/brand/1/products")
         data = resp.json()
         objects = data["objects"]
@@ -49,16 +49,16 @@ class TestPaginationPerms(TestCase):
 
     # error: need to return no objects
     def test_correct_parent_incorrect_reverse_perms_get(self):
-        p.set_perms_shortcut(self.user, Brand, "r", field_name="products")
-        p.set_perms_shortcut(self.user, Product, "wcd")
+        p.add_perms_shortcut(self.user, Brand, "r", field_name="products")
+        p.add_perms_shortcut(self.user, Product, "wcd")
         resp = self.user_client.get("/brand/1/products")
         data = resp.json()
         self.assertEquals(0, data["total"])
         self.assertEquals(len(data["objects"]), 0)
 
     def test_get_with_object_level_perm(self):
-        p.set_perms_shortcut(self.user, Brand, "r", field_name="products")
-        p.set_perms_shortcut(self.user, Product, "r")
+        p.add_perms_shortcut(self.user, Brand, "r", field_name="products")
+        p.add_perms_shortcut(self.user, Product, "r")
         resp = self.user_client.get("/brand/1/products")
         data = resp.json()
         objects = data["objects"]
