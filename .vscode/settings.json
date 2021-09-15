@@ -11,5 +11,10 @@
   "files.exclude": {
     ".mypy_cache": true,
     ".venv/": true
-  }
+  },
+  "coverage-gutters.xmlname": "coverage.xml",
+  "git.ignoreLimitWarning": true,
+  "coverage-gutters.showLineCoverage": true,
+  "coverage-gutters.showRulerCoverage": true,
+  "coverage-gutters.showGutterCoverage": false
 }

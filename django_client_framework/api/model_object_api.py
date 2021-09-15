@@ -103,7 +103,7 @@ class ModelObjectAPI(BaseModelAPI):
             return Response(
                 {
                     "success": True,
-                    "info": "The object has been updated but you have no permission to view it.",
+                    "detail": "The object has been updated but you have no permission to view it.",
                 },
                 status=201,
             )

@@ -13,111 +13,135 @@ class TestPaginationPerms(TestCase):
         self.user_client = APIClient()
         self.user_client.force_authenticate(self.user)
         self.brand = Brand.objects.create(name="brand")
-        self.products = [
-            Product.objects.create(barcode=f"product_{i+1}", brand=self.brand)
-            for i in range(100)
-        ]
-        self.br2 = Brand.objects.create(name="nike")
-        self.new_products = [
-            Product.objects.create(barcode=f"product_{i+101}", brand=self.br2)
-            for i in range(50)
-        ]
+        self.old_product = Product.objects.create(
+            barcode="old_product", brand=self.brand
+        )
+        self.product = Product.objects.create(barcode="product")
+        # self.products = [
+        #     Product.objects.create(barcode=f"product_{i+1}", brand=self.brand)
+        #     for i in range(100)
+        # ]
+        # self.br2 = Brand.objects.create(name="nike")
+        # self.new_products = [
+        #     Product.objects.create(barcode=f"product_{i+101}", brand=self.br2)
+        #     for i in range(50)
+        # ]
 
-    def test_patch_no_permissions(self):
+    def test_min_patch_perms(self):
+        """Test minimum patch permission. Replaces the old product with new."""
+        p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, self.old_product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
         resp = self.user_client.patch(
-            "/brand/1/products", data=[3], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
-        self.assertEquals(404, resp.status_code)
+        self.assertEqual(200, resp.status_code)
+        self.product.refresh_from_db()
+        self.old_product.refresh_from_db()
+        self.assertEqual(self.product.brand, self.brand)
+        self.assertIsNone(self.old_product.brand)
 
-    def test_patch_incorrect_parent_permissions(self):
-        p.add_perms_shortcut(self.user, Brand, "r", field_name="products")
+    def test_patch_parent_no_write(self):
+        """If brand has no write perm, raise 403."""
+        p.add_perms_shortcut(self.user, self.brand, "r", field_name="products")
+        p.add_perms_shortcut(self.user, self.old_product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
         resp = self.user_client.patch(
-            "/brand/1/products", data=[3], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
-        self.assertEquals(404, resp.status_code)
+        self.assertEqual(403, resp.status_code)
+        self.assertEqual(
+            f"You have no write permission on brand({self.brand.id})'s products field.",
+            resp.json(),
+        )
+        # unchanged
+        self.product.refresh_from_db()
+        self.old_product.refresh_from_db()
+        self.assertEqual(self.old_product.brand, self.brand)
+        self.assertIsNone(self.product.brand)
 
-    def test_patch_correct_parent_perms(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+    def test_patch_parent_no_perm(self):
+        """If brand has no write or read perm, raise 404."""
+        p.add_perms_shortcut(self.user, self.old_product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
         resp = self.user_client.patch(
-            "/brand/1/products", data=[3], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
-        self.assertEquals(404, resp.status_code)
+        self.assertEqual(404, resp.status_code)
+        self.assertEqual(
+            f"Not Found: brand({self.brand.id})",
+            resp.json(),
+        )
+        # unchanged
+        self.product.refresh_from_db()
+        self.old_product.refresh_from_db()
+        self.assertEqual(self.old_product.brand, self.brand)
+        self.assertIsNone(self.product.brand)
 
-    def test_patch_correct_parent_incorrect_reverse_field_perms(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Product, "r", field_name="brand")
+    def test_old_child_no_write(self):
+        """What if User cannot write to the old child"""
+        p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, self.old_product, "r", field_name="brand")
+        p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
         resp = self.user_client.patch(
-            "/brand/1/products", data=[3], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
-        self.assertEquals(404, resp.status_code)
+        self.assertEqual(403, resp.status_code, resp.json())
+        self.assertEqual(
+            f"You have no write permission on product({self.old_product.id})'s brand field.",
+            resp.json(),
+        )
+        # unchanged
+        self.product.refresh_from_db()
+        self.old_product.refresh_from_db()
+        self.assertEqual(self.old_product.brand, self.brand)
+        self.assertIsNone(self.product.brand)
 
-    def test_patch_correct_parent_incorrect_reverse_field_perms_ver_2(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Product, "r")
+    def test_new_child_no_write(self):
+        """What if User cannot write to the new child"""
+        p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, self.old_product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, self.product, "r", field_name="brand")
         resp = self.user_client.patch(
-            "/brand/1/products", data=[3], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
-        self.assertEquals(403, resp.status_code)
+        self.assertEqual(403, resp.status_code, resp.json())
+        self.assertEqual(
+            f"You have no write permission on product({self.product.id})'s brand field.",
+            resp.json(),
+        )
+        # unchanged
+        self.product.refresh_from_db()
+        self.old_product.refresh_from_db()
+        self.assertEqual(self.old_product.brand, self.brand)
+        self.assertIsNone(self.product.brand)
 
-    def test_patch_correct_parent_and_reverse_perms(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Product, "w")
+    def test_new_child_no_perm(self):
+        """What if User cannot write to the new child"""
+        p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, self.old_product, "w", field_name="brand")
         resp = self.user_client.patch(
-            "/brand/1/products", data=[3], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
-        data = resp.json()
-        self.assertEquals(True, data["success"])
-        self.assertEquals(1, Product.objects.get(id=3).brand_id)
-        self.assertEquals(1, Product.objects.filter(brand_id=1).count())
-
-    def test_patch_correct_parent_and_reverse_perms_ver_2(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
-        resp = self.user_client.patch(
-            "/brand/1/products", data=[3], content_type="application/json"
+        self.assertEqual(404, resp.status_code, resp.json())
+        self.assertEqual(
+            f"Not Found: product({self.product.id})",
+            resp.json(),
         )
-        data = resp.json()
-        self.assertEquals(True, data["success"])
-        self.assertEquals(1, Product.objects.get(id=3).brand_id)
-        self.assertEquals(1, Product.objects.filter(brand_id=1).count())
-
-    def test_patch_correct_parent_and_reverse_perms_but_can_only_read_parent(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Brand, "r")
-        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
-        resp = self.user_client.patch(
-            "/brand/1/products", data=[3], content_type="application/json"
-        )
-        data = resp.json()
-        self.assertEquals(1, Product.objects.filter(brand_id=1).count())
-        self.assertEquals(0, len(data["objects"]))
-
-    def test_patch_correct_parent_and_reverse_perms_with_correct_read_perms(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Brand, "r")
-        p.add_perms_shortcut(self.user, Product, "r")
-        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
-        resp = self.user_client.patch(
-            "/brand/1/products", data=[101, 102, 103], content_type="application/json"
-        )
-        data = resp.json()
-        self.assertEquals(3, Product.objects.filter(brand_id=1).count())
-        self.assertEquals(3, len(data["objects"]))
-        self.assertDictEqual(
-            {"id": 101, "barcode": "product_101", "brand_id": 1}, data["objects"][0]
-        )
-
-    def test_patch_correct_parent_and_reverse_perms_with_correct_read_perms_ver2(self):
-        p.add_perms_shortcut(self.user, Brand, "wr", field_name="products")
-        p.add_perms_shortcut(self.user, Product.objects.get(id=101), "r")
-        p.add_perms_shortcut(self.user, Product.objects.get(id=102), "r")
-        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
-        resp = self.user_client.patch(
-            "/brand/1/products", data=[101, 102, 103], content_type="application/json"
-        )
-        data = resp.json()
-        self.assertEquals(3, Product.objects.filter(brand_id=1).count())
-        self.assertEquals(2, len(data["objects"]))
-        self.assertDictEqual(
-            {"id": 101, "barcode": "product_101", "brand_id": 1}, data["objects"][0]
-        )
+        # unchanged
+        self.product.refresh_from_db()
+        self.old_product.refresh_from_db()
+        self.assertEqual(self.old_product.brand, self.brand)
+        self.assertIsNone(self.product.brand)

@@ -13,107 +13,150 @@ class TestPaginationPerms(TestCase):
         self.user_client = APIClient()
         self.user_client.force_authenticate(self.user)
         self.brand = Brand.objects.create(name="brand")
-        self.products = [
-            Product.objects.create(barcode=f"product_{i+1}", brand=self.brand)
-            for i in range(100)
-        ]
-        self.br2 = Brand.objects.create(name="nike")
-        self.new_products = [
-            Product.objects.create(barcode=f"product_{i+101}", brand=self.br2)
-            for i in range(50)
-        ]
+        self.product = Product.objects.create(barcode="prodcut", brand=self.brand)
+        self.assertEqual(1, self.brand.products.count())
 
-    def test_delete_no_permissions(self):
+    def test_delete_min_perms(self):
+        """Minimum permission required for a successful deletion"""
+        p.add_perms_shortcut(self.user, self.brand, "rw", field_name="products")
+        p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
         resp = self.user_client.delete(
-            "/brand/1/products", data=[99], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
-        self.assertEquals(404, resp.status_code)
+        data = resp.json()
+        self.assertEquals(200, resp.status_code)
+        self.assertEquals(0, data.get("total", ""), data)
+        # product relation is now deleted
+        self.product.refresh_from_db()
+        self.assertIsNone(self.product.brand_id)
+        self.assertEqual(0, self.brand.products.count())
 
-    def test_delete_incorrect_parent_permissions(self):
-        p.add_perms_shortcut(self.user, Brand, "r", field_name="products")
+    def test_delete_child_no_write(self):
+        """When child has no write perm, delete should fail."""
+        p.add_perms_shortcut(self.user, self.brand, "rw", field_name="products")
+        p.add_perms_shortcut(self.user, self.product, "r", field_name="brand")
         resp = self.user_client.delete(
-            "/brand/1/products", data=[99], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
-        self.assertEquals(404, resp.status_code)
-
-    def test_delete_correct_parent_perms(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        resp = self.user_client.delete(
-            "/brand/1/products", data=[99], content_type="application/json"
-        )
-        self.assertEquals(404, resp.status_code)
-
-    def test_delete_correct_parent_incorrect_reverse_field_perms(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Product, "r", field_name="brand")
-        resp = self.user_client.delete(
-            "/brand/1/products", data=[99], content_type="application/json"
-        )
-        self.assertEquals(404, resp.status_code)
-
-    def test_delete_correct_parent_incorrect_reverse_field_perms_ver_2(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Product, "r")
-        resp = self.user_client.delete(
-            "/brand/1/products", data=[99], content_type="application/json"
-        )
+        data = resp.json()
         self.assertEquals(403, resp.status_code)
+        self.assertEquals(
+            f"You have no write permission on product({self.product.id})'s brand field.",
+            data,
+        )
+        # product relation still exists
+        self.product.refresh_from_db()
+        self.assertEquals(self.product.brand_id, self.brand.id)
+        self.assertEquals(1, self.brand.products.count())
 
-    def test_delete_correct_parent_and_reverse_perms(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Product, "w")
+    def test_delete_child_no_perm(self):
+        """When child has no write perm, delete should fail. And if child has no
+        read perm, should 404."""
+        p.add_perms_shortcut(self.user, self.brand, "rw", field_name="products")
         resp = self.user_client.delete(
-            "/brand/1/products", data=[99], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
         data = resp.json()
-        self.assertEquals(True, data["success"])
-        self.assertEquals(None, Product.objects.get(id=99).brand_id)
-        self.assertEquals(99, Product.objects.filter(brand_id=1).count())
+        self.assertEquals(404, resp.status_code, data)
+        self.assertEquals(
+            f"Not Found: product({self.product.id})",
+            data,
+        )
+        # product relation still exists
+        self.product.refresh_from_db()
+        self.assertEquals(self.product.brand_id, self.brand.id)
+        self.assertEquals(1, self.brand.products.count())
 
-    def test_delete_correct_parent_and_reverse_perms_ver_2(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
+    def test_delete_parent_no_read(self):
+        """Parent has no read perm, should succeed, but returns no data."""
+        p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
         resp = self.user_client.delete(
-            "/brand/1/products", data=[99], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
         data = resp.json()
-        self.assertEquals(None, Product.objects.get(id=99).brand_id)
-        self.assertTrue(data["success"])
-        self.assertEquals(99, Product.objects.filter(brand_id=1).count())
-
-    def test_delete_correct_parent_and_reverse_perms_with_correct_read_perms(self):
-        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.add_perms_shortcut(self.user, Brand, "r")
-        p.add_perms_shortcut(self.user, Product, "r")
-        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
-        resp = self.user_client.delete(
-            "/brand/1/products", data=[99], content_type="application/json"
-        )
-        data = resp.json()
-        self.assertEquals(50, len(data["objects"]))
+        self.assertEquals(200, resp.status_code)
         self.assertDictEqual(
-            data["objects"][0], {"id": 1, "barcode": "product_1", "brand_id": 1}
+            {
+                "success": True,
+                "detail": "Action was successful but you have no permission to view the result.",
+            },
+            data,
         )
-        self.assertEquals(None, Product.objects.get(id=99).brand_id)
-        self.assertEquals(99, Product.objects.filter(brand_id=1).count())
+        # product relation is now deleted
+        self.product.refresh_from_db()
+        self.assertIsNone(self.product.brand_id)
+        self.assertEqual(0, self.brand.products.count())
 
-    def test_delete_correct_parent_and_reverse_perms_with_correct_read_perms_v2(self):
-        p.add_perms_shortcut(
-            self.user, Brand.objects.get(id=1), "wr", field_name="products"
-        )
-        p.add_perms_shortcut(self.user, Product.objects.filter(id=10), "r")
-        p.add_perms_shortcut(self.user, Product.objects.filter(id=9), "r")
-        p.add_perms_shortcut(self.user, Product.objects.filter(id=11), "r")
-        p.add_perms_shortcut(
-            self.user, Product.objects.filter(id=99), "w", field_name="brand"
-        )
+    def test_delete_parent_no_read(self):
+        """Parent has no read perm, should succeed, but returns no data."""
+        p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
         resp = self.user_client.delete(
-            "/brand/1/products", data=[99], content_type="application/json"
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
         )
         data = resp.json()
-        self.assertEquals(3, len(data["objects"]))
+        self.assertEquals(200, resp.status_code)
         self.assertDictEqual(
-            data["objects"][0], {"id": 9, "barcode": "product_9", "brand_id": 1}
+            {
+                "success": True,
+                "detail": "Action was successful but you have no permission to view the result.",
+            },
+            data,
         )
-        self.assertEquals(None, Product.objects.get(id=99).brand_id)
-        self.assertEquals(99, Product.objects.filter(brand_id=1).count())
+        # product relation is now deleted
+        self.product.refresh_from_db()
+        self.assertIsNone(self.product.brand_id)
+        self.assertEqual(0, self.brand.products.count())
+
+    def test_delete_parent_no_write(self):
+        """Parent has no write perm, should fail."""
+        p.add_perms_shortcut(self.user, self.brand, "r", field_name="products")
+        p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
+        resp = self.user_client.delete(
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
+        )
+        data = resp.json()
+        self.assertEquals(403, resp.status_code)
+        self.assertEquals(
+            f"You have no write permission on brand({self.brand.id})'s products field.",
+            data,
+        )
+        # product relation still exists
+        self.product.refresh_from_db()
+        self.assertEquals(self.product.brand_id, self.brand.id)
+        self.assertEquals(1, self.brand.products.count())
+
+    def test_delete_parent_no_perms(self):
+        """
+        Parent has no permissions, should fail, and since no read perm, returns
+        404.
+        """
+        p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
+        resp = self.user_client.delete(
+            f"/brand/{self.brand.id}/products",
+            data=[self.product.id],
+            content_type="application/json",
+        )
+        data = resp.json()
+        self.assertEquals(404, resp.status_code)
+        self.assertEquals(
+            f"Not Found: brand({self.brand.id})",
+            data,
+        )
+        # product relation still exists
+        self.product.refresh_from_db()
+        self.assertEquals(self.product.brand_id, self.brand.id)
+        self.assertEquals(1, self.brand.products.count())
