@@ -24,30 +24,30 @@ class TestPatchPerms(TestCase):
         self.assertEqual(404, resp.status_code)
 
     def test_patch_incorrect_permission(self):
-        p.set_perms_shortcut(self.user, Product, "rcd")
+        p.add_perms_shortcut(self.user, Product, "rcd")
         resp = self.user_client.patch(
             "/product/1/brand", data=2, content_type="application/json"
         )
         self.assertEqual(403, resp.status_code)
 
     def test_patch_only_parent_permission(self):
-        p.set_perms_shortcut(self.user, Product, "w")
+        p.add_perms_shortcut(self.user, Product, "w")
         resp = self.user_client.patch(
             "/product/1/brand", data=2, content_type="application/json"
         )
         self.assertEqual(404, resp.status_code)
 
     def test_patch_parent_but_incorrect_related_perms(self):
-        p.set_perms_shortcut(self.user, Product, "w")
-        p.set_perms_shortcut(self.user, Brand, "rcd")
+        p.add_perms_shortcut(self.user, Product, "w")
+        p.add_perms_shortcut(self.user, Brand, "rcd")
         resp = self.user_client.patch(
             "/product/1/brand", data=2, content_type="application/json"
         )
         self.assertEqual(403, resp.status_code)
 
     def test_correct_patch_perms_no_read(self):
-        p.set_perms_shortcut(self.user, Product, "w")
-        p.set_perms_shortcut(self.user, Brand, "w")
+        p.add_perms_shortcut(self.user, Product, "w")
+        p.add_perms_shortcut(self.user, Brand, "w")
         resp = self.user_client.patch(
             "/product/1/brand", data=2, content_type="application/json"
         )
@@ -61,8 +61,8 @@ class TestPatchPerms(TestCase):
         )
 
     def test_correct_patch_perms_no_read_v2(self):
-        p.set_perms_shortcut(self.user, Product, "w")
-        p.set_perms_shortcut(self.user, Brand, "wr")
+        p.add_perms_shortcut(self.user, Product, "w")
+        p.add_perms_shortcut(self.user, Brand, "wr")
         resp = self.user_client.patch(
             "/product/1/brand", data=2, content_type="application/json"
         )
@@ -76,8 +76,8 @@ class TestPatchPerms(TestCase):
         )
 
     def test_correct_patch_perms_can_read(self):
-        p.set_perms_shortcut(self.user, Brand, "rw")
-        p.set_perms_shortcut(self.user, Product, "rw")
+        p.add_perms_shortcut(self.user, Brand, "rw")
+        p.add_perms_shortcut(self.user, Product, "rw")
         resp = self.user_client.patch(
             "/product/1/brand", data=2, content_type="application/json"
         )
@@ -85,9 +85,9 @@ class TestPatchPerms(TestCase):
         self.assertDictEqual({"id": 2, "name": "br2"}, resp.json())
 
     def test_correct_patch_perms_can_read_v2(self):
-        p.set_perms_shortcut(self.user, Product.objects.get(id=1), "rw")
-        p.set_perms_shortcut(self.user, Brand.objects.get(id=1), "w")
-        p.set_perms_shortcut(self.user, Brand.objects.get(id=2), "rw")
+        p.add_perms_shortcut(self.user, Product.objects.get(id=1), "rw")
+        p.add_perms_shortcut(self.user, Brand.objects.get(id=1), "w")
+        p.add_perms_shortcut(self.user, Brand.objects.get(id=2), "rw")
         resp = self.user_client.patch(
             "/product/1/brand", data=2, content_type="application/json"
         )
@@ -95,14 +95,14 @@ class TestPatchPerms(TestCase):
         self.assertDictEqual({"id": 2, "name": "br2"}, resp.json())
 
     def test_correct_patch_perms_can_read_v3(self):
-        p.set_perms_shortcut(
+        p.add_perms_shortcut(
             self.user, Product.objects.get(id=1), "rw", field_name="brand"
         )
-        p.set_perms_shortcut(
+        p.add_perms_shortcut(
             self.user, Brand.objects.get(id=1), "w", field_name="products"
         )
-        p.set_perms_shortcut(self.user, Brand.objects.get(id=2), "r")
-        p.set_perms_shortcut(
+        p.add_perms_shortcut(self.user, Brand.objects.get(id=2), "r")
+        p.add_perms_shortcut(
             self.user, Brand.objects.get(id=2), "w", field_name="products"
         )
         resp = self.user_client.patch(
@@ -114,13 +114,13 @@ class TestPatchPerms(TestCase):
     def test_assign_from_null(self):
         """PATCH Product.brand from None to existing"""
         # brand = Brand.objects.create(pk=11, name="old")
-        # p.set_perms_shortcut(self.user, brand, "rw")
+        # p.add_perms_shortcut(self.user, brand, "rw")
         product = Product.objects.create()
-        p.set_perms_shortcut(self.user, product, "r")
-        p.set_perms_shortcut(self.user, product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, product, "r")
+        p.add_perms_shortcut(self.user, product, "w", field_name="brand")
         brand = Brand.objects.create(name="new branch")
-        p.set_perms_shortcut(self.user, brand, "r")
-        p.set_perms_shortcut(self.user, brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, brand, "r")
+        p.add_perms_shortcut(self.user, brand, "w", field_name="products")
         resp = self.user_client.patch(
             f"/product/{product.id}/brand",
             data=brand.id,

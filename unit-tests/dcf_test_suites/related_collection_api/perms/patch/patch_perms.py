@@ -30,38 +30,38 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(404, resp.status_code)
 
     def test_patch_incorrect_parent_permissions(self):
-        p.set_perms_shortcut(self.user, Brand, "r", field_name="products")
+        p.add_perms_shortcut(self.user, Brand, "r", field_name="products")
         resp = self.user_client.patch(
             "/brand/1/products", data=[3], content_type="application/json"
         )
         self.assertEquals(404, resp.status_code)
 
     def test_patch_correct_parent_perms(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
         resp = self.user_client.patch(
             "/brand/1/products", data=[3], content_type="application/json"
         )
         self.assertEquals(404, resp.status_code)
 
     def test_patch_correct_parent_incorrect_reverse_field_perms(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Product, "r", field_name="brand")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Product, "r", field_name="brand")
         resp = self.user_client.patch(
             "/brand/1/products", data=[3], content_type="application/json"
         )
         self.assertEquals(404, resp.status_code)
 
     def test_patch_correct_parent_incorrect_reverse_field_perms_ver_2(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Product, "r")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Product, "r")
         resp = self.user_client.patch(
             "/brand/1/products", data=[3], content_type="application/json"
         )
         self.assertEquals(403, resp.status_code)
 
     def test_patch_correct_parent_and_reverse_perms(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Product, "w")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Product, "w")
         resp = self.user_client.patch(
             "/brand/1/products", data=[3], content_type="application/json"
         )
@@ -71,8 +71,8 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(1, Product.objects.filter(brand_id=1).count())
 
     def test_patch_correct_parent_and_reverse_perms_ver_2(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
         resp = self.user_client.patch(
             "/brand/1/products", data=[3], content_type="application/json"
         )
@@ -82,9 +82,9 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(1, Product.objects.filter(brand_id=1).count())
 
     def test_patch_correct_parent_and_reverse_perms_but_can_only_read_parent(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Brand, "r")
-        p.set_perms_shortcut(self.user, Product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Brand, "r")
+        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
         resp = self.user_client.patch(
             "/brand/1/products", data=[3], content_type="application/json"
         )
@@ -93,10 +93,10 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(0, len(data["objects"]))
 
     def test_patch_correct_parent_and_reverse_perms_with_correct_read_perms(self):
-        p.set_perms_shortcut(self.user, Brand, "w", field_name="products")
-        p.set_perms_shortcut(self.user, Brand, "r")
-        p.set_perms_shortcut(self.user, Product, "r")
-        p.set_perms_shortcut(self.user, Product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
+        p.add_perms_shortcut(self.user, Brand, "r")
+        p.add_perms_shortcut(self.user, Product, "r")
+        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
         resp = self.user_client.patch(
             "/brand/1/products", data=[101, 102, 103], content_type="application/json"
         )
@@ -108,10 +108,10 @@ class TestPaginationPerms(TestCase):
         )
 
     def test_patch_correct_parent_and_reverse_perms_with_correct_read_perms_ver2(self):
-        p.set_perms_shortcut(self.user, Brand, "wr", field_name="products")
-        p.set_perms_shortcut(self.user, Product.objects.get(id=101), "r")
-        p.set_perms_shortcut(self.user, Product.objects.get(id=102), "r")
-        p.set_perms_shortcut(self.user, Product, "w", field_name="brand")
+        p.add_perms_shortcut(self.user, Brand, "wr", field_name="products")
+        p.add_perms_shortcut(self.user, Product.objects.get(id=101), "r")
+        p.add_perms_shortcut(self.user, Product.objects.get(id=102), "r")
+        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
         resp = self.user_client.patch(
             "/brand/1/products", data=[101, 102, 103], content_type="application/json"
         )
