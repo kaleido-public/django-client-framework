@@ -3,14 +3,15 @@ FROM alpine
 RUN apk add --no-cache python3 py3-pip postgresql \
     postgresql-dev gcc python3-dev musl-dev
 
-RUN mkdir /_
-COPY ./setup.py /_/setup.py
-COPY ./README.md /_/README.md
-COPY ./django_client_framework /_/django_client_framework
-RUN pip3 install /_
-COPY . /_
+RUN mkdir /_work
+WORKDIR /_work
 
-ENV PYTHONPATH /_
+COPY ./pyproject.toml           /_work/pyproject.toml
+COPY ./README.md                /_work/README.md
+COPY ./django_client_framework  /_work/django_client_framework
+COPY ./unit-tests               /_work/unit-tests
 
-WORKDIR /_/unit-tests
-ENTRYPOINT [ "./manage.py" ]
+RUN pip3 install /_work
+ENV PYTHONPATH /_work
+
+WORKDIR /_work/unit-tests
