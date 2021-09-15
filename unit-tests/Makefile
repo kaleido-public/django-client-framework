@@ -1,6 +1,10 @@
-.PHONY: defaults
-defaults: alpine-base
-	docker-compose run --rm dcf-test-alpine test -v2 dcf_test_suites
+default:
+	PYTHONPATH="./:../" poetry run coverage run --branch --source=../django_client_framework ./manage.py test --no-input -v2 -p "*.py"
+	poetry run coverage xml
+
+.PHONY: ci
+ci: alpine-base
+	docker-compose run --rm dcf-test-alpine ./manage.py test --no-input -v2 -p "*.py"
 
 .PHONY: alpine-base
 alpine-base:
@@ -8,8 +12,8 @@ alpine-base:
 
 .PHONY: sh
 sh: alpine-base
-	docker-compose run --entrypoint sh dcf-test-alpine
+	docker-compose run --rm dcf-test-alpine sh
 
-.PHONY: Makefile
-%: Makefile alpine-base
-	docker-compose run --rm dcf-test-alpine test -v2 $@
+%:
+	PYTHONPATH="./:../" poetry run coverage run --branch --source=../django_client_framework ./manage.py test --no-input -v2 -p "$@.py"
+	poetry run coverage xml

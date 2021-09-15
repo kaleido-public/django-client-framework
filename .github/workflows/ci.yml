@@ -58,7 +58,7 @@ jobs:
       - name: Run tests
         run: |
           (cd ./installation-tests && make) &&\
-          (cd ./unit-tests && make) &&\
+          (cd ./unit-tests && make ci) &&\
           (cd ./dart-client-tests && make)
 
       - name: Shutdown
