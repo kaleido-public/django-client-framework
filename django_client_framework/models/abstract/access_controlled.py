@@ -4,6 +4,7 @@ from logging import getLogger
 from typing import Any, Generic, Type, TypeVar, cast
 
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models.signals import post_save
 from guardian.models import UserObjectPermission
 
 from .model import Model as DCFModel
@@ -54,29 +55,22 @@ class AccessControlled(DCFModel):
 
         return manager
 
-    def save(self, *args, **kwargs):
-        ret = super().save(*args, **kwargs)
-        self.get_permissionmanager_class()().reset_perms(self)
-        return ret
-
-    # def __init_subclass__(cls) -> None:
-    #     post_save.connect(
-    #         update_permission_on_change,
-    #         sender=cls,
-    #         dispatch_uid=f"{cls.__name__}.update_permission_on_change",
-    #     )
-    #     return super().__init_subclass__()
+    def __init_subclass__(cls) -> None:
+        post_save.connect(
+            update_permission_on_change,
+            sender=cls,
+            dispatch_uid=f"{cls.__name__}.update_permission_on_change",
+        )
+        return super().__init_subclass__()
 
     @classmethod
     def register_signals(cls):
-        pass
-
-    #     for child in cls.__subclasses__():
-    #         post_save.connect(
-    #             update_permission_on_change,
-    #             sender=child,
-    #             dispatch_uid=f"{cls.__name__}.update_permission_on_change",
-    #         )
+        for child in cls.__subclasses__():
+            post_save.connect(
+                update_permission_on_change,
+                sender=child,
+                dispatch_uid=f"{cls.__name__}.update_permission_on_change",
+            )
 
 
 def update_permission_on_change(sender, instance, **kwargs):

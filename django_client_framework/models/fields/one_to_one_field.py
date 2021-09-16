@@ -1,6 +1,10 @@
-from django.db.models.fields.related import ReverseOneToOneDescriptor, OneToOneField
+from __future__ import annotations
+
+from typing import Generic, TypeVar
+
 from django.core.exceptions import ObjectDoesNotExist
-from typing import TypeVar, Generic
+from django.db.models.fields.related import OneToOneField, ReverseOneToOneDescriptor
+
 from ..abstract import DCFModel
 
 T = TypeVar("T", bound=DCFModel)

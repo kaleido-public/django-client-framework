@@ -18,24 +18,26 @@ def main(write):
 
 
 def prettier(args, **kwargs):
-    kwargs["check"] = True
-    return run(
-        [
-            "prettier",
-            f"--config={PROJ_ROOT/'.prettierrc.yml'}",
-            f"--ignore-path={PROJ_ROOT/'.prettierignore'}",
-            *args,
-        ],
-        **kwargs,
-    )
+    if run("which prettier", shell=True).returncode == 0:
+        return run(
+            [
+                "prettier",
+                f"--config={PROJ_ROOT/'.prettierrc.yml'}",
+                f"--ignore-path={PROJ_ROOT/'.prettierignore'}",
+                *args,
+            ],
+            **kwargs,
+        )
+    else:
+        return run(["echo", "prettier is not installed."])
 
 
 def check_only():
     procs = [
-        run(["flake8", "--show-source", PROJ_ROOT]),
-        run(["black", "--check", PROJ_ROOT]),
-        run(["isort", "--check", PROJ_ROOT]),
-        prettier(["--check", PROJ_ROOT]),
+        run(["poetry", "run", "flake8", "--show-source", "."], cwd=PROJ_ROOT),
+        run(["poetry", "run", "black", "--check", "."], cwd=PROJ_ROOT),
+        run(["poetry", "run", "isort", "--check", "."], cwd=PROJ_ROOT),
+        prettier(["--check", "."], cwd=PROJ_ROOT),
     ]
     error = False
     for p in procs:
@@ -43,12 +45,14 @@ def check_only():
             print(f"Issues found after running {p.args}.")
             error = True
     if error:
-        exit("Issues found after running checkstyle.")
+        exit("Issues found after running checkstyle. Run checkstyle -w to autofix.")
 
 
 def format_files():
     run(
         [
+            "poetry",
+            "run",
             "autoflake",
             "-i",
             "--ignore-init-module-imports",
@@ -58,9 +62,9 @@ def format_files():
         ],
         cwd=PROJ_ROOT,
     )
-    run(["isort", "."], cwd=PROJ_ROOT, check=True)
-    run(["black", "."], cwd=PROJ_ROOT)
-    prettier(["-w", "."], cwd=PROJ_ROOT)
+    run(["poetry", "run", "isort", "."], cwd=PROJ_ROOT, check=True)
+    run(["poetry", "run", "black", "."], cwd=PROJ_ROOT, check=True)
+    prettier(["-w", "."], cwd=PROJ_ROOT, check=True)
 
 
 if __name__ == "__main__":
