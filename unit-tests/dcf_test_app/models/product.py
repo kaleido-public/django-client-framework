@@ -4,8 +4,7 @@ from typing import List
 from django_client_framework import models as m
 from django_client_framework.api import register_api_model
 from django_client_framework.models import Serializable
-from django_client_framework.serializers.model_serializer import \
-    ModelSerializer
+from django_client_framework.serializers.model_serializer import DCFModelSerializer
 
 from .brand import Brand
 
@@ -25,7 +24,7 @@ class Product(Serializable["Product"]):
         return ProductSerializer
 
 
-class ProductSerializer(ModelSerializer["Product"]):
+class ProductSerializer(DCFModelSerializer["Product"]):
     class Meta:
         model = Product
         exclude: List[str] = []

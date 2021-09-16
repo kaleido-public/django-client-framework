@@ -42,3 +42,6 @@ dcf_clientschema = "django_client_framework.client_schema.cli:main"
 [tool.pyright]
 include = ["**/*.py"]
 stubPath = './stubs'
+
+[tool.isort]
+profile = "black"

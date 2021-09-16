@@ -2,8 +2,7 @@ from django.db.models import CASCADE, CharField, ForeignKey
 
 from django_client_framework.api import register_api_model
 from django_client_framework.models import AccessControlled, Serializable
-from django_client_framework.permissions import (add_perms_shortcut,
-                                                 default_groups)
+from django_client_framework.permissions import add_perms_shortcut, default_groups
 from django_client_framework.serializers import ModelSerializer
 
 

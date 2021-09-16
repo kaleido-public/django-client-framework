@@ -4,7 +4,7 @@ from django.db import models as m
 
 from django_client_framework.api import register_api_model
 from django_client_framework.models import Serializable
-from django_client_framework.serializers import ModelSerializer
+from django_client_framework.serializers import DCFModelSerializer
 
 
 @register_api_model
@@ -17,7 +17,7 @@ class Brand(Serializable):
         return BrandSerializer
 
 
-class BrandSerializer(ModelSerializer):
+class BrandSerializer(DCFModelSerializer):
     class Meta:
         model = Brand
         exclude: List[str] = []
