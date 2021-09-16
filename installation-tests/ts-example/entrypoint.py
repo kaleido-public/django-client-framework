@@ -1,7 +1,7 @@
-from subprocess import Popen, run
-from pathlib import Path
 import shutil
 import unittest
+from pathlib import Path
+from subprocess import Popen, run
 
 PROJ = Path("/_out")
 

@@ -1,7 +1,8 @@
 # convert a serializer to a JSON Schema.
-from django_client_framework.serializers import TypedSerializerMethodField
 from rest_framework import serializers
 from rest_framework.settings import api_settings
+
+from django_client_framework.serializers import TypedSerializerMethodField
 
 from .convert import converter, field_to_jsonschema
 from .fields import JSONSchemaField, SerializerJSONField

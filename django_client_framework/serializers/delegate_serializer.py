@@ -1,20 +1,39 @@
-from logging import getLogger
+from __future__ import annotations
 
+from logging import getLogger
+from typing import Any, Generic, Tuple, Type, TypeVar, overload
+
+from django.db.models.base import Model
 from django.utils.functional import cached_property
+
 from django_client_framework import exceptions as e
+
 from .serializer import Serializer
 
 LOG = getLogger(__name__)
 
+T = TypeVar("T", bound=Model)
 
-class DelegateSerializer(Serializer):
+
+class DelegateSerializer(Generic[T], Serializer[T]):
     """
     Any subclass can provide read, create, update delegate serializers dynamically.
     """
 
-    def __init__(self, instance=None, data=None, **kwargs):
+    @overload
+    def __init__(self, *, instance: T, data: Any):
+        ...
+
+    @overload
+    def __init__(self, *, instance: T):
+        ...
+
+    @overload
+    def __init__(self, *, data: Any):
+        ...
+
+    def __init__(self, *, instance: T = None, data: Any = None, **kwargs):
         self.__delegate = None
-        self.read_delegate = None
         self.is_read = self.is_create = self.is_update = False
         self.kwargs = kwargs
         self.instance = instance
@@ -28,12 +47,7 @@ class DelegateSerializer(Serializer):
 
         self.read_delegate = self.get_read_delegate_class(instance)(instance=instance)
 
-        if not self.read_delegate:
-            raise RuntimeError(
-                f"Cannot determine read_delegate for {self}, {data=}, {instance=}"
-            )
-
-    def get_delegate(self, raise_exception=False):
+    def get_delegate(self, raise_exception: bool = False) -> Serializer[T]:
         delegate = None
 
         if self.is_update:
@@ -75,10 +89,11 @@ class DelegateSerializer(Serializer):
         elif self.is_read:
             delegate = self.read_delegate
 
+        assert delegate is not None
         return delegate
 
     @cached_property
-    def delegate(self):
+    def delegate(self) -> Serializer[T]:
         if ret := self.get_delegate():
             return ret
         else:
@@ -92,17 +107,21 @@ class DelegateSerializer(Serializer):
         else:
             return getattr(self.delegate, name)
 
-    def get_create_delegate_class(self, initial_data, prevalidated_data):
+    def get_create_delegate_class(
+        self, initial_data, prevalidated_data
+    ) -> Type[Serializer]:
         raise NotImplementedError(
             f"{self.__class__} must implement .get_create_delegate_class()"
         )
 
-    def get_update_delegate_class(self, instance, initial_data, prevalidated_data):
+    def get_update_delegate_class(
+        self, instance, initial_data, prevalidated_data
+    ) -> Tuple[Type[Serializer], bool]:
         raise NotImplementedError(
             f"{self.__class__} must implement .get_update_delegate_class()"
         )
 
-    def get_read_delegate_class(self, instance):
+    def get_read_delegate_class(self, instance) -> Type[Serializer]:
         raise NotImplementedError(
             f"{self.__class__} must implement .get_read_delegate_class()"
         )
@@ -117,7 +136,7 @@ class DelegateSerializer(Serializer):
     def data(self):
         return self.read_delegate.data
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, raise_exception: bool = False) -> bool:
         """
         Need to overwrite this method to handle our custom ValidationError class
         """

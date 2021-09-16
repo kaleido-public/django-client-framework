@@ -1,23 +1,29 @@
-from typing import List, Optional, Type
-from django.contrib.auth.models import User
-from django.db.models.base import Model
-from django_client_framework.permissions.site_permission import has_perms_shortcut
 from logging import getLogger
+from typing import Any, Dict, List, Optional, Type, cast
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
-from django.http.request import HttpRequest, QueryDict
+from django.db.models.base import Model
+from django.http.request import QueryDict
 from django.utils.functional import cached_property
-from django_client_framework import exceptions as e
-from django_client_framework import permissions as p
-from django_client_framework.models.abstract import Searchable
 from ipromise import overrides
 from rest_framework.exceptions import MethodNotAllowed, NotFound
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.conf import settings
+
+from django_client_framework.models.abstract.model import DCFModel
+from django_client_framework.models.abstract.user import DCFAbstractUser
+
+from .. import exceptions as e
+from .. import permissions as p
+from ..models import get_user_model
+from ..models.abstract import Searchable
+from ..models.abstract.serializable import Serializable
+from ..permissions.site_permission import has_perms_shortcut
+from ..serializers import Serializer as DCFSerializer
 
 LOG = getLogger(__name__)
 
@@ -43,6 +49,8 @@ class ApiPagination(PageNumberPagination):
 
     @overrides(PageNumberPagination)
     def get_paginated_response(self, data):
+        # assert self.page
+        assert self.request
         return Response(
             {
                 "page": self.page.number,
@@ -59,11 +67,11 @@ class BaseModelAPI(GenericAPIView):
     """base class for requests to /products or /products/1"""
 
     pagination_class = ApiPagination
-    models = []
+    models: List[Type[Serializable]] = []
 
     @cached_property
-    def __name_to_model(self):
-        return {model._meta.model_name: model for model in self.models}
+    def __name_to_model(self) -> Dict[str, Type[Serializable]]:
+        return {self.__model_name(model): model for model in self.models}
 
     @overrides(APIView)
     def dispatch(self, request, *args, **kwargs):
@@ -74,7 +82,7 @@ class BaseModelAPI(GenericAPIView):
         except APIPermissionDenied as error:
             self.__handle_permission_denied(error)
 
-    def get_request_data(self, request: HttpRequest):
+    def get_request_data(self, request: Request):
         """
         Excludes special keys and returns only the instance related data.
         """
@@ -158,7 +166,7 @@ class BaseModelAPI(GenericAPIView):
         ).distinct()
 
     @cached_property
-    def model(self):
+    def model(self) -> Type[Serializable]:
         model_name = self.kwargs["model"]
         if model_name not in self.__name_to_model:
             valid_models = ", ".join(self.__name_to_model.keys())
@@ -167,6 +175,9 @@ class BaseModelAPI(GenericAPIView):
             )
         return self.__name_to_model[model_name]
 
+    def __model_name(self, model: Type[Model]) -> str:
+        return model._meta.model_name or model._meta.label_lower.split(".")[-1]
+
     def get_model_field(self, key, default=None):
         try:
             return self.model._meta.get_field(key)
@@ -174,13 +185,19 @@ class BaseModelAPI(GenericAPIView):
             return default
 
     @cached_property
-    def model_object(self):
+    def model_object(self) -> Serializable:
         pk = self.kwargs["pk"]
         return get_object_or_404(self.model, pk=pk)
 
     @overrides(GenericAPIView)
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> Type[DCFSerializer]:
         return self.model.serializer_class()
+
+    @overrides(GenericAPIView)
+    def get_serializer(self, *args: Any, **kwargs: Any) -> DCFSerializer:
+        ret = super().get_serializer(*args, **kwargs)
+        assert isinstance(ret, DCFSerializer)
+        return ret
 
     @overrides(GenericAPIView)
     def get_queryset(self, *args, **kwargs):
@@ -210,15 +227,18 @@ class BaseModelAPI(GenericAPIView):
             else:
                 raise NotFound()
 
+        msg_only_debug = "(DEBUG=True) " if settings.DEBUG else ""
         if error.field:
             raise e.PermissionDenied(
-                f"You have no {action} permission on {target}'s {error.field} field."
+                f"{msg_only_debug}You have no {action} permission on {target}'s {error.field} field."
             )
         else:
-            raise e.PermissionDenied(f"You have no {action} permission on {target}.")
+            raise e.PermissionDenied(
+                f"{msg_only_debug}You have no {action} permission on {target}."
+            )
 
     @property
-    def user_object(self) -> User:
+    def user_object(self) -> DCFAbstractUser:
         """
         DRF does not know about django-guardian's Anynymous user instance.
         This is a helper method to get the django-guardian version of user
@@ -227,13 +247,13 @@ class BaseModelAPI(GenericAPIView):
         if self.request.user.is_anonymous:
             return self.__anonymous_user
         else:
-            return self.request.user
+            return cast(DCFAbstractUser, self.request.user)
 
     @cached_property
-    def __anonymous_user(self):
+    def __anonymous_user(self) -> DCFAbstractUser:
         return get_user_model().get_anonymous()
 
-    def assert_pks_exist_or_raise_404(self, model: Type[Model], pks: List[int]):
+    def assert_pks_exist_or_raise_404(self, model: Type[DCFModel], pks: List[int]):
         queryset = model.objects.filter(pk__in=pks)
         if queryset.count() != len(pks):
             for pk in pks:

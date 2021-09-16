@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from logging import getLogger
 
 from django.contrib.contenttypes.fields import GenericRelation
@@ -6,12 +8,14 @@ from django.contrib.postgres.search import SearchQuery
 from django.db import models as m
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+
 from ..search_feature import SearchFeature
+from .model import Model as DCFModel
 
 LOG = getLogger(__name__)
 
 
-class Searchable(m.Model):
+class Searchable(DCFModel):
     class Meta:
         abstract = True
 

@@ -1,15 +1,21 @@
 from logging import getLogger
+from typing import Any, Dict, Generic, List, Type, TypeVar, cast
 
 from django.core.exceptions import FieldDoesNotExist
+from django.db.models.fields import Field as DjangoField
 from django.db.models.fields.related import ForeignKey
 from django.utils.functional import cached_property
-from django_client_framework.exceptions import ValidationError
 from ipromise.overrides import overrides
+from rest_framework.fields import Field as DRFField
 from rest_framework.serializers import BaseSerializer
 from rest_framework.serializers import ModelSerializer as DRFModelSerializer
 from rest_framework.serializers import PrimaryKeyRelatedField
 from rest_framework.utils.model_meta import RelationInfo
-from .serializer import Serializer
+
+from django_client_framework.exceptions import ValidationError
+
+from ..models import DCFModel
+from .serializer import DCFSerializer
 
 LOG = getLogger(__name__)
 
@@ -21,8 +27,8 @@ def get_model_field(model, key, default=None):
         return default
 
 
-def register_serializer_field(for_model_field):
-    def make_decorator(serializer_field):
+def register_serializer_field(for_model_field: Type[DjangoField]):
+    def make_decorator(serializer_field: Type[DRFField]):
         ModelSerializer.additional_serializer_field_mapping[
             for_model_field
         ] = serializer_field
@@ -31,12 +37,15 @@ def register_serializer_field(for_model_field):
     return make_decorator
 
 
-class ModelSerializer(Serializer, DRFModelSerializer):
-    additional_serializer_field_mapping = {}
+T = TypeVar("T", bound=DCFModel)
+
+
+class DCFModelSerializer(Generic[T], DCFSerializer[T], DRFModelSerializer):
+    additional_serializer_field_mapping: Dict[Type[DjangoField], Type[DRFField]] = {}
 
     @cached_property
     def serializer_field_mapping(self):
-        mapping = super().serializer_field_mapping
+        mapping = cast(Any, super().serializer_field_mapping)
         mapping.update(self.additional_serializer_field_mapping)
         return mapping
 
@@ -135,12 +144,12 @@ class ModelSerializer(Serializer, DRFModelSerializer):
             raise ValidationError(**{field_name: "This field is required."})
 
 
-DCFModelSerializer = ModelSerializer
+ModelSerializer = DCFModelSerializer
 
 
 class GenerateJsonSchemaDecorator:
-    for_model_read = {}
-    for_model_write = {}
+    for_model_read: Dict[Type[DCFModel], List[Type[DCFSerializer]]] = {}
+    for_model_write: Dict[Type[DCFModel], List[Type[DCFSerializer]]] = {}
 
     def __call__(self, for_model):
         def decorator(serializer_class):

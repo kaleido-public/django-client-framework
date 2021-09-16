@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "ms-python.vscode-pylance",
+    "ryanluker.vscode-coverage-gutters",
+    "dlech.chmod",
+    "ms-vsliveshare.vsliveshare",
+    "ms-vsliveshare.vsliveshare-pack",
+    "esbenp.prettier-vscode",
+    "geddski.macros",
+    "waderyan.gitblame"
+  ]
+}
