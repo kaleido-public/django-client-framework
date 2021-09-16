@@ -10,6 +10,9 @@ T = TypeVar("T", bound=DCFModel)
 
 
 class DCFSerializer(Generic[T], DRFSerializer):
+    # Every attribute / method in this class must also be added to the
+    # DelegateSerializer, otherwise the DelegateSerializer breaks.
+
     instance: T | None
 
     def update(self, instance: T, validated_data: Any) -> T:

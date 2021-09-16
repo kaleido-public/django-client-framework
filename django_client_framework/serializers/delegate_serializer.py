@@ -1,5 +1,4 @@
 from __future__ import annotations
-from django_client_framework.models.abstract.model import DCFModel
 
 from logging import getLogger
 from typing import Any, Generic, Tuple, Type, TypeVar, overload
@@ -7,6 +6,7 @@ from typing import Any, Generic, Tuple, Type, TypeVar, overload
 from django.utils.functional import cached_property
 
 from django_client_framework import exceptions as e
+from django_client_framework.models.abstract.model import DCFModel
 
 from .serializer import DCFSerializer
 

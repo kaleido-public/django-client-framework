@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Generic, Type, TypeVar
 from django.conf import settings
 from django.core.cache import cache
 from django.db import models as m
-from django.db.models import Model as DjangoModel
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.utils.functional import cached_property
