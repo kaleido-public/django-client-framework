@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from ..models import get_user_model
 
 
 def register_default_user(username):

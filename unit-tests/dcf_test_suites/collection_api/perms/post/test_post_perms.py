@@ -1,8 +1,8 @@
+from dcf_test_app.models import Brand, Product
+from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
-from dcf_test_app.models import Product
-from dcf_test_app.models import Brand
-from django.contrib.auth.models import User
+
 from django_client_framework import permissions as p
 
 

@@ -1,14 +1,12 @@
 # convert a serializer to a JSON Schema.
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import ForeignKey
-from django.db.models.fields.reverse_related import (
-    ManyToManyRel,
-    ManyToOneRel,
-    OneToOneRel,
-)
-from django_client_framework.serializers import generate_jsonschema
+from django.db.models.fields.reverse_related import (ManyToManyRel,
+                                                     ManyToOneRel, OneToOneRel)
 from rest_framework import serializers
 from rest_framework.utils.field_mapping import ClassLookupDict
+
+from django_client_framework.serializers import generate_jsonschema
 
 field_to_converter = ClassLookupDict({})
 

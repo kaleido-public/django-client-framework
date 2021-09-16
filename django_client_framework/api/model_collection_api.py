@@ -1,12 +1,15 @@
 from logging import getLogger
+from typing import List
 
 from django.db.models.fields.related import ForeignKey
-from django_client_framework import exceptions as e
-from django_client_framework import permissions as p
 from ipromise import overrides
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .base_model_api import BaseModelAPI, APIPermissionDenied
+
+from django_client_framework import exceptions as e
+from django_client_framework import permissions as p
+
+from .base_model_api import APIPermissionDenied, BaseModelAPI
 
 LOG = getLogger(__name__)
 
@@ -14,7 +17,7 @@ LOG = getLogger(__name__)
 class ModelCollectionAPI(BaseModelAPI):
     """handle request such as GET/POST /products"""
 
-    allowed_methods = ["GET", "POST"]
+    allowed_methods: List[str] = ["GET", "POST"]
 
     @overrides(APIView)
     def check_permissions(self, request):
@@ -24,6 +27,7 @@ class ModelCollectionAPI(BaseModelAPI):
 
     def get(self, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
+        assert self.paginator
         page = self.paginator.paginate_queryset(queryset, self.request, view=self)
         return self.paginator.get_paginated_response([obj.json() for obj in page])
 

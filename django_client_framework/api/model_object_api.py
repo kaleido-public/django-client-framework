@@ -1,12 +1,17 @@
+from __future__ import annotations
+
 from logging import getLogger
+from typing import List
 
 from django.db.models.deletion import ProtectedError
 from django.db.models.fields.related import ForeignKey
-from django_client_framework import exceptions as e
-from django_client_framework import permissions as p
 from ipromise import overrides
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from django_client_framework import exceptions as e
+from django_client_framework import permissions as p
+
 from .base_model_api import APIPermissionDenied, BaseModelAPI
 
 LOG = getLogger(__name__)
@@ -15,7 +20,7 @@ LOG = getLogger(__name__)
 class ModelObjectAPI(BaseModelAPI):
     """handle requests such as GET/DELETE/PATCH /products/1"""
 
-    allowed_methods = ["GET", "DELETE", "PATCH"]
+    allowed_methods: List[str] = ["GET", "DELETE", "PATCH"]
 
     @overrides(APIView)
     def check_permissions(self, request):
@@ -60,6 +65,7 @@ class ModelObjectAPI(BaseModelAPI):
                 for related_obj in filter(
                     bool, [old_related_obj, new_related_obj]
                 ):  # remove None
+                    assert related_obj
                     if not p.has_perms_shortcut(
                         self.user_object,
                         related_obj,
@@ -119,7 +125,7 @@ class ModelObjectAPI(BaseModelAPI):
                     context={"request": request},
                 )
                 serializer.is_valid(raise_exception=True)
-                serializer.delete()
+                serializer.delete_obj()
             else:
                 self.model_object.delete()
         except ProtectedError as excpt:

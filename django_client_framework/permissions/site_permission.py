@@ -1,21 +1,54 @@
-from logging import getLogger
+from __future__ import annotations
 
+from logging import getLogger
+from typing import Literal, Type, TypeVar, cast, overload
+
+from deprecation import deprecated
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import models as m
 from django.db import transaction
-from django.db.models.base import ModelBase
+from django.db.models.base import Model, ModelBase
+from django.db.models.query import QuerySet
 from guardian import models as gm
 from guardian import shortcuts as gs
-from deprecation import deprecated
+
 from .default_groups import default_groups
 
 LOG = getLogger(__name__)
 
+T = TypeVar("T", bound=Model)
+
+
+@overload
+def get_permission_for_model(
+    shortcut: str,
+    model: Type[Model],
+    *,
+    string: Literal[True],
+    field_name: str | None,
+) -> str:
+    ...
+
+
+@overload
+def get_permission_for_model(
+    shortcut: str,
+    model: Type[Model],
+    *,
+    string: Literal[False],
+    field_name: str | None,
+) -> Permission:
+    ...
+
 
 def get_permission_for_model(
-    shortcut, model, string=False, app_label=True, field_name=None
+    shortcut: str,
+    model: Type[Model],
+    *,
+    string,
+    field_name,
 ):
     """
     Returns permission object for model and field.
@@ -42,15 +75,17 @@ def get_permission_for_model(
             content_type=c, codename=f"{action}_{model._meta.model_name}"
         )
     if string:
-        if app_label:
-            return f"{c.app_label}.{p.codename}"
-        else:
-            return p.codename
+        return f"{c.app_label}.{p.codename}"
     else:
         return p
 
 
-def filter_queryset_by_perms_shortcut(perms, user_or_group, queryset, field_name=None):
+def filter_queryset_by_perms_shortcut(
+    perms: str,
+    user_or_group: AbstractUser | Group,
+    queryset: QuerySet[T],
+    field_name: str | None = None,
+) -> QuerySet[T]:
     r"""
     Filters queryset by keeping objects that user_or_group has all permissions
     specified by perms. If field_name is specified, additionally include objects
@@ -88,7 +123,10 @@ def filter_queryset_by_perms_shortcut(perms, user_or_group, queryset, field_name
 
 
 def add_perms_shortcut(
-    user_or_group, model_or_instance_or_queryset, perms, field_name=None
+    user_or_group: AbstractUser | Group,
+    model_or_instance_or_queryset: Type[Model] | Model | QuerySet,
+    perms: str,
+    field_name: str | None = None,
 ):
     """
     Adds model or object permission depending on whether model_or_instance_or_queryset
@@ -99,7 +137,7 @@ def add_perms_shortcut(
     if isinstance(model_or_instance_or_queryset, m.Model):
         instance = model_or_instance_or_queryset
         model = instance.__class__
-    elif isinstance(model_or_instance_or_queryset, m.QuerySet):
+    elif isinstance(model_or_instance_or_queryset, QuerySet):
         instance = model_or_instance_or_queryset
         model = model_or_instance_or_queryset.model
     elif model_or_instance_or_queryset.__class__ is ModelBase:
@@ -116,20 +154,28 @@ def add_perms_shortcut(
 
 @deprecated(details="use add_perms_shortcut(...) instead")
 def set_perms_shortcut(
-    user_or_group, model_or_instance_or_queryset, perms, field_name=None
+    user_or_group: AbstractUser | Group,
+    model_or_instance_or_queryset: Type[Model] | Model | QuerySet,
+    perms: str,
+    field_name: str | None = None,
 ):
     return add_perms_shortcut(
         user_or_group, model_or_instance_or_queryset, perms, field_name
     )
 
 
-def has_perms_shortcut(user_or_group, model_or_instance, perms, field_name=None):
+def has_perms_shortcut(
+    user_or_group: AbstractUser | Group,
+    model_or_instance: Type[Model] | Model,
+    perms: str,
+    field_name: str | None = None,
+):
     """
     Check if user has all permissions as indicated by perms. For example, when
     perms="rw", returns True only if the user has both read and write
     permissions. Model permission > object permission > field permission.
     """
-    User = get_user_model()
+    User = cast(Type[AbstractUser], get_user_model())
 
     if isinstance(model_or_instance, m.Model):
         instance = model_or_instance
@@ -143,10 +189,10 @@ def has_perms_shortcut(user_or_group, model_or_instance, perms, field_name=None)
     if isinstance(user_or_group, User) and user_or_group.is_superuser:
         return True
 
-    def disjunction(s):
+    def disjunction(s: str):
         for u in set([default_groups.anyone, user_or_group]):
             for f in set([None, field_name]):
-                perm = get_permission_for_model(s, model, field_name=f)
+                perm = get_permission_for_model(s, model, string=False, field_name=f)
                 if isinstance(u, Group):
                     # check group model permission
                     if u.permissions.filter(pk=perm.pk).exists():

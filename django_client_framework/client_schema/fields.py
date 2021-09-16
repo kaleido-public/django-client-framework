@@ -1,6 +1,7 @@
-from rest_framework import serializers
 from jsonschema import Draft4Validator, FormatChecker
 from jsonschema.exceptions import ValidationError as JSONSchemaValidationError
+from rest_framework import serializers
+
 from .convert import to_jsonschema
 
 _DEFAULT = object()

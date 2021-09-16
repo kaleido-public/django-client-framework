@@ -1,18 +1,21 @@
 from logging import getLogger
-from typing import List, Optional
-from django.db.models import Model
+from typing import Any, List, Optional, Type
 
+from django.db.models import Model
 from django.db.models.fields import related_descriptors
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.db.models.fields.reverse_related import ManyToManyRel, ManyToOneRel
 from django.http.response import JsonResponse
 from django.utils.functional import cached_property
-from django_client_framework import exceptions as e
-from django_client_framework import permissions as p
 from ipromise import overrides
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from django_client_framework import exceptions as e
+from django_client_framework import permissions as p
+from django_client_framework.models.abstract.model import DCFModel
+
 from .base_model_api import APIPermissionDenied, BaseModelAPI
 
 LOG = getLogger(__name__)
@@ -232,7 +235,7 @@ class RelatedModelAPI(BaseModelAPI):
         return getattr(self.model_object, self.field_name)
 
     @cached_property
-    def field_model(self) -> Model:
+    def field_model(self) -> Type[DCFModel[Any]]:
         return self.field.related_model
 
     @cached_property

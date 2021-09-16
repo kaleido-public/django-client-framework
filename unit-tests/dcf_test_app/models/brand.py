@@ -1,4 +1,7 @@
+from typing import List
+
 from django.db import models as m
+
 from django_client_framework.api import register_api_model
 from django_client_framework.models import Serializable
 from django_client_framework.serializers import ModelSerializer
@@ -17,4 +20,4 @@ class Brand(Serializable):
 class BrandSerializer(ModelSerializer):
     class Meta:
         model = Brand
-        exclude = []
+        exclude: List[str] = []

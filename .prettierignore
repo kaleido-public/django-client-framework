@@ -10,3 +10,4 @@ docs/
 deps/
 .yarn/
 .mypy_cache/
+.venv/

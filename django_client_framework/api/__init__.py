@@ -1,4 +1,5 @@
 from django_client_framework.models.abstract import Serializable
+
 from .base_model_api import BaseModelAPI
 
 

@@ -1,25 +1,36 @@
+from __future__ import annotations
+
 from logging import getLogger
+from typing import TYPE_CHECKING, Generic, Type, TypeVar
 
 from django.conf import settings
 from django.core.cache import cache
 from django.db import models as m
+from django.db.models import Model as DjangoModel
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.utils.functional import cached_property
 
+from .model import Model as DCFModel
+
 LOG = getLogger(__name__)
 
+if TYPE_CHECKING:
+    from django_client_framework.serializers.serializer import DCFSerializer
 
-class Serializable(m.Model):
+T = TypeVar("T", bound="DjangoModel", covariant=True)
+
+
+class Serializable(Generic[T], DCFModel[T]):
     class Meta:
         abstract = True
 
     @classmethod
-    def serializer_class(cls):
+    def serializer_class(cls) -> Type[DCFSerializer]:
         raise NotImplementedError(f"{cls} must implement .serializer_class()")
 
     @property
-    def serializer(self):
+    def serializer(self) -> DCFSerializer:
         return self.serializer_class()(instance=self)
 
     @property
@@ -77,7 +88,7 @@ def auto_invalidate_cached_serialization_post_delete(sender, instance, **kwargs)
 
 
 def check_integrity():
-    from ...serializers import Serializer, DelegateSerializer
+    from ...serializers import DelegateSerializer, Serializer
 
     for model in Serializable.__subclasses__():
         if model.__module__ == "__fake__":

@@ -18,6 +18,9 @@ class DefaultApp(AppConfig):
         from django.conf import settings
 
         from . import models  # noqa
+        from .models.abstract import AccessControlled
+
+        AccessControlled.register_signals()
 
         if settings.DEBUG:
             from . import api, serializers
