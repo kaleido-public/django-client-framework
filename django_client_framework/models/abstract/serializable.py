@@ -18,7 +18,7 @@ LOG = getLogger(__name__)
 if TYPE_CHECKING:
     from django_client_framework.serializers.serializer import DCFSerializer
 
-T = TypeVar("T", bound="DjangoModel", covariant=True)
+T = TypeVar("T", bound=DCFModel, covariant=True)
 
 
 class Serializable(Generic[T], DCFModel[T]):
@@ -30,7 +30,7 @@ class Serializable(Generic[T], DCFModel[T]):
         raise NotImplementedError(f"{cls} must implement .serializer_class()")
 
     @property
-    def serializer(self) -> DCFSerializer:
+    def serializer(self) -> DCFSerializer[T]:
         return self.serializer_class()(instance=self)
 
     @property

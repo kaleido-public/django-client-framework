@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
-from subprocess import CalledProcessError, run
+from subprocess import run
 
 import click
 
@@ -19,7 +19,7 @@ def main(write):
 
 def prettier(args, **kwargs):
     kwargs["check"] = True
-    run(
+    return run(
         [
             "prettier",
             f"--config={PROJ_ROOT/'.prettierrc.yml'}",
@@ -31,17 +31,22 @@ def prettier(args, **kwargs):
 
 
 def check_only():
-    try:
-        run(["flake8", "--show-source", "."], cwd=PROJ_ROOT, check=True)
-        run(["black", "--check", "."], cwd=PROJ_ROOT, check=True)
-        run(["isort", "--check", "."], cwd=PROJ_ROOT, check=True)
-        prettier(["--check", "."], cwd=PROJ_ROOT, check=True)
-    except CalledProcessError as expt:
-        exit(f"Issues found after running {expt.cmd} in {PROJ_ROOT}.")
+    procs = [
+        run(["flake8", "--show-source", PROJ_ROOT]),
+        run(["black", "--check", PROJ_ROOT]),
+        run(["isort", "--check", PROJ_ROOT]),
+        prettier(["--check", PROJ_ROOT]),
+    ]
+    error = False
+    for p in procs:
+        if p.returncode != 0:
+            print(f"Issues found after running {p.args}.")
+            error = True
+    if error:
+        exit("Issues found after running checkstyle.")
 
 
 def format_files():
-    run(["black", "."], cwd=PROJ_ROOT)
     run(
         [
             "autoflake",
@@ -54,6 +59,7 @@ def format_files():
         cwd=PROJ_ROOT,
     )
     run(["isort", "."], cwd=PROJ_ROOT, check=True)
+    run(["black", "."], cwd=PROJ_ROOT)
     prettier(["-w", "."], cwd=PROJ_ROOT)
 
 
