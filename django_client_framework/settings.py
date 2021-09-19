@@ -12,6 +12,24 @@ def monkeypatch_djangotypes():
         cls.__class_getitem__ = classmethod(lambda cls, *args, **kwargs: cls)  # type: ignore [attr-defined]
 
 
+def monkeypatch_abstract_generic():
+    # Monkey patch for django-types See
+    # https://github.com/typeddjango/django-stubs/issues/299 in settings.py
+    from typing import Generic
+    from django.db.migrations.state import ModelState
+
+    _original = ModelState.render
+
+    def _new(self, apps):
+        self.bases = tuple(base for base in self.bases if base is not Generic)  # type: ignore
+        return _original(self, apps)
+
+    ModelState.render = _new  # type: ignore
+
+
+monkeypatch_abstract_generic()
+
+
 def install(
     INSTALLED_APPS,
     REST_FRAMEWORK,
@@ -36,3 +54,4 @@ def install(
     ]
 
     monkeypatch_djangotypes()
+    monkeypatch_abstract_generic()
