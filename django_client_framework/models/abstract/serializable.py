@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Generic, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, Type, TypeVar
 
 from django.conf import settings
 from django.core.cache import cache
@@ -36,8 +36,8 @@ class Serializable(Generic[T], DCFModel[T]):
     def cached_serialized_data(self):
         return self.get_or_create_cached_serialization()
 
-    def json(self):
-        return self.serializer_class()(instance=self).data
+    def json(self) -> Any:
+        return dict(self.serializer_class()(instance=self).data)
 
     def __repr__(self):
         if settings.DEBUG:
