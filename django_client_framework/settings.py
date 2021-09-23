@@ -16,6 +16,7 @@ def monkeypatch_abstract_generic():
     # Monkey patch for django-types See
     # https://github.com/typeddjango/django-stubs/issues/299 in settings.py
     from typing import Generic
+
     from django.db.migrations.state import ModelState
 
     _original = ModelState.render
