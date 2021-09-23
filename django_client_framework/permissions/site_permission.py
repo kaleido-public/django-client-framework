@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Literal, Type, TypeVar, cast, overload
+from typing import TYPE_CHECKING, List, Literal, Type, TypeVar, cast, overload
 
 from deprecation import deprecated
 from django.contrib.auth import get_user_model
@@ -15,6 +15,9 @@ from guardian import models as gm
 from guardian import shortcuts as gs
 
 from .default_groups import default_groups
+
+if TYPE_CHECKING:
+    from ..models.abstract.access_controlled import AccessControlled
 
 LOG = getLogger(__name__)
 
@@ -239,29 +242,24 @@ def clear_permissions():
         Group.objects.exclude(m.Q(name="anyone") | m.Q(name="logged_in")).delete()
 
 
-def reset_permissions():
-    with transaction.atomic():
-        LOG.info("resetting permissions...")
-
-        clear_permissions()
-        LOG.info("recreating permissions...")
-
-        # reset user permissions
-        from .default_groups import default_groups
-        from .default_users import default_users
-
-        default_groups.setup()
-        default_users.setup()
-        # set user self permission
-        # must be done after all default users are added
-        from django_client_framework.models import AccessControlled
-
-        for model in AccessControlled.__subclasses__():
-            permmanager = model.get_permissionmanager_class()()
-            for instance in model.objects.all():
+def reset_permissions(for_classes: List[Type["AccessControlled"]]):
+    # set user self permission
+    # must be done after all default users are added
+    total_model_count = len(for_classes)
+    current_model_count = 0
+    for model in for_classes:
+        current_model_count += 1
+        permmanager: AccessControlled.PermissionManager = (
+            model.get_permissionmanager_class()()
+        )
+        LOG.warn(f"Resetting permissions for model {model.__name__}")
+        total = model.objects.count()
+        current = 0
+        for instance in model.objects.all():
+            current += 1
+            percentage = current * 100 / total
+            LOG.info(
+                f"{current_model_count}/{total_model_count} {model.__name__}({instance.id}) %{percentage:.2f}"
+            )
+            with transaction.atomic():
                 permmanager.reset_perms(instance)
-
-
-@deprecated(details="use reset_permissions()")
-def setup_permissions():
-    reset_permissions()
