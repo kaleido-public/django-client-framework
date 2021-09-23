@@ -1,3 +1,3 @@
-from .default_users import *
 from .default_groups import *
+from .default_users import *
 from .site_permission import *

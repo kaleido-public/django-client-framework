@@ -16,7 +16,7 @@ T = TypeVar("T", bound="AccessControlled")
 _T = TypeVar("_T", bound="DCFModel")
 
 
-class AccessControlled(DCFModel):
+class AccessControlled(DCFModel, Generic[T]):
     class Meta:
         abstract = True
 
@@ -54,6 +54,9 @@ class AccessControlled(DCFModel):
             )
 
         return manager
+
+    def update_perms(self: T):
+        self.get_permissionmanager_class()().reset_perms(self)
 
     def __init_subclass__(cls) -> None:
         post_save.connect(
