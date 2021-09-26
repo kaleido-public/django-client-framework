@@ -124,7 +124,6 @@ class ModelObjectAPI(BaseModelAPI):
                     instance=self.model_object,
                     context={"request": request},
                 )
-                serializer.is_valid(raise_exception=True)
                 serializer.delete_obj()
             else:
                 self.model_object.delete()
