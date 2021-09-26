@@ -33,7 +33,7 @@ class Serializable(Generic[T], DCFModel[T]):
         return self.serializer_class()(instance=self)
 
     @property
-    def cached_serialized_data(self):
+    def cached_json(self) -> Any:
         return self.get_or_create_cached_serialization()
 
     def json(self) -> Any:
