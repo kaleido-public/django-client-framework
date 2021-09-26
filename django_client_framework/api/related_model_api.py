@@ -127,7 +127,7 @@ class RelatedModelAPI(BaseModelAPI):
             queryset = self.filter_queryset(self.get_queryset())
             page = self.paginator.paginate_queryset(queryset, self.request, view=self)
             return self.paginator.get_paginated_response(
-                [obj.cached_serialized_data for obj in page]
+                [obj.cached_json for obj in page]
             )
 
     def post(self, request, *args, **kwargs):
