@@ -29,13 +29,14 @@ class ModelCollectionAPI(BaseModelAPI):
         queryset = self.filter_queryset(self.get_queryset())
         assert self.paginator
         page = self.paginator.paginate_queryset(queryset, self.request, view=self)
-        return self.paginator.get_paginated_response([obj.json() for obj in page])
+        serializer_class = self.model.serializer_class()
+        context = self.get_serializer_context()
+        return self.paginator.get_paginated_response(
+            [serializer_class(instance=obj, context=context).data for obj in page]
+        )
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(
-            data=self.request_data,
-            context={"request": request},
-        )
+        serializer = self.get_serializer(data=self.request_data)
         serializer.is_valid(raise_exception=True)
         # make sure user write permission to related fields
         for field_name, field_instance in serializer.validated_data.items():
@@ -50,10 +51,7 @@ class ModelCollectionAPI(BaseModelAPI):
         instance = serializer.save()
         if p.has_perms_shortcut(self.user_object, instance, "r"):
             return Response(
-                self.get_serializer(
-                    instance=instance,
-                    context={"request": request},
-                ).data,
+                self.get_serializer(instance=instance).data,
                 status=201,
             )
         else:
