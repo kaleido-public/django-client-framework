@@ -48,19 +48,23 @@ class Serializable(Generic[T], DCFModel[T]):
     def __str__(self):
         return f"<{self.__class__.__name__}:{self.pk}>"
 
-    def get_serialization_cache_timeout(self):
-        return 3600 * 24 * 7
+    def get_serialization_cache_timeout(self) -> int:
+        """Return how long to cache the serialization in seconds"""
+        return 0
 
     def get_or_create_cached_serialization(self):
-        result = cache.get(self.cache_key_for_serialization, None)
-        if result:
+        timeout = self.get_serialization_cache_timeout()
+        if timeout == 0:
+            return self.json()
+
+        if result := cache.get(self.cache_key_for_serialization, None):
             return result
         else:
             ser = self.serializer_class()(instance=self)
             cache.add(
                 self.cache_key_for_serialization,
                 ser.data,
-                timeout=self.get_serialization_cache_timeout(),
+                timeout=timeout,
             )
             return ser.data
 
