@@ -33,10 +33,7 @@ class ModelObjectAPI(BaseModelAPI):
     def get(self, request, *args, **kwargs):
         if not p.has_perms_shortcut(self.user_object, self.model_object, "r"):
             raise APIPermissionDenied(self.model_object, "r")
-        serializer = self.get_serializer(
-            self.model_object,
-            context={"request": request},
-        )
+        serializer = self.get_serializer(self.model_object)
         return Response(serializer.data)
 
     def patch(self, request, *args, **kwargs):
@@ -99,10 +96,7 @@ class ModelObjectAPI(BaseModelAPI):
             p.add_perms_shortcut(self.user_object, instance, "r")
         if p.has_perms_shortcut(self.user_object, instance, "r"):
             return Response(
-                self.get_serializer(
-                    instance=instance,
-                    context={"request": request},
-                ).data,
+                self.get_serializer(instance=instance).data,
                 status=201,
             )
         else:
@@ -120,9 +114,7 @@ class ModelObjectAPI(BaseModelAPI):
         try:
             if hasattr(self.get_serializer_class(), "delete"):
                 serializer = self.get_serializer(
-                    data=self.request_data,
-                    instance=self.model_object,
-                    context={"request": request},
+                    data=self.request_data, instance=self.model_object
                 )
                 serializer.delete_obj()
             else:

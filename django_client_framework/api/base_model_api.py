@@ -200,6 +200,17 @@ class BaseModelAPI(GenericAPIView):
         return ret
 
     @overrides(GenericAPIView)
+    def get_serializer_context(self) -> Dict[str, Any]:
+        context = super().get_serializer_context()
+        context.update(
+            {
+                "request": self.request,
+                "view_kwargs": self.kwargs,
+            }
+        )
+        return context
+
+    @overrides(GenericAPIView)
     def get_queryset(self, *args, **kwargs):
         return self.model.objects.all()
 
