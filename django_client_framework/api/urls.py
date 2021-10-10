@@ -4,6 +4,8 @@ from .model_collection_api import ModelCollectionAPI
 from .model_object_api import ModelObjectAPI
 from .related_model_api import RelatedModelAPI
 
+app_name = "dcf"
+
 urlpatterns = [
     path("<str:model>", ModelCollectionAPI.as_view(), name="model_collection"),
     path("<str:model>/<int:pk>", ModelObjectAPI.as_view(), name="model_object"),
