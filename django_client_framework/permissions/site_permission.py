@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, List, Literal, Type, TypeVar, cast, overload
+from typing import TYPE_CHECKING, Any, List, Literal, Type, TypeVar, cast, overload
 
 from deprecation import deprecated
 from django.contrib.auth import get_user_model
@@ -104,7 +104,7 @@ def filter_queryset_by_perms_shortcut(
         B1 = A0 union A1, g=1
         B0 union B1
     """
-    union = queryset.model.objects.none()
+    union = queryset.none()
     for u in set([user_or_group, default_groups.anyone]):  # B
         for f in set([None, field_name]):  # A
             perm_full_strs = [
@@ -136,7 +136,7 @@ def add_perms_shortcut(
     is a model.
     """
     LOG.debug(f"{user_or_group=} {model_or_instance_or_queryset=} {perms=}")
-
+    instance: Any
     if isinstance(model_or_instance_or_queryset, m.Model):
         instance = model_or_instance_or_queryset
         model = instance.__class__
@@ -180,6 +180,7 @@ def has_perms_shortcut(
     """
     User = cast(Type[AbstractUser], get_user_model())
 
+    instance: Any
     if isinstance(model_or_instance, m.Model):
         instance = model_or_instance
         model = instance._meta.model

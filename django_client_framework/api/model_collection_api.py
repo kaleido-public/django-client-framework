@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import List
+from typing import Any, List
 
 from django.db.models.fields.related import ForeignKey
 from ipromise import overrides
@@ -28,11 +28,10 @@ class ModelCollectionAPI(BaseModelAPI):
     def get(self, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         assert self.paginator
+        page: Any
         page = self.paginator.paginate_queryset(queryset, self.request, view=self)
-        serializer_class = self.model.serializer_class()
-        context = self.get_serializer_context()
         return self.paginator.get_paginated_response(
-            [serializer_class(instance=obj, context=context).data for obj in page]
+            [self.get_serializer(obj).data for obj in page]
         )
 
     def post(self, request, *args, **kwargs):
@@ -51,7 +50,7 @@ class ModelCollectionAPI(BaseModelAPI):
         instance = serializer.save()
         if p.has_perms_shortcut(self.user_object, instance, "r"):
             return Response(
-                self.get_serializer(instance=instance).data,
+                self.get_serializer(instance).data,
                 status=201,
             )
         else:

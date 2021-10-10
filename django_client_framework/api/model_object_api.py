@@ -112,10 +112,8 @@ class ModelObjectAPI(BaseModelAPI):
         if not p.has_perms_shortcut(self.user_object, self.model_object, "d"):
             raise APIPermissionDenied(self.model_object, "d")
         try:
-            if hasattr(self.get_serializer_class(), "delete"):
-                serializer = self.get_serializer(
-                    data=self.request_data, instance=self.model_object
-                )
+            serializer = self.get_serializer(self.model_object, data=self.request_data)
+            if hasattr(serializer, "delete_obj"):
                 serializer.delete_obj()
             else:
                 self.model_object.delete()
