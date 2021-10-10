@@ -1,3 +1,4 @@
+import math
 from logging import getLogger
 from typing import Any, Dict, List, Optional, Type, cast
 
@@ -45,17 +46,21 @@ class ApiPagination(PageNumberPagination):
     page_query_param = "_page"
     page_size_query_param = "_limit"
     page_size = 50
-    max_page_size = 1000
+    max_page_size = 200
 
     @overrides(PageNumberPagination)
     def get_paginated_response(self, data):
-        # assert self.page
-        assert self.request
+        assert self.page is not None
+        assert self.request is not None
+        limit = self.get_page_size(self.request)
+        assert limit is not None
+        total = self.page.paginator.count
         return Response(
             {
                 "page": self.page.number,
-                "limit": self.get_page_size(self.request),
+                "limit": limit,
                 "total": self.page.paginator.count,
+                "count": math.ceil(total / limit),
                 "previous": self.get_previous_link(),
                 "next": self.get_next_link(),
                 "objects": data,
@@ -63,15 +68,26 @@ class ApiPagination(PageNumberPagination):
         )
 
 
-class BaseModelAPI(GenericAPIView):
+class BaseModelAPI(APIView):
     """base class for requests to /products or /products/1"""
 
-    pagination_class = ApiPagination
     models: List[Type[Serializable]] = []
 
     @cached_property
     def __name_to_model(self) -> Dict[str, Type[Serializable]]:
         return {self.__model_name(model): model for model in self.models}
+
+    @cached_property
+    def paginator(self):
+        return ApiPagination()
+
+    def paginate_queryset(self, queryset):
+        """
+        Return a single page of results, or `None` if pagination is disabled.
+        """
+        if self.paginator is None:
+            return None
+        return self.paginator.paginate_queryset(queryset, self.request, view=self)
 
     @overrides(APIView)
     def dispatch(self, request, *args, **kwargs):
@@ -189,26 +205,23 @@ class BaseModelAPI(GenericAPIView):
         pk = self.kwargs["pk"]
         return get_object_or_404(self.model, pk=pk)
 
-    @overrides(GenericAPIView)
-    def get_serializer_class(self) -> Type[DCFSerializer]:
-        return self.model.serializer_class()
+    def get_serializer(
+        self, instance: Serializable = None, **kwargs: Any
+    ) -> DCFSerializer:
+        if instance:
+            return instance.get_serializer(
+                context=self.get_serializer_context(), **kwargs
+            )
+        else:
+            return self.model.serializer_class()(
+                context=self.get_serializer_context(), **kwargs
+            )
 
-    @overrides(GenericAPIView)
-    def get_serializer(self, *args: Any, **kwargs: Any) -> DCFSerializer:
-        ret = super().get_serializer(*args, **kwargs)
-        assert isinstance(ret, DCFSerializer)
-        return ret
-
-    @overrides(GenericAPIView)
     def get_serializer_context(self) -> Dict[str, Any]:
-        context = super().get_serializer_context()
-        context.update(
-            {
-                "request": self.request,
-                "view_kwargs": self.kwargs,
-            }
-        )
-        return context
+        return {
+            "request": self.request,
+            "view": self,
+        }
 
     @overrides(GenericAPIView)
     def get_queryset(self, *args, **kwargs):

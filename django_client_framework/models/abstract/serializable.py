@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Generic, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, Generic, Type, TypeVar
 
 from django.conf import settings
 from django.core.cache import cache
@@ -28,20 +28,19 @@ class Serializable(Generic[T], DCFModel[T]):
     def serializer_class(cls) -> Type[DCFSerializer]:
         raise NotImplementedError(f"{cls} must implement .serializer_class()")
 
-    @property
+    @cached_property
     def serializer(self) -> DCFSerializer[T]:
-        return self.serializer_class()(instance=self)
+        return self.get_serializer()
 
-    @property
-    def cached_json(self) -> Any:
-        return self.get_or_create_cached_serialization()
+    def get_serializer(self, **kwargs) -> DCFSerializer[T]:
+        return self.serializer_class()(instance=self, **kwargs)
 
-    def json(self) -> Any:
-        return dict(self.serializer_class()(instance=self).data)
+    def json(self, *, context: Dict[str, Any]) -> Any:
+        return dict(self.get_serializer(context=context).data)
 
     def __repr__(self):
         if settings.DEBUG:
-            return f"<<{self.__class__.__name__}:{self.serializer_class()(instance=self).data}>>"
+            return f"<<{self.__class__.__name__}:{self.serializer.data}>>"
         else:
             return f"<{self.__class__.__name__}:{self.pk}>"
 
@@ -52,21 +51,21 @@ class Serializable(Generic[T], DCFModel[T]):
         """Return how long to cache the serialization in seconds"""
         return 0
 
-    def get_or_create_cached_serialization(self):
+    def cached_json(self, *, context: Dict[str, Any]):
         timeout = self.get_serialization_cache_timeout()
         if timeout == 0:
-            return self.json()
+            return self.json(context=context)
 
         if result := cache.get(self.cache_key_for_serialization, None):
             return result
         else:
-            ser = self.serializer_class()(instance=self)
+            data = self.json(context=context)
             cache.add(
                 self.cache_key_for_serialization,
-                ser.data,
+                data,
                 timeout=timeout,
             )
-            return ser.data
+            return data
 
     @cached_property
     def cache_key_for_serialization(self):

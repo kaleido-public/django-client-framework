@@ -8,7 +8,6 @@ from django.db.models.fields.reverse_related import ManyToManyRel, ManyToOneRel
 from django.http.response import JsonResponse
 from django.utils.functional import cached_property
 from ipromise import overrides
-from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -116,20 +115,15 @@ class RelatedModelAPI(BaseModelAPI):
                 self.__assert_object_field_perm(
                     self.field_val, "r", self.field.related_query_name()
                 )
-                serializer = self.get_serializer(
-                    self.field_val,
-                    context={"request": self.request},
-                )
+                serializer = self.get_serializer(self.field_val)
                 return Response(serializer.data)
             else:
                 raise e.NotFound()
         else:
             queryset = self.filter_queryset(self.get_queryset())
             page = self.paginator.paginate_queryset(queryset, self.request, view=self)
-            serializer_class = self.get_serializer_class()
-            context = self.get_serializer_context()
             return self.paginator.get_paginated_response(
-                [serializer_class(instance=obj, context=context).data for obj in page]
+                [self.get_serializer(obj).data for obj in page]
             )
 
     def post(self, request, *args, **kwargs):
@@ -249,17 +243,8 @@ class RelatedModelAPI(BaseModelAPI):
             temp = getattr(self.model, self.field_name)
             return temp.field.related_query_name()
 
-    @overrides(GenericAPIView)
-    def get_serializer_class(self):
-        return self.field_model.serializer_class()
-
-    @overrides(GenericAPIView)
     def get_queryset(self, *args, **kwargs):
         return self.field_val.all()
-
-    @overrides(GenericAPIView)
-    def get_object(self, *args, **kwargs):
-        raise NotImplementedError()
 
     @overrides(APIView)
     def check_permissions(self, request):

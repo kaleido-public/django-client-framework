@@ -18,5 +18,6 @@ from django.urls import include, path
 import django_client_framework.api.urls
 
 urlpatterns = [
+    path("/api/<str:version>/", include(django_client_framework.api.urls)),
     path("", include(django_client_framework.api.urls)),
 ]
