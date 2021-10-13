@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
+from typing import Generic, TypeVar
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -10,12 +11,13 @@ from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
 from ..search_feature import SearchFeature
-from .model import Model as DCFModel
 
 LOG = getLogger(__name__)
 
+T = TypeVar("T", bound="Searchable")
 
-class Searchable(DCFModel):
+
+class Searchable(m.Model, Generic[T]):
     class Meta:
         abstract = True
 
@@ -32,7 +34,7 @@ class Searchable(DCFModel):
             )
         return text
 
-    search_feature = GenericRelation(SearchFeature)
+    search_feature = GenericRelation(SearchFeature)  # type: ignore
 
     @classmethod
     def filter_by_text_search(cls, search_text, queryset=None):

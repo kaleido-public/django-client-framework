@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, Generic, Type, TypeVar
 
 from django.conf import settings
 from django.core.cache import cache
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=DCFModel, covariant=True)
 
 
-class Serializable(DCFModel[T]):
+class Serializable(m.Model, Generic[T]):
     class Meta:
         abstract = True
 
