@@ -4,6 +4,7 @@ from logging import getLogger
 from typing import Any, Generic, Type, TypeVar, cast
 
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models as m
 from django.db.models.signals import post_save
 from guardian.models import UserObjectPermission
 
@@ -16,12 +17,12 @@ T = TypeVar("T", bound="AccessControlled")
 _T = TypeVar("_T", bound="DCFModel")
 
 
-class AccessControlled(DCFModel):
+class AccessControlled(m.Model, Generic[T]):
     class Meta:
         abstract = True
 
     userobjectpermissions = GenericRelation(
-        UserObjectPermission, object_id_field="object_pk"
+        UserObjectPermission, object_id_field="object_pk"  # type: ignore
     )
 
     class PermissionManager(Generic[_T]):
@@ -34,7 +35,7 @@ class AccessControlled(DCFModel):
             self.add_perms(instance)
 
     @classmethod
-    def get_permissionmanager_class(cls) -> Type[PermissionManager[T]]:
+    def get_permissionmanager_class(cls) -> Type[PermissionManager]:
         """
         Returns an PermissionManager class. The default implementation looks for a class
         named PermissionManager in the current class.
