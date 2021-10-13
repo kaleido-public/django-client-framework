@@ -1,5 +1,6 @@
 from logging import getLogger
 from typing import Any, List, Optional, Type
+from uuid import UUID
 
 from django.db.models import Model
 from django.db.models.fields import related_descriptors
@@ -31,30 +32,36 @@ class RelatedModelAPI(BaseModelAPI):
             return ["GET", "DELETE", "POST", "PATCH"]
 
     @cached_property
-    def __body_pk_ls(self) -> List[int]:
+    def __body_pk_ls(self) -> List[UUID]:
         data = self.request_data
         if isinstance(data, list):
             if len(data) > 0:
                 for item in data:
-                    if type(item) is not int:
+                    if type(item) is not str:
                         raise e.ValidationError(
-                            "Expected a list of model pk in the request body,"
-                            f" but one of the list item received is {type(item)}: {item}"
+                            {
+                                "error": "Expected a list of model pk in the request body,"
+                                f" but one of the list item received is {type(item)}: {item}"
+                            }
                         )
-            return data
+            return list(map(UUID, data))
         else:
             raise e.ValidationError(
-                "Expected a list of object pk in the request body,"
-                f" but received {type(data).__name__}: {data}"
+                {
+                    "error": "Expected a list of object pk in the request body,"
+                    f" but received {type(data).__name__}: {data}"
+                }
             )
 
     @cached_property
-    def __body_pk(self) -> Optional[int]:
+    def __body_pk(self) -> Optional[UUID]:
         data = self.request_data
-        if data is None or isinstance(data, int):
-            return data
+        if data is None:
+            return None
+        elif isinstance(data, str):
+            return UUID(data)
         else:
-            raise e.ValidationError(
+            raise e.ParseError(
                 "Expected an object pk in the request body,"
                 f" but received {type(data).__name__}: {data}"
             )
@@ -97,7 +104,6 @@ class RelatedModelAPI(BaseModelAPI):
         else:
             return JsonResponse(
                 {
-                    "success": True,
                     "detail": "Action was successful but you have no permission to view the result.",
                 }
             )
@@ -187,7 +193,9 @@ class RelatedModelAPI(BaseModelAPI):
         # model, otherwise it becomes fieldname_set
         if not hasattr(self.model, field_name):
             raise e.ValidationError(
-                f'"{field_name}" is not a property name on {self.model.__name__}'
+                {
+                    "error": f'"{field_name}" is not a property name on {self.model.__name__}'
+                }
             )
         target_field = self.get_model_field(field_name, None)
         if (

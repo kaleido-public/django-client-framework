@@ -24,7 +24,8 @@ def transform_drf_exception(exc, current_field=None):
 
 def dcf_exception_handler(exc, context):
     if isinstance(exc, ValidationError):
-        flatten = transform_drf_exception(exc)
+        # flatten = transform_drf_exception(exc)
+        flatten = exc.get_full_details()
         return JsonResponse(flatten, status=400)
     else:
         # get default behavior

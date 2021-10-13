@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from django_client_framework import models as m
 from django_client_framework.api import register_api_model
@@ -14,6 +13,7 @@ LOG = logging.getLogger(__name__)
 @register_api_model
 class Product(Serializable["Product"]):
     barcode = m.CharField(max_length=255, blank=True, default="")
+    priority = m.IntegerField(default=1)
     brand = m.ForeignKey(
         Brand, null=True, on_delete=m.SET_NULL, related_name="products"
     )
@@ -27,4 +27,4 @@ class Product(Serializable["Product"]):
 class ProductSerializer(DCFModelSerializer["Product"]):
     class Meta:
         model = Product
-        exclude: List[str] = []
+        fields = ["id", "priority", "brand_id", "barcode"]

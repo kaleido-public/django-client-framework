@@ -16,7 +16,7 @@ T = TypeVar("T", bound="AccessControlled")
 _T = TypeVar("_T", bound="DCFModel")
 
 
-class AccessControlled(DCFModel, Generic[T]):
+class AccessControlled(DCFModel):
     class Meta:
         abstract = True
 

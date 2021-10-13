@@ -4,10 +4,12 @@ from typing import Generic, TypeVar
 
 from django.contrib.auth.models import AbstractUser as DjangoAbstractUser
 
+from .model import DCFModel
+
 T = TypeVar("T")
 
 
-class DCFAbstractUser(Generic[T], DjangoAbstractUser):
+class DCFAbstractUser(DCFModel, DjangoAbstractUser, Generic[T]):
     class Meta:
         abstract = True
 

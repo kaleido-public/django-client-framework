@@ -3,6 +3,7 @@ from typing import Any, List
 
 from django.db.models.fields.related import ForeignKey
 from ipromise import overrides
+from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -12,6 +13,14 @@ from django_client_framework import permissions as p
 from .base_model_api import APIPermissionDenied, BaseModelAPI
 
 LOG = getLogger(__name__)
+
+
+class CreatedHiddenObject(APIException):
+    status_code = 201
+    default_detail = (
+        "The object has been created but you have no permission to view it."
+    )
+    default_code = "success_hidden"
 
 
 class ModelCollectionAPI(BaseModelAPI):
@@ -54,10 +63,4 @@ class ModelCollectionAPI(BaseModelAPI):
                 status=201,
             )
         else:
-            return Response(
-                {
-                    "success": True,
-                    "detail": "The object has been created but you have no permission to view it.",
-                },
-                status=201,
-            )
+            raise CreatedHiddenObject()
