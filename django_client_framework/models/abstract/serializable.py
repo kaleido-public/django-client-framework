@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, Generic, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, Type, TypeVar
 
 from django.conf import settings
 from django.core.cache import cache
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=DCFModel, covariant=True)
 
 
-class Serializable(Generic[T], DCFModel[T]):
+class Serializable(DCFModel[T]):
     class Meta:
         abstract = True
 
@@ -35,7 +35,7 @@ class Serializable(Generic[T], DCFModel[T]):
     def get_serializer(self, **kwargs) -> DCFSerializer[T]:
         return self.serializer_class()(instance=self, **kwargs)
 
-    def json(self, *, context: Dict[str, Any]) -> Any:
+    def json(self, *, context: Dict[str, Any] = {}) -> Any:
         return dict(self.get_serializer(context=context).data)
 
     def __repr__(self):
@@ -51,7 +51,7 @@ class Serializable(Generic[T], DCFModel[T]):
         """Return how long to cache the serialization in seconds"""
         return 0
 
-    def cached_json(self, *, context: Dict[str, Any]):
+    def cached_json(self, *, context: Dict[str, Any] = {}):
         timeout = self.get_serialization_cache_timeout()
         if timeout == 0:
             return self.json(context=context)

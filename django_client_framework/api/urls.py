@@ -8,9 +8,9 @@ app_name = "dcf"
 
 urlpatterns = [
     path("<str:model>", ModelCollectionAPI.as_view(), name="model_collection"),
-    path("<str:model>/<int:pk>", ModelObjectAPI.as_view(), name="model_object"),
+    path("<str:model>/<str:pk>", ModelObjectAPI.as_view(), name="model_object"),
     path(
-        "<str:model>/<int:pk>/<str:target_field>",
+        "<str:model>/<str:pk>/<str:target_field>",
         RelatedModelAPI.as_view(),
         name="related_model",
     ),

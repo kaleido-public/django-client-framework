@@ -11,6 +11,7 @@ from rest_framework.serializers import BaseSerializer
 from rest_framework.serializers import ModelSerializer as DRFModelSerializer
 from rest_framework.serializers import PrimaryKeyRelatedField
 from rest_framework.utils.model_meta import RelationInfo
+from rest_framework.validators import UniqueValidator
 
 from django_client_framework.exceptions import ValidationError
 
@@ -40,7 +41,17 @@ def register_serializer_field(for_model_field: Type[DjangoField]):
 T = TypeVar("T", bound=DCFModel)
 
 
-class DCFModelSerializer(Generic[T], DCFSerializer[T], DRFModelSerializer):
+class UniqueID(UniqueValidator):
+    def __call__(self, value, serializer_field):
+        try:
+            return super().__call__(value, serializer_field)
+        except ValidationError:
+            raise ValidationError(
+                f"A resource with the ID {value} already exists.", "exists"
+            )
+
+
+class DCFModelSerializer(DCFSerializer[T], DRFModelSerializer, Generic[T]):
     additional_serializer_field_mapping: Dict[Type[DjangoField], Type[DRFField]] = {}
 
     @cached_property
@@ -73,6 +84,37 @@ class DCFModelSerializer(Generic[T], DCFSerializer[T], DRFModelSerializer):
         )
 
     @overrides(DRFModelSerializer)
+    def get_extra_kwargs(self) -> Dict[str, Any]:
+        """Adds support for Meta.required_fields."""
+        extra_kwargs = super().get_extra_kwargs()
+        extra_required = getattr(self.Meta, "required_fields", None)
+        if extra_required is not None:
+            if not isinstance(extra_required, (list, tuple)):
+                raise TypeError(
+                    "The `required_fields` option must be a list or tuple. "
+                    "Got %s." % type(extra_required).__name__
+                )
+            for field_name in extra_required:
+                kwargs = extra_kwargs.get(field_name, {})
+                kwargs["required"] = True
+                extra_kwargs[field_name] = kwargs
+        """Make the ID field also write-able for creating an UUID."""
+        extra_kwargs.setdefault("id", {})
+        if self.instance:  # Update
+            extra_kwargs["id"].update({"read_only": True})
+        else:  # Create
+            extra_kwargs["id"].update(
+                {
+                    "read_only": False,
+                    "required": False,
+                    "allow_null": False,
+                    "validators": [UniqueID(queryset=self.Meta.model.objects.all())],
+                }
+            )
+
+        return extra_kwargs
+
+    @overrides(DRFModelSerializer)
     def build_field(self, field_name, info, model_class, nested_depth):
         suffix = "_id"
         if field_name.endswith(suffix):
@@ -93,35 +135,36 @@ class DCFModelSerializer(Generic[T], DCFSerializer[T], DRFModelSerializer):
         return all(
             [
                 super().is_valid(raise_exception),
-                self.check_undefined_fields(raise_exception),
-                self.check_readonly_fields(raise_exception),
+                self.__check_undefined_fields(raise_exception),
+                self.__check_readonly_fields(raise_exception),
             ]
         )
 
-    def check_undefined_fields(self, raise_exception):
-        valid_fields = list(self.fields.keys())
-        if "id" in valid_fields:
-            valid_fields.remove("id")
-        if "pk" in valid_fields:
-            valid_fields.remove("pk")
-        valid_fields.sort()
+    def __check_undefined_fields(self, raise_exception):
+        """Enforces that each field passing through the Serializer must be
+        declared in the Meta.fields, for added Security."""
+        valid_fields = self.fields.keys()
+        input_fields = self.initial_data.keys()
 
-        input_fields = list(self.initial_data.keys())
-        input_fields.sort()
-
-        extra_fields = list(set(input_fields) - set(valid_fields))
-        extra_fields.sort()
-
-        if extra_fields:
+        if extra_fields := list(set(input_fields) - set(valid_fields)):
+            valid_fields = list(valid_fields)
+            valid_fields.sort()
+            extra_fields.sort()
             if raise_exception:
                 raise ValidationError(
-                    f"Extra fields are not allowed: {extra_fields}, valid fields are: {valid_fields}"
+                    {
+                        field: [f"Extra field. Valid fields are: {valid_fields}"]
+                        for field in extra_fields
+                    }
                 )
             else:
                 return False
         return True
 
-    def check_readonly_fields(self, raise_exception):
+    def __check_readonly_fields(self, raise_exception):
+        """By default, any 'read_only' fields that are incorrectly included in
+        the serializer input will be ignored. This method enforces that the
+        error is more explicit by raising a ValidationError."""
         read_only_fields = set(
             [
                 field_name
@@ -129,19 +172,16 @@ class DCFModelSerializer(Generic[T], DCFSerializer[T], DRFModelSerializer):
                 if field_instance.read_only
             ]
         )
-        invalid_fields = [key for key in self.initial_data if key in read_only_fields]
-        invalid_fields.sort()
 
-        if invalid_fields:
+        if invalid_fields := [
+            key for key in self.initial_data if key in read_only_fields
+        ]:
             if raise_exception:
+                invalid_fields.sort()
                 raise ValidationError(f"These fields are read-only: {invalid_fields}")
             else:
                 return False
         return True
-
-    def validate_in(self, field_name, data):
-        if field_name not in data:
-            raise ValidationError(**{field_name: "This field is required."})
 
 
 ModelSerializer = DCFModelSerializer
