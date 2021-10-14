@@ -12,7 +12,7 @@ LOG = getLogger(__name__)
 
 class SearchFeature(m.Model):
     content_type = m.ForeignKey(ContentType, on_delete=m.CASCADE, null=True)
-    object_id = m.PositiveIntegerField(null=True, db_index=True)
+    object_id = m.UUIDField(null=True, db_index=True)
     content_object = GenericForeignKey("content_type", "object_id")
     text_feature = m.TextField()
     search_vector = s.SearchVectorField()
