@@ -3,10 +3,12 @@ from typing import Any, Dict, Generic, List, Type, TypeVar, cast
 
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models.fields import Field as DjangoField
+from django.db.models.fields import UUIDField as DjangoUUIDField
 from django.db.models.fields.related import ForeignKey
 from django.utils.functional import cached_property
 from ipromise.overrides import overrides
 from rest_framework.fields import Field as DRFField
+from rest_framework.fields import UUIDField as DRFUUIDField
 from rest_framework.serializers import BaseSerializer
 from rest_framework.serializers import ModelSerializer as DRFModelSerializer
 from rest_framework.serializers import PrimaryKeyRelatedField
@@ -51,13 +53,29 @@ class UniqueID(UniqueValidator):
             )
 
 
-class DCFModelSerializer(DCFSerializer[T], DRFModelSerializer, Generic[T]):
-    additional_serializer_field_mapping: Dict[Type[DjangoField], Type[DRFField]] = {}
+class DCFUUIDField(DRFUUIDField):
+    """The DRFUUIDField casts the UUID value back and forth to a str. However,
+    in DRFModelSerializer, a ForeignKey of the UUID type is not casted. This
+    leaves a inconsistency of type, and makes the code more complex. Therefore,
+    we replace the DRFUUID field with our version that skips the type
+    conversion. Now we get a UUID value from the .id field too."""
 
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data):
+        return data
+
+
+class DCFModelSerializer(DCFSerializer[T], DRFModelSerializer, Generic[T]):
     @cached_property
     def serializer_field_mapping(self):
         mapping = cast(Any, super().serializer_field_mapping)
-        mapping.update(self.additional_serializer_field_mapping)
+        mapping.update(
+            {
+                DjangoUUIDField: DCFUUIDField,  # This replaces all DRFUUID field with our DCFUUIDField
+            }
+        )
         return mapping
 
     @overrides(DRFModelSerializer)
