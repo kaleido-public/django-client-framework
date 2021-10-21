@@ -1,40 +1,48 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.search import SearchQuery
 from django.db import models as m
+from django.db.models import Model as DjangoModel
+from django.db.models.manager import Manager
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
 from ..search_feature import SearchFeature
+from .model import AbstractDCFModel, DCFModel
+
+if TYPE_CHECKING:
+    from django.db.models import Model
+
 
 LOG = getLogger(__name__)
 
-T = TypeVar("T", bound="Searchable")
+
+T = TypeVar("T", bound="DCFModel")
 
 
-class Searchable(m.Model, Generic[T]):
+class Searchable(AbstractDCFModel[T], Generic[T]):
     class Meta:
         abstract = True
 
-    def get_text_feature(self):
+    search_feature = GenericRelation(SearchFeature)  # type: ignore
+
+    def get_text_feature(self) -> str:
         raise NotImplementedError()
 
-    def __get_text_feature(self):
+    def _get_text_feature(self):
         # Need to reset @cached_property otherwise auto-update won't work
-        new_self = self.__class__.objects.get(pk=self.pk)
+        new_self: Any = self.objects.get(pk=self.id)
         text = new_self.get_text_feature()
         if type(text) is not str:
             raise TypeError(
                 f".get_text_feature() must return a str, instead of {type(text)}"
             )
         return text
-
-    search_feature = GenericRelation(SearchFeature)  # type: ignore
 
     @classmethod
     def filter_by_text_search(cls, search_text, queryset=None):
@@ -50,7 +58,7 @@ class Searchable(m.Model, Generic[T]):
 
         pk_set = set(
             SearchFeature.objects.filter(
-                content_type=ContentType.objects.get_for_model(cls)
+                content_type=ContentType.objects.get_for_model(cast(Model, cls))
             )
             .filter(
                 m.Q(search_vector=SearchQuery(search_text))
@@ -61,21 +69,24 @@ class Searchable(m.Model, Generic[T]):
         return queryset.filter(pk__in=pk_set)
 
     def get_or_create_searchfeature(self):
+        assert isinstance(self, DjangoModel)
         return SearchFeature.objects.get_or_create(
             content_type=ContentType.objects.get_for_model(self),
-            object_id=self.pk,
-            defaults={"text_feature": self.__get_text_feature()},
+            object_id=self.id,
+            defaults={"text_feature": self._get_text_feature()},
         )
 
     def update_or_create_searchfeature(self):
         return SearchFeature.objects.update_or_create(
             content_type=ContentType.objects.get_for_model(self),
-            object_id=self.pk,
-            defaults={"text_feature": self.__get_text_feature()},
+            object_id=self.id,
+            defaults={"text_feature": self._get_text_feature()},
         )
 
     @classmethod
     def update_all_search_feature(cls):
+        instance: cls
+        cls.objects: Manager[cls]
         for instance in cls.objects.all():
             instance.update_or_create_searchfeature()
 
@@ -95,4 +106,4 @@ def update_searchfeature_on_change(sender, instance, **kwargs):
 def delete_searchfeature_on_delete(sender, instance, **kwargs):
     if isinstance(instance, Searchable):
         LOG.debug(f"{sender=} {instance=}")
-        instance.search_feature.all().delete()
+        instance.search_feature.all().delete()  # type: ignore

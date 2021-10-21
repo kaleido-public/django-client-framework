@@ -3,6 +3,7 @@ from logging import getLogger
 from typing import Any, Dict, List, Optional, Type, cast
 from uuid import UUID
 
+import orjson
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models.base import Model
@@ -13,11 +14,11 @@ from ipromise import overrides
 from rest_framework.exceptions import MethodNotAllowed, NotFound
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django_client_framework.models.abstract.model import DCFModel
 from django_client_framework.models.abstract.user import DCFAbstractUser
 
 from .. import exceptions as e
@@ -26,7 +27,7 @@ from ..models import get_user_model
 from ..models.abstract import Searchable
 from ..models.abstract.serializable import Serializable
 from ..permissions.site_permission import has_perms_shortcut
-from ..serializers import Serializer as DCFSerializer
+from ..serializers import DCFSerializer
 
 LOG = getLogger(__name__)
 
@@ -72,26 +73,56 @@ class ApiPagination(PageNumberPagination):
         )
 
 
-class BaseModelAPI(APIView):
+class DCFJSONRenderer(JSONRenderer):
+    """Adds support for serializing UUID as a dictionary key."""
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        """
+        Render `data` into JSON, returning a bytestring.
+        """
+        if data is None:
+            return b""
+
+        renderer_context = renderer_context or {}
+
+        ret = orjson.dumps(
+            data,
+            option=orjson.OPT_SORT_KEYS,
+        )
+
+        # We always fully escape \u2028 and \u2029 to ensure we output JSON
+        # that is a strict javascript subset.
+        # See: http://timelessrepo.com/json-isnt-a-javascript-subset
+        ret = ret.replace(b"\u2028", b"\\u2028").replace(b"\u2029", b"\\u2029")
+        return ret
+
+
+class BaseModelAPI(GenericAPIView):
     """base class for requests to /products or /products/1"""
+
+    renderer_classes = [DCFJSONRenderer]
+    pagination_class = ApiPagination
 
     models: List[Type[Serializable]] = []
 
+    def __init__(self, **kwargs):
+        """
+        Constructor. Called in the URLconf; can contain helpful extra
+        keyword arguments, and other things.
+        """
+        # Go through keyword arguments, and either save their values to our
+        # instance, or raise an error.
+        for key, value in kwargs.items():
+            print(key, value)
+            setattr(self, key, value)
+
+    @property
+    def version(self) -> str:
+        return getattr(self, "kwargs", {}).get("version", "default")
+
     @cached_property
-    def __name_to_model(self) -> Dict[str, Type[Serializable]]:
+    def __name_to_model(self) -> Dict[str, Type[Serializable[Any]]]:
         return {self.__model_name(model): model for model in self.models}
-
-    @cached_property
-    def paginator(self):
-        return ApiPagination()
-
-    def paginate_queryset(self, queryset):
-        """
-        Return a single page of results, or `None` if pagination is disabled.
-        """
-        if self.paginator is None:
-            return None
-        return self.paginator.paginate_queryset(queryset, self.request, view=self)
 
     @overrides(APIView)
     def dispatch(self, request, *args, **kwargs):
@@ -158,7 +189,7 @@ class BaseModelAPI(APIView):
                         searchtext, queryset=queryset
                     )
                 else:
-                    raise e.ValidationError(
+                    raise e.ParseError(
                         f"{self.model.__name__} does not support full text search"
                     )
             elif key and key[0] != "_":  # ignore pagination keys
@@ -172,18 +203,18 @@ class BaseModelAPI(APIView):
         try:
             return queryset.filter(**querydict)
         except Exception as exept:
-            raise e.ValidationError({"error": str(exept)})
+            raise e.ParseError(str(exept))
 
     def __order_queryset_by_param(self, queryset: QuerySet):
         """
-        Support generic filtering, eg: /products?_order_by=name
+        Support generic filtering, eg: /products/?_order_by=name
         """
         by = self.request.query_params.getlist("_order_by", ["-created_at"])
         by_arr = by[0].strip().split(",")
         try:
             return queryset.order_by(*by_arr)
         except Exception as execpt:
-            raise e.ValidationError({"error": str(execpt)})
+            raise e.ParseError(str(execpt))
 
     @overrides(GenericAPIView)
     def filter_queryset(self, queryset):
@@ -194,11 +225,11 @@ class BaseModelAPI(APIView):
         ).distinct()
 
     @cached_property
-    def model(self) -> Type[Serializable]:
+    def model(self) -> Type[Serializable[Any]]:
         model_name = self.kwargs["model"]
         if model_name not in self.__name_to_model:
             valid_models = ", ".join(self.__name_to_model.keys())
-            raise e.ValidationError(
+            raise e.NotFound(
                 f"{model_name} is not a valid model. Valid models are: {valid_models or []}"
             )
         return self.__name_to_model[model_name]
@@ -213,30 +244,15 @@ class BaseModelAPI(APIView):
             return default
 
     @cached_property
-    def model_object(self) -> Serializable:
+    def model_object(self) -> Serializable[Any]:
         pk = self.kwargs["pk"]
         return get_object_or_404(self.model, pk=pk)
 
-    def get_serializer(
-        self, instance: Serializable = None, **kwargs: Any
-    ) -> DCFSerializer:
-        if instance:
-            return instance.get_serializer(
-                context=self.get_serializer_context(), **kwargs
-            )
-        else:
-            return self.model.serializer_class()(
-                context=self.get_serializer_context(), **kwargs
-            )
+    def get_serializer_class(self):
+        raise NotImplementedError("Must override")
 
-    def get_serializer_context(self) -> Dict[str, Any]:
-        return {
-            "request": self.request,
-            "view": self,
-        }
-
-    @overrides(GenericAPIView)
-    def get_queryset(self, *args, **kwargs):
+    @property
+    def queryset(self):
         return self.model.objects.all()
 
     def __handle_permission_denied(self, error: APIPermissionDenied):
@@ -289,9 +305,32 @@ class BaseModelAPI(APIView):
     def __anonymous_user(self) -> DCFAbstractUser:
         return get_user_model().get_anonymous()
 
-    def assert_pks_exist_or_raise_404(self, model: Type[DCFModel], pks: List[UUID]):
+    def assert_pks_exist_or_raise_404(
+        self, model: Type[Serializable[Any]], pks: List[UUID]
+    ):
         queryset = model.objects.filter(pk__in=pks)
         if queryset.count() != len(pks):
             for pk in pks:
                 if not model.objects.filter(pk=pk).exists():
                     raise NotFound(f"Not Found: {model.__name__} ({pk})")
+
+    def get_serializer_context(self) -> Dict[str, Any]:
+        context = super().get_serializer_context()
+        view = context.get("view")
+        locale = "default"
+        if kwargs := getattr(view, "kwargs"):
+            locale = kwargs.get("locale", "default")
+        context.update(
+            {
+                "version": self.version,
+                "locale": locale,
+            }
+        )
+        return context
+
+    @overrides(GenericAPIView)
+    def get_serializer(self, *args: Any, **kwargs: Any) -> DCFSerializer:
+        serializer_class = self.get_serializer_class()
+        kwargs.setdefault("context", {})
+        kwargs["context"].update(self.get_serializer_context())
+        return serializer_class(*args, **kwargs)

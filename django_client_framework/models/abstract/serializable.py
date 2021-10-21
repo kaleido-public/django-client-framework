@@ -1,92 +1,132 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, Generic, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, Generic, List, Type, TypeVar
 
 from django.conf import settings
 from django.core.cache import cache
 from django.db import models as m
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
-from django.utils.functional import cached_property
 
-from .model import Model as DCFModel
+from .model import DCFModel
 
 LOG = getLogger(__name__)
 
 if TYPE_CHECKING:
-    from django_client_framework.serializers.serializer import DCFSerializer
-
-T = TypeVar("T", bound=DCFModel, covariant=True)
+    from ...serializers.serializer import DCFSerializer
 
 
-class Serializable(m.Model, Generic[T]):
+T = TypeVar("T", bound=DCFModel)
+
+
+class Serializable(DCFModel[T], Generic[T]):
     class Meta:
         abstract = True
 
     @classmethod
-    def serializer_class(cls) -> Type[DCFSerializer]:
-        raise NotImplementedError(f"{cls} must implement .serializer_class()")
+    def get_serializer_class(
+        cls, version: str, context: Dict[str, Any]
+    ) -> Type[DCFSerializer]:
+        raise NotImplementedError(f"{cls} must implement .get_serializer_class()")
 
-    @cached_property
-    def serializer(self) -> DCFSerializer[T]:
-        return self.get_serializer()
+    def get_serializer(
+        self, version: str, context: Dict[str, Any], **kwargs
+    ) -> DCFSerializer[T]:
+        return self.get_serializer_class(version, context)(instance=self, **kwargs)
 
-    def get_serializer(self, **kwargs) -> DCFSerializer[T]:
-        return self.serializer_class()(instance=self, **kwargs)
+    def json(
+        self,
+        *,
+        version: str,
+        context: Dict[str, Any] = {},
+        serializer: DCFSerializer = None,
+        ignore_cache=False,
+    ) -> Any:
+        if ignore_cache or self.get_cache_timeout() == 0:
+            return self.get_json(
+                version=version,
+                context=context,
+                serializer=serializer,
+            )
+        return self.cached_json(
+            version=version,
+            context=context,
+            serializer=serializer,
+        )
 
-    def json(self, *, context: Dict[str, Any] = {}) -> Any:
-        return dict(self.get_serializer(context=context).data)
+    def get_json(
+        self,
+        *,
+        version: str,
+        context: Dict[str, Any] = {},
+        serializer: DCFSerializer = None,
+    ) -> Any:
+        if serializer:
+            return serializer.to_representation(self)
+        else:
+            return dict(self.get_serializer(version, context).data)
+
+    def get_extra_content_to_hash(self) -> List[Any]:
+        return []
+
+    def values(self):
+        return self.objects.filter(pk=self.id).values().first()
 
     def __repr__(self):
         if settings.DEBUG:
-            return f"<<{self.__class__.__name__}:{self.serializer.data}>>"
+            return f"<<{self.__class__.__name__}:{self.values()}>>"
         else:
-            return f"<{self.__class__.__name__}:{self.pk}>"
+            return f"<{self.__class__.__name__}:{self.id}>"
 
     def __str__(self):
-        return f"<{self.__class__.__name__}:{self.pk}>"
+        return f"<{self.__class__.__name__}:{self.id}>"
 
-    def get_serialization_cache_timeout(self) -> int:
+    def get_cache_timeout(self) -> int:
         """Return how long to cache the serialization in seconds"""
         return 0
 
-    def cached_json(self, *, context: Dict[str, Any] = {}):
-        timeout = self.get_serialization_cache_timeout()
+    def cached_json(
+        self,
+        *,
+        version,
+        context: Dict[str, Any] = {},
+        serializer: DCFSerializer = None,
+    ):
+        timeout = self.get_cache_timeout()
         if timeout == 0:
-            return self.json(context=context)
+            return self.get_json(
+                version=version,
+                context=context,
+                serializer=serializer,
+            )
 
-        if result := cache.get(self.cache_key_for_serialization, None):
+        if result := cache.get(
+            self.get_cache_key_for_serialization(version, context), None
+        ):
             return result
         else:
-            data = self.json(context=context)
+            data = self.get_json(
+                version=version,
+                context=context,
+                serializer=serializer,
+            )
             cache.add(
-                self.cache_key_for_serialization,
+                self.get_cache_key_for_serialization(version, context),
                 data,
                 timeout=timeout,
             )
             return data
 
-    @cached_property
-    def cache_key_for_serialization(self):
-        return f"serialization_{self._meta.model_name}_{self.pk}"
-
-    def invalidate_serialization_cache(self):
-        cache.delete(self.cache_key_for_serialization)
-
-
-@receiver(post_save)
-def auto_invalidate_cached_serialization_post_save(sender, instance, created, **kwargs):
-    if not created and isinstance(instance, Serializable):
-        LOG.debug(f"invalidate cache for {instance}")
-        instance.invalidate_serialization_cache()
-
-
-@receiver(post_delete)
-def auto_invalidate_cached_serialization_post_delete(sender, instance, **kwargs):
-    if isinstance(instance, Serializable):
-        LOG.debug(f"delete cache for {instance}")
-        instance.invalidate_serialization_cache()
+    def get_cache_key_for_serialization(
+        self, version: str, context: Dict[str, Any]
+    ) -> str:
+        # whenver one of the hashed content is changed, the cache misses, and a
+        # re-serialization is forced.
+        return "serialization_cache_" + str(
+            hash(
+                [self._meta.model_name, self.id, version, context]
+                + self.get_extra_content_to_hash()
+            )
+        )
 
 
 def check_integrity():
@@ -107,7 +147,7 @@ def check_integrity():
             )
 
     for model in Serializable.__subclasses__():
-        sercls = model.serializer_class()
+        sercls = model.get_serializer_class(version="default", context={})
         if not (
             issubclass(sercls, Serializer) or issubclass(sercls, DelegateSerializer)
         ):

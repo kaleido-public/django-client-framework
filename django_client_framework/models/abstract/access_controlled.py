@@ -4,20 +4,19 @@ from logging import getLogger
 from typing import Any, Generic, Type, TypeVar, cast
 
 from django.contrib.contenttypes.fields import GenericRelation
-from django.db import models as m
 from django.db.models.signals import post_save
 from guardian.models import UserObjectPermission
 
-from .model import Model as DCFModel
+from django_client_framework.models.abstract.model import AbstractDCFModel, DCFModel
 
 LOG = getLogger(__name__)
 
 
-T = TypeVar("T", bound="AccessControlled")
+T = TypeVar("T", bound="DCFModel")
 _T = TypeVar("_T", bound="DCFModel")
 
 
-class AccessControlled(m.Model, Generic[T]):
+class AccessControlled(AbstractDCFModel[T], Generic[T]):
     class Meta:
         abstract = True
 
@@ -56,7 +55,7 @@ class AccessControlled(m.Model, Generic[T]):
 
         return manager
 
-    def update_perms(self: T):
+    def update_perms(self):
         self.get_permissionmanager_class()().reset_perms(self)
 
     def __init_subclass__(cls) -> None:

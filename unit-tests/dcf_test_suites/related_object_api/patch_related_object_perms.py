@@ -125,7 +125,9 @@ class TestPatchPerms(TestCase):
         )
         self.pr1.refresh_from_db()
         self.assertEqual(self.br2, self.pr1.brand)
-        self.assertDictContainsSubset({"id": str(self.br2.id)}, resp.json())
+        self.assertDictContainsSubset(
+            {"id": str(self.br2.id)}, resp.json(), resp.content
+        )
 
     def test_assign_from_null(self):
         """PATCH Product.brand from None to existing"""
@@ -141,4 +143,4 @@ class TestPatchPerms(TestCase):
             format="json",
         )
         product.refresh_from_db()
-        self.assertEqual(product.brand, brand, resp.json())
+        self.assertEqual(product.brand, brand, resp.content)

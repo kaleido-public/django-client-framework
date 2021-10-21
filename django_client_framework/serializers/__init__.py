@@ -6,8 +6,7 @@ from .fields import *
 from .model_serializer import ModelSerializer
 from .model_serializer import ModelSerializer as DCFModelSerializer
 from .model_serializer import generate_jsonschema, register_serializer_field
-from .serializer import Serializer
-from .serializer import Serializer as DCFSerializer
+from .serializer import DCFSerializer
 
 
 def check_integrity():

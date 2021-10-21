@@ -1,8 +1,8 @@
 from .access_controlled import *
-from .model import DCFModel, DjangoModel, Model
+from .model import DCFModel, DjangoModel
 from .searchable import *
 from .serializable import *
-from .user import AbstractUser, DCFAbstractUser
+from .user import DCFAbstractUser
 
 
 def check_integrity():

@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, List, Optional, Type
+from typing import Any, Iterable, List, Optional, Type
 from uuid import UUID
 
 from django.db.models import Model
@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 
 from django_client_framework import exceptions as e
 from django_client_framework import permissions as p
-from django_client_framework.models.abstract.model import DCFModel
+from django_client_framework.models.abstract.serializable import Serializable
 
 from .base_model_api import APIPermissionDenied, BaseModelAPI
 
@@ -121,15 +121,26 @@ class RelatedModelAPI(BaseModelAPI):
                 self.__assert_object_field_perm(
                     self.field_val, "r", self.field.related_query_name()
                 )
-                serializer = self.get_serializer(self.field_val)
+                serializer = self.get_serializer(instance=self.field_val)
                 return Response(serializer.data)
             else:
                 raise e.NotFound()
         else:
             queryset = self.filter_queryset(self.get_queryset())
-            page = self.paginator.paginate_queryset(queryset, self.request, view=self)
+            assert self.paginator
+            page: Iterable[Serializable] = self.paginator.paginate_queryset(
+                queryset, self.request, view=self
+            )
+            serializer = self.get_serializer()
             return self.paginator.get_paginated_response(
-                [self.get_serializer(obj).data for obj in page]
+                [
+                    data.json(
+                        version=self.version,
+                        context=self.get_serializer_context(),
+                        serializer=serializer,
+                    )
+                    for data in page
+                ]
             )
 
     def post(self, request, *args, **kwargs):
@@ -239,8 +250,8 @@ class RelatedModelAPI(BaseModelAPI):
         return getattr(self.model_object, self.field_name)
 
     @cached_property
-    def field_model(self) -> Type[DCFModel[Any]]:
-        return self.field.related_model
+    def field_model(self) -> Type[Serializable[Any]]:
+        return self.field.related_model  # type: ignore
 
     @cached_property
     def reverse_field_name(self):
@@ -251,7 +262,8 @@ class RelatedModelAPI(BaseModelAPI):
             temp = getattr(self.model, self.field_name)
             return temp.field.related_query_name()
 
-    def get_queryset(self, *args, **kwargs):
+    @property
+    def queryset(self):
         return self.field_val.all()
 
     @overrides(APIView)
@@ -269,3 +281,10 @@ class RelatedModelAPI(BaseModelAPI):
     @cached_property
     def is_related_collection_api(self):
         return not isinstance(self.field, ForeignKey)
+
+    @overrides(BaseModelAPI)
+    def get_serializer_class(self):
+        return self.field_model.get_serializer_class(
+            version=self.version,
+            context=self.get_serializer_context(),
+        )

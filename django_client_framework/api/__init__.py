@@ -1,6 +1,9 @@
 from django_client_framework.models.abstract import Serializable
 
 from .base_model_api import BaseModelAPI
+from .model_collection_api import ModelCollectionAPI
+from .model_object_api import ModelObjectAPI
+from .related_model_api import RelatedModelAPI
 
 
 def register_api_model(model_class):

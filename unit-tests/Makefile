@@ -17,7 +17,7 @@ sh: alpine-base
 .PHONY: clean
 clean:
 	-cd dcf_test_app/migrations && rm -f 0001_initial.py
-	PYTHONPATH="./:../" ./manage.py makemigrations
+	PYTHONPATH="./:../" poetry run ./manage.py makemigrations
 
 .PHONY: Makefile
 Makefile:
