@@ -1,14 +1,17 @@
 from logging import getLogger
-from typing import Any, List
+from typing import Iterable, List
 
 from django.db.models.fields.related import ForeignKey
 from ipromise import overrides
 from rest_framework.exceptions import APIException
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.views import APIView
 
 from django_client_framework import exceptions as e
 from django_client_framework import permissions as p
+from django_client_framework.models.abstract.serializable import Serializable
 
 from .base_model_api import APIPermissionDenied, BaseModelAPI
 
@@ -23,8 +26,14 @@ class CreatedHiddenObject(APIException):
     default_code = "success_hidden"
 
 
+class DCFCollectionSchema(AutoSchema):
+    pass
+
+
 class ModelCollectionAPI(BaseModelAPI):
-    """handle request such as GET/POST /products"""
+    """handle request such as GET/POST /products/"""
+
+    schema = DCFCollectionSchema()
 
     allowed_methods: List[str] = ["GET", "POST"]
 
@@ -35,12 +44,21 @@ class ModelCollectionAPI(BaseModelAPI):
                 raise e.PermissionDenied("You have no permission to perform POST.")
 
     def get(self, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+        queryset = self.filter_queryset(self.get_queryset())  # type: ignore
         assert self.paginator
-        page: Any
-        page = self.paginator.paginate_queryset(queryset, self.request, view=self)
+        page: Iterable[Serializable] = self.paginator.paginate_queryset(
+            queryset, self.request, view=self
+        )
+        serializer = self.get_serializer()
         return self.paginator.get_paginated_response(
-            [self.get_serializer(obj).data for obj in page]
+            [
+                data.json(
+                    version=self.version,
+                    context=self.get_serializer_context(),
+                    serializer=serializer,
+                )
+                for data in page
+            ]
         )
 
     def post(self, request, *args, **kwargs):
@@ -64,3 +82,10 @@ class ModelCollectionAPI(BaseModelAPI):
             )
         else:
             raise CreatedHiddenObject()
+
+    @overrides(GenericAPIView)
+    def get_serializer_class(self):
+        return self.model.get_serializer_class(
+            version=self.version,
+            context=self.get_serializer_context(),
+        )

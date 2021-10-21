@@ -4,17 +4,15 @@ from typing import Generic, TypeVar
 
 from django.contrib.auth.models import AbstractUser as DjangoAbstractUser
 
-from .model import DCFModel
+from .model import AbstractDCFModel, DCFModel
 
-T = TypeVar("T")
+T = TypeVar("T", bound=DCFModel)
 
 
-class DCFAbstractUser(DCFModel, DjangoAbstractUser, Generic[T]):
+class DCFAbstractUser(AbstractDCFModel[T], DjangoAbstractUser, Generic[T]):
     class Meta:
         abstract = True
 
-    def get_anonymous(self) -> T:
+    @classmethod
+    def get_anonymous(cls) -> T:
         raise NotImplementedError()
-
-
-AbstractUser = DCFAbstractUser

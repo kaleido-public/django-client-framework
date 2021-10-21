@@ -1,26 +1,39 @@
 from __future__ import annotations
 
 import base64
-from typing import ClassVar, Generic, TypeVar
+from typing import Any, Generic, TypeVar
 from uuid import UUID, uuid4
 
 from django.db.models import Model as DjangoModel
+from django.db.models.base import ModelBase
 from django.db.models.fields import DateTimeField, UUIDField
 from django.db.models.manager import Manager
 
-T = TypeVar("T", bound="DjangoModel", covariant=True)
+
+class DCFModelBase(ModelBase):
+    def __new__(cls, name, bases, attrs, **kwargs):
+        for b in bases:
+            attrs.update(b.__dict__)
+        return super().__new__(name, bases, attrs, **kwargs)
 
 
-class DCFModel(DjangoModel, Generic[T]):
+T = TypeVar("T", bound="DCFModel")
+
+
+class AbstractDCFModel(DjangoModel, Generic[T]):
     class Meta:
         abstract = True
 
-    objects: ClassVar[Manager[T]]
+    objects: Manager[T]
+    id: Any
+
+
+class DCFModel(AbstractDCFModel[T], Generic[T]):
+    class Meta:
+        abstract = True
+
     id = UUIDField(unique=True, primary_key=True, default=uuid4, editable=False)
     created_at = DateTimeField(auto_now_add=True)
-
-
-Model = DCFModel
 
 
 def b64str_to_uuid(id: str) -> UUID:

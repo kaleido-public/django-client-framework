@@ -17,6 +17,9 @@ django-guardian = "^2.4.0"
 django-currentuser = "^0.5.3"
 ipromise = "^1.9"
 deprecation = "^2.1.0"
+orjson = "^3.6.4"
+PyYAML = "^6.0"
+uritemplate = "^4.1.1"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"

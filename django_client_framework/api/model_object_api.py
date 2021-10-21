@@ -7,6 +7,7 @@ from django.db.models.deletion import ProtectedError
 from django.db.models.fields.related import ForeignKey
 from ipromise import overrides
 from rest_framework.exceptions import APIException
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -42,7 +43,7 @@ class ModelObjectAPI(BaseModelAPI):
     def get(self, request, *args, **kwargs):
         if not p.has_perms_shortcut(self.user_object, self.model_object, "r"):
             raise APIPermissionDenied(self.model_object, "r")
-        serializer = self.get_serializer(self.model_object)
+        serializer = self.get_serializer(instance=self.model_object)
         return Response(serializer.data)
 
     def patch(self, request, *args, **kwargs):
@@ -52,7 +53,11 @@ class ModelObjectAPI(BaseModelAPI):
         if p.has_perms_shortcut(self.user_object, instance, "r"):
             has_read_permissions = True
 
-        serializer = self.get_serializer(instance, data=self.request_data, partial=True)
+        serializer = self.get_serializer(
+            instance=instance,
+            data=self.request_data,
+            partial=True,
+        )
         if not serializer.is_valid(raise_exception=True):
             raise e.ValidationError("Validation Error")
         # User can have either write permission to model, object, or to a field
@@ -95,12 +100,6 @@ class ModelObjectAPI(BaseModelAPI):
         # when permited
         serializer.save()
 
-        if getattr(instance, "_prefetched_objects_cache", None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        # return Response(serializer.data)
         if has_read_permissions:
             p.add_perms_shortcut(self.user_object, instance, "r")
         if p.has_perms_shortcut(self.user_object, instance, "r"):
@@ -121,6 +120,13 @@ class ModelObjectAPI(BaseModelAPI):
             else:
                 self.model_object.delete()
         except ProtectedError as excpt:
-            raise e.ValidationError(excpt)
+            raise e.ValidationError(str(excpt))
         else:
             return Response(status=204)
+
+    @overrides(GenericAPIView)
+    def get_serializer_class(self):
+        return self.model.get_serializer_class(
+            version=self.version,
+            context=self.get_serializer_context(),
+        )

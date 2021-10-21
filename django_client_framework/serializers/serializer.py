@@ -39,6 +39,3 @@ class DCFSerializer(Generic[T], DRFSerializer):
     def delete_obj(self):
         assert self.instance is not None
         self.delete(self.instance)
-
-
-Serializer = DCFSerializer
