@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Dict, Generic, Optional, Tuple, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, Tuple, Type, TypeVar
 
 from django.utils.functional import cached_property
 
-from django_client_framework import exceptions as e
-from django_client_framework.models.abstract.model import DCFModel
-
+from .. import exceptions as e
 from .serializer import DCFSerializer
 
 LOG = getLogger(__name__)
 
-T = TypeVar("T", bound=DCFModel)
+if TYPE_CHECKING:
+    from ..models.abstract.model import DCFModel
+
+T = TypeVar("T", bound="DCFModel")
 
 
 class DelegateSerializer(DCFSerializer[T], Generic[T]):

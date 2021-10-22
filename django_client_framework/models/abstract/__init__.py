@@ -1,7 +1,7 @@
-from .access_controlled import *
+from .access_controlled import AccessControlled
 from .model import DCFModel, DjangoModel
-from .searchable import *
-from .serializable import *
+from .searchable import Searchable
+from .serializable import Serializable
 from .user import DCFAbstractUser
 
 

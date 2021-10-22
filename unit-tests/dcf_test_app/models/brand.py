@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, List
 from django.db import models as m
 
 from django_client_framework.api import register_api_model
-from django_client_framework.models import Serializable
+from django_client_framework.models import DCFModel, Serializable
 from django_client_framework.serializers import DCFModelSerializer
 
 if TYPE_CHECKING:
@@ -14,7 +14,9 @@ if TYPE_CHECKING:
 
 
 @register_api_model
-class Brand(Serializable):
+class Brand(DCFModel, Serializable):
+    class Meta:
+        pass
 
     name = m.CharField(max_length=100, unique=True, null=True)
     priority = m.IntegerField(default=1)
