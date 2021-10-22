@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, Generic, List, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, Generic, List, Optional, Type, TypeVar
 
 from django.conf import settings
 from django.core.cache import cache
 from django.db import models as m
 
-from .model import DCFModel
+from .model import AbstractDCFModel
 
 LOG = getLogger(__name__)
 
@@ -15,22 +15,18 @@ if TYPE_CHECKING:
     from ...serializers.serializer import DCFSerializer
 
 
-T = TypeVar("T", bound=DCFModel)
+T = TypeVar("T", bound="DCFSerializer")
 
 
-class Serializable(DCFModel[T], Generic[T]):
+class Serializable(AbstractDCFModel, Generic[T]):
     class Meta:
         abstract = True
 
     @classmethod
-    def get_serializer_class(
-        cls, version: str, context: Dict[str, Any]
-    ) -> Type[DCFSerializer]:
+    def get_serializer_class(cls, version: str, context: Dict[str, Any]) -> Type[T]:
         raise NotImplementedError(f"{cls} must implement .get_serializer_class()")
 
-    def get_serializer(
-        self, version: str, context: Dict[str, Any], **kwargs
-    ) -> DCFSerializer[T]:
+    def get_serializer(self, version: str, context: Dict[str, Any], **kwargs) -> T:
         return self.get_serializer_class(version, context)(instance=self, **kwargs)
 
     def json(
@@ -38,7 +34,7 @@ class Serializable(DCFModel[T], Generic[T]):
         *,
         version: str,
         context: Dict[str, Any] = {},
-        serializer: DCFSerializer = None,
+        serializer: Optional[T] = None,
         ignore_cache=False,
     ) -> Any:
         if ignore_cache or self.get_cache_timeout() == 0:
@@ -58,7 +54,7 @@ class Serializable(DCFModel[T], Generic[T]):
         *,
         version: str,
         context: Dict[str, Any] = {},
-        serializer: DCFSerializer = None,
+        serializer: Optional[T] = None,
     ) -> Any:
         if serializer:
             return serializer.to_representation(self)
@@ -90,7 +86,7 @@ class Serializable(DCFModel[T], Generic[T]):
         *,
         version,
         context: Dict[str, Any] = {},
-        serializer: DCFSerializer = None,
+        serializer: Optional[T] = None,
     ):
         timeout = self.get_cache_timeout()
         if timeout == 0:

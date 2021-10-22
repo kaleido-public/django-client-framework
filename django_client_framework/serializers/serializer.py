@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from rest_framework.serializers import Serializer as DRFSerializer
 
-from ..models import DCFModel
+if TYPE_CHECKING:
+    from ..models import DCFModel
 
-T = TypeVar("T", bound=DCFModel)
+T = TypeVar("T", bound="DCFModel[Any]")
 
 
 class DCFSerializer(DRFSerializer, Generic[T]):

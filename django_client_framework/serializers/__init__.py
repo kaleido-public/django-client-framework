@@ -3,9 +3,7 @@ from rest_framework.serializers import *
 
 from .delegate_serializer import DelegateSerializer
 from .fields import *
-from .model_serializer import ModelSerializer
-from .model_serializer import ModelSerializer as DCFModelSerializer
-from .model_serializer import generate_jsonschema, register_serializer_field
+from .model_serializer import DCFModelSerializer, generate_jsonschema
 from .serializer import DCFSerializer
 
 
