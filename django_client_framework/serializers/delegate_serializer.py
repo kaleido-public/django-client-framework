@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Generic, Tuple, Type, TypeVar, overload
+from typing import Any, Dict, Generic, Optional, Tuple, Type, TypeVar, overload
 
 from django.utils.functional import cached_property
 
@@ -15,29 +15,25 @@ LOG = getLogger(__name__)
 T = TypeVar("T", bound=DCFModel)
 
 
-class DelegateSerializer(Generic[T], DCFSerializer[T]):
+class DelegateSerializer(DCFSerializer[T], Generic[T]):
     """
     Any subclass can provide read, create, update delegate serializers dynamically.
     """
 
-    @overload
-    def __init__(self, *, instance: T, data: Any):
-        ...
-
-    @overload
-    def __init__(self, *, instance: T):
-        ...
-
-    @overload
-    def __init__(self, *, data: Any):
-        ...
-
-    def __init__(self, *, instance: T = None, data: Any = None, **kwargs):
-        self.__delegate = None
+    def __init__(
+        self,
+        instance: T = None,
+        data: Any = None,
+        *,
+        context: Dict[str, Any] = {},
+        **kwargs,
+    ):
         self.is_read = self.is_create = self.is_update = False
-        self.kwargs = kwargs
+        self.serializer_kwargs = kwargs
         self.instance = instance
         self.initial_data = data
+        self.serializer_context = context
+
         if data is not None and instance is not None:
             self.is_update = True
         if data is not None and instance is None:
@@ -45,7 +41,11 @@ class DelegateSerializer(Generic[T], DCFSerializer[T]):
         if data is None and instance is not None:
             self.is_read = True
 
-        self.read_delegate = self.get_read_delegate_class(instance)(instance=instance)
+        self.read_delegate = self.get_read_delegate_class()(
+            instance=instance,
+            context=context,
+            **self.serializer_kwargs,
+        )
 
     def update(self, instance: T, validated_data: Any) -> T:
         return self.delegate.update(instance, validated_data)
@@ -72,9 +72,14 @@ class DelegateSerializer(Generic[T], DCFSerializer[T]):
         delegate = None
 
         if self.is_update:
+            assert self.instance is not None
             if prevalcls := self.get_update_prevalidation_class():
                 prevalins = prevalcls(
-                    data=self.initial_data, instance=self.instance, partial=True
+                    data=self.initial_data,
+                    instance=self.instance,
+                    context=self.serializer_context,
+                    partial=True,
+                    **self.serializer_kwargs,
                 )
                 prevalins.is_valid(raise_exception)
                 prevalidated_data = prevalins.validated_data
@@ -87,25 +92,38 @@ class DelegateSerializer(Generic[T], DCFSerializer[T]):
                 prevalidated_data=prevalidated_data,
             )
 
-            self.kwargs.update(dict(partial=is_partial))
             delegate = delegatecls(
-                instance=self.instance, data=self.initial_data, **self.kwargs
+                instance=self.instance,
+                data=self.initial_data,
+                context=self.serializer_context,
+                partial=is_partial,
+                **self.serializer_kwargs,
             )
 
         elif self.is_create:
             if prevalcls := self.get_create_prevalidation_class():
                 prevalins = prevalcls(
-                    data=self.initial_data, instance=self.instance, partial=False
+                    data=self.initial_data,
+                    instance=self.instance,
+                    context=self.serializer_context,
+                    partial=False,
+                    **self.serializer_kwargs,
                 )
                 prevalins.is_valid(raise_exception)
                 prevalidated_data = prevalins.validated_data
             else:
                 prevalidated_data = None
 
-            delegate = self.get_create_delegate_class(
+            delegate_class = self.get_create_delegate_class(
                 initial_data=self.initial_data,
                 prevalidated_data=prevalidated_data,
-            )(instance=self.instance, data=self.initial_data, **self.kwargs)
+            )
+            delegate = delegate_class(
+                instance=self.instance,
+                data=self.initial_data,
+                context=self.serializer_context,
+                **self.serializer_kwargs,
+            )
 
         elif self.is_read:
             delegate = self.read_delegate
@@ -129,20 +147,25 @@ class DelegateSerializer(Generic[T], DCFSerializer[T]):
             return getattr(self.delegate, name)
 
     def get_create_delegate_class(
-        self, initial_data, prevalidated_data
-    ) -> Type[DCFSerializer]:
+        self,
+        initial_data: Dict[str, Any],
+        prevalidated_data: Optional[Dict[str, Any]],
+    ) -> Type[DCFSerializer[T]]:
         raise NotImplementedError(
             f"{self.__class__} must implement .get_create_delegate_class()"
         )
 
     def get_update_delegate_class(
-        self, instance, initial_data, prevalidated_data
-    ) -> Tuple[Type[DCFSerializer], bool]:
+        self,
+        instance: T,
+        initial_data: Dict[str, Any],
+        prevalidated_data: Optional[Dict[str, Any]],
+    ) -> Tuple[Type[DCFSerializer[T]], bool]:
         raise NotImplementedError(
             f"{self.__class__} must implement .get_update_delegate_class()"
         )
 
-    def get_read_delegate_class(self, instance) -> Type[DCFSerializer]:
+    def get_read_delegate_class(self) -> Type[DCFSerializer[T]]:
         raise NotImplementedError(
             f"{self.__class__} must implement .get_read_delegate_class()"
         )
@@ -156,6 +179,9 @@ class DelegateSerializer(Generic[T], DCFSerializer[T]):
     @cached_property
     def data(self):
         return self.read_delegate.data
+
+    def to_representation(self, instance: T) -> T:
+        return self.read_delegate.to_representation(instance)
 
     def is_valid(self, raise_exception: bool = False) -> bool:
         """
