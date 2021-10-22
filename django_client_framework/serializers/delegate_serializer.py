@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Dict, Generic, Optional, Tuple, Type, TypeVar, overload
+from typing import Any, Dict, Generic, Optional, Tuple, Type, TypeVar
 
 from django.utils.functional import cached_property
 
