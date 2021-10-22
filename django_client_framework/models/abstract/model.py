@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import base64
-from typing import Any, Generic, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 from uuid import UUID, uuid4
 
 from django.db.models import Model as DjangoModel
 from django.db.models.base import ModelBase
 from django.db.models.fields import DateTimeField, UUIDField
 from django.db.models.manager import Manager
+from django.db.models.options import Options
 
 
 class DCFModelBase(ModelBase):
@@ -24,8 +25,9 @@ class AbstractDCFModel(DjangoModel, Generic[T]):
     class Meta:
         abstract = True
 
-    objects: Manager[T]
+    objects: ClassVar[Manager[T]]
     id: Any
+    _meta: Options[T]
 
 
 class DCFModel(AbstractDCFModel[T], Generic[T]):

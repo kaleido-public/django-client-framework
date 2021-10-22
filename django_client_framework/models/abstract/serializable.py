@@ -69,7 +69,8 @@ class Serializable(DCFModel[T], Generic[T]):
         return []
 
     def values(self):
-        return self.objects.filter(pk=self.id).values().first()
+        self._meta: Any
+        return self._meta.model.objects.filter(pk=self.id).values().first()
 
     def __repr__(self):
         if settings.DEBUG:

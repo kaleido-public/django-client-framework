@@ -36,7 +36,8 @@ class Searchable(AbstractDCFModel[T], Generic[T]):
 
     def _get_text_feature(self):
         # Need to reset @cached_property otherwise auto-update won't work
-        new_self: Any = self.objects.get(pk=self.id)
+        self._meta: Any
+        new_self: Any = self._meta.model.objects.get(pk=self.id)
         text = new_self.get_text_feature()
         if type(text) is not str:
             raise TypeError(
