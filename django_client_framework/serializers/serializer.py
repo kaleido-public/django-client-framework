@@ -9,7 +9,7 @@ from ..models import DCFModel
 T = TypeVar("T", bound=DCFModel)
 
 
-class DCFSerializer(Generic[T], DRFSerializer):
+class DCFSerializer(DRFSerializer, Generic[T]):
     # Every attribute / method in this class must also be added to the
     # DelegateSerializer, otherwise the DelegateSerializer breaks.
 
