@@ -17,6 +17,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.utils.encoders import JSONEncoder
 from rest_framework.views import APIView
 
 from django_client_framework.models.abstract.user import DCFAbstractUser
@@ -87,7 +88,8 @@ class DCFJSONRenderer(JSONRenderer):
 
         ret = orjson.dumps(
             data,
-            option=orjson.OPT_SORT_KEYS,
+            option=orjson.OPT_SORT_KEYS | orjson.OPT_NON_STR_KEYS,
+            default=JSONEncoder().default,
         )
 
         # We always fully escape \u2028 and \u2029 to ensure we output JSON

@@ -23,11 +23,13 @@ class Serializable(AbstractDCFModel, Generic[T]):
         abstract = True
 
     @classmethod
-    def get_serializer_class(cls, version: str, context: Dict[str, Any]) -> Type[T]:
+    def get_serializer_class(cls, *, version: str, context: Dict[str, Any]) -> Type[T]:
         raise NotImplementedError(f"{cls} must implement .get_serializer_class()")
 
-    def get_serializer(self, version: str, context: Dict[str, Any], **kwargs) -> T:
-        return self.get_serializer_class(version, context)(instance=self, **kwargs)
+    def get_serializer(self, *, version: str, context: Dict[str, Any], **kwargs) -> T:
+        return self.get_serializer_class(version=version, context=context)(
+            instance=self, **kwargs
+        )
 
     def json(
         self,
@@ -59,7 +61,7 @@ class Serializable(AbstractDCFModel, Generic[T]):
         if serializer:
             return serializer.to_representation(self)
         else:
-            return dict(self.get_serializer(version, context).data)
+            return dict(self.get_serializer(version=version, context=context).data)
 
     def get_extra_content_to_hash(self) -> List[Any]:
         return []
