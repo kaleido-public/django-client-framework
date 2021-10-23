@@ -62,13 +62,9 @@ class ApiPagination(PageNumberPagination):
         return Response(
             {
                 "page": self.page.number,
-                "number": self.page.number,
                 "limit": limit,
-                "total": self.page.paginator.count,
-                "total_objects": self.page.paginator.count,
-                "total_pages": math.ceil(total / limit),
-                "previous": self.get_previous_link(),
-                "next": self.get_next_link(),
+                "objects_count": self.page.paginator.count,
+                "pages_count": math.ceil(total / limit),
                 "objects": data,
             }
         )
