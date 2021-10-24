@@ -250,12 +250,10 @@ def reset_permissions(for_classes: List[Type["AccessControlled"]]):
     current_model_count = 0
     for model in for_classes:
         current_model_count += 1
-        permmanager: AccessControlled.PermissionManager = (
-            model.get_permissionmanager_class()()
-        )
         LOG.warn(f"Resetting permissions for model {model.__name__}")
         total = model.objects.count()
         current = 0
+        instance: AccessControlled
         for instance in model.objects.all():
             current += 1
             percentage = current * 100 / total
@@ -263,4 +261,4 @@ def reset_permissions(for_classes: List[Type["AccessControlled"]]):
                 f"{current_model_count}/{total_model_count} {model.__name__}({instance.id}) %{percentage:.2f}"
             )
             with transaction.atomic():
-                permmanager.reset_perms(instance)
+                instance.update_perms()
