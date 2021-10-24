@@ -38,19 +38,18 @@ class RelatedModelAPI(BaseModelAPI):
             if len(data) > 0:
                 for item in data:
                     if type(item) is not str:
-                        raise e.ValidationError(
-                            {
-                                "error": "Expected a list of model pk in the request body,"
-                                f" but one of the list item received is {type(item)}: {item}"
-                            }
+                        raise e.ParseError(
+                            "Expected a list of model pk in the request body,"
+                            f" but one of the list item received is {type(item)}: {item}"
                         )
-            return list(map(UUID, data))
+            try:
+                return list(map(UUID, data))
+            except ValueError as err:
+                raise e.ParseError(str(err))
         else:
-            raise e.ValidationError(
-                {
-                    "error": "Expected a list of object pk in the request body,"
-                    f" but received {type(data).__name__}: {data}"
-                }
+            raise e.ParseError(
+                "Expected a list of object pk in the request body,"
+                f" but received {type(data).__name__}: {data}"
             )
 
     @cached_property
@@ -59,7 +58,10 @@ class RelatedModelAPI(BaseModelAPI):
         if data is None:
             return None
         elif isinstance(data, str):
-            return UUID(data)
+            try:
+                return UUID(data)
+            except ValueError as err:
+                raise e.ParseError(str(err))
         else:
             raise e.ParseError(
                 "Expected an object pk in the request body,"
