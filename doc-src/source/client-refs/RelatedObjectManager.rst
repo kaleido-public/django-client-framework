@@ -72,4 +72,4 @@ this case:
             let product: ObjectManager<Product> = ... // assumes id is 1
             let brand: ObjectManager<Brand> = ... // assumes id is 1
             product.brand.set(brand)
-            // PUT /product/1/brand [1]
+            // PATCH /product/1/brand 1

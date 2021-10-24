@@ -1,74 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>class CollectionManager &lt;T:Model&gt; &mdash; Django Client Framework  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/tabs.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> Django Client Framework
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -76,18 +36,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/index.html">Introduction to the Framework</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../backend-refs/index.html">Backend API Reference</a></li>
@@ -95,73 +44,32 @@
 <li class="toctree-l1"><a class="reference internal" href="../modify-this-document.html">Modify this documentation</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Django Client Framework</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content style-external-links">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li><cite>class</cite> CollectionManager <cite>&lt;T:Model&gt;</cite></li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/client-refs/CollectionManager.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="class-collectionmanager-t-model">
-<span id="collectionmanager"></span><h1><cite>class</cite> CollectionManager <cite>&lt;T:Model&gt;</cite><a class="headerlink" href="#class-collectionmanager-t-model" title="Permalink to this headline">¶</a></h1>
+<span id="collectionmanager"></span><h1><cite>class</cite> CollectionManager <cite>&lt;T:Model&gt;</cite><a class="headerlink" href="#class-collectionmanager-t-model" title="Permalink to this headline"></a></h1>
 <p>A generic class where <code class="docutils literal notranslate"><span class="pre">T</span></code> is constrained by <a href="#id1"><span class="problematic" id="id2">`Model`_</span></a>. This class provides the
 access to backend objects. You should use this class to retrieve an
 <code class="docutils literal notranslate"><span class="pre">ObjectManager</span></code> for an model object, instead of creating an <code class="docutils literal notranslate"><span class="pre">ObjectManager</span></code>
@@ -176,7 +84,7 @@ erased during the runtime.</p>
 class, so that you can retrieve the <code class="docutils literal notranslate"><span class="pre">CollectionManager</span></code> instance directly.</p>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-0-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
-    <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
+    <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
 <span class="p">}</span>
 
 <span class="kd">let</span> <span class="nx">results</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">page</span><span class="p">({})</span>
@@ -186,7 +94,7 @@ class, so that you can retrieve the <code class="docutils literal notranslate"><
 </div>
 <p><strong>Methods</strong></p>
 <div class="section" id="method-page-query-pagination">
-<span id="collectionmanager-page"></span><h2><cite>method</cite> .page <cite>(query, pagination)</cite><a class="headerlink" href="#method-page-query-pagination" title="Permalink to this headline">¶</a></h2>
+<span id="collectionmanager-page"></span><h2><cite>method</cite> .page <cite>(query, pagination)</cite><a class="headerlink" href="#method-page-query-pagination" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><p>Returns a filtered collection of the model objects, with the desired
 pagination. It sends a <code class="docutils literal notranslate"><span class="pre">GET</span></code> request to the server.</p>
@@ -264,7 +172,7 @@ reverse order. Use <code class="docutils literal notranslate"><span class="pre">
 </div></blockquote>
 </div>
 <div class="section" id="method-get-query">
-<span id="collectionmanager-get"></span><h2><cite>method</cite> .get <cite>(query)</cite><a class="headerlink" href="#method-get-query" title="Permalink to this headline">¶</a></h2>
+<span id="collectionmanager-get"></span><h2><cite>method</cite> .get <cite>(query)</cite><a class="headerlink" href="#method-get-query" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><p>This method does the same thing as <a class="reference internal" href="index.html#collectionmanager-page"><span class="std std-ref">method .page (query, pagination)</span></a> except
 that it expects exactly one object to be returned from the server. If less
@@ -276,7 +184,7 @@ or more than one object is returned, an InvalidObjectCount error is thrown.</p>
 </div></blockquote>
 </div>
 <div class="section" id="method-create-data">
-<span id="collectionmanager-create"></span><h2><cite>method</cite> .create <cite>(data)</cite><a class="headerlink" href="#method-create-data" title="Permalink to this headline">¶</a></h2>
+<span id="collectionmanager-create"></span><h2><cite>method</cite> .create <cite>(data)</cite><a class="headerlink" href="#method-create-data" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><p>Saves an object on the server with the provided dictionary of data. It sends
 a <code class="docutils literal notranslate"><span class="pre">POST</span></code> request to the server.</p>
@@ -300,7 +208,7 @@ a <code class="docutils literal notranslate"><span class="pre">POST</span></code
 </div></blockquote>
 </div>
 <div class="section" id="method-get-or-create-query-defaults">
-<span id="collectionmanager-get-or-create"></span><h2><cite>method</cite> .get_or_create <cite>(query, defaults)</cite><a class="headerlink" href="#method-get-or-create-query-defaults" title="Permalink to this headline">¶</a></h2>
+<span id="collectionmanager-get-or-create"></span><h2><cite>method</cite> .get_or_create <cite>(query, defaults)</cite><a class="headerlink" href="#method-get-or-create-query-defaults" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><p>First tries to <a class="reference internal" href="index.html#collectionmanager-get"><span class="std std-ref">method .get (query)</span></a> the object with the query
 dictionary. If the object does not exist, then
@@ -328,7 +236,7 @@ not exist, then sends a <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </div>
 <div class="section" id="method-update-or-create-query-defaults">
-<span id="collectionmanager-update-or-create"></span><h2><cite>method</cite> .update_or_create <cite>(query, defaults)</cite><a class="headerlink" href="#method-update-or-create-query-defaults" title="Permalink to this headline">¶</a></h2>
+<span id="collectionmanager-update-or-create"></span><h2><cite>method</cite> .update_or_create <cite>(query, defaults)</cite><a class="headerlink" href="#method-update-or-create-query-defaults" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><p>First tries to <a class="reference internal" href="index.html#collectionmanager-get"><span class="std std-ref">method .get (query)</span></a> the object with the
 <code class="docutils literal notranslate"><span class="pre">query</span></code> dictionary. If the object does not exist, then it follows the
@@ -359,46 +267,30 @@ dictionary. When updating, sends a <code class="docutils literal notranslate"><s
 
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Yu.
-
-    </p>
+    <p>&#169; Copyright 2021, Yu.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

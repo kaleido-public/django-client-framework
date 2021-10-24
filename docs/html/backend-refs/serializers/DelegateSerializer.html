@@ -1,73 +1,33 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>class DelegateSerializer extends Serializer &mdash; Django Client Framework  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../index.html" class="icon icon-home"> Django Client Framework
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -75,18 +35,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction to the Framework</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Backend API Reference</a></li>
@@ -94,73 +43,32 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modify-this-document.html">Modify this documentation</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Django Client Framework</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content style-external-links">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li><cite>class</cite> DelegateSerializer <cite>extends Serializer</cite></li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../../_sources/backend-refs/serializers/DelegateSerializer.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="class-delegateserializer-extends-serializer">
-<span id="delegateserializer"></span><h1><cite>class</cite> DelegateSerializer <cite>extends Serializer</cite><a class="headerlink" href="#class-delegateserializer-extends-serializer" title="Permalink to this headline">¶</a></h1>
+<span id="delegateserializer"></span><h1><cite>class</cite> DelegateSerializer <cite>extends Serializer</cite><a class="headerlink" href="#class-delegateserializer-extends-serializer" title="Permalink to this headline"></a></h1>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DelegateSerializer</span>
 </pre></div>
 </div>
@@ -174,7 +82,7 @@ one of the serializers.</p>
 <a class="reference internal" href="#delegateserializer-get-update-delegate-class">DelegateSerializer.get_update_delegate_class(…)</a>,
 <a class="reference internal" href="#delegateserializer-get-read-delegate-class">DelegateSerializer.get_read_delegate_class(…)</a>.</p>
 <div class="section" id="method-get-read-delegate-class-self-instance-serializer">
-<span id="delegateserializer-get-read-delegate-class"></span><h2><cite>method</cite> .get_read_delegate_class <cite>(self, instance) -&gt; Serializer</cite><a class="headerlink" href="#method-get-read-delegate-class-self-instance-serializer" title="Permalink to this headline">¶</a></h2>
+<span id="delegateserializer-get-read-delegate-class"></span><h2><cite>method</cite> .get_read_delegate_class <cite>(self, instance) -&gt; Serializer</cite><a class="headerlink" href="#method-get-read-delegate-class-self-instance-serializer" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><p><cite>required</cite></p>
 <dl class="simple">
@@ -193,7 +101,7 @@ initialized with only the <code class="docutils literal notranslate"><span class
 </div></blockquote>
 </div>
 <div class="section" id="method-get-create-delegate-class-self-initial-data-prevalidated-data-serializer">
-<span id="delegateserializer-get-create-delegate-class"></span><h2><cite>method</cite> .get_create_delegate_class <cite>(self, initial_data, prevalidated_data) -&gt; Serializer</cite><a class="headerlink" href="#method-get-create-delegate-class-self-initial-data-prevalidated-data-serializer" title="Permalink to this headline">¶</a></h2>
+<span id="delegateserializer-get-create-delegate-class"></span><h2><cite>method</cite> .get_create_delegate_class <cite>(self, initial_data, prevalidated_data) -&gt; Serializer</cite><a class="headerlink" href="#method-get-create-delegate-class-self-initial-data-prevalidated-data-serializer" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><p><cite>required</cite></p>
 <dl class="simple">
@@ -211,7 +119,7 @@ initialized with only the <code class="docutils literal notranslate"><span class
 </div></blockquote>
 </div>
 <div class="section" id="method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer">
-<span id="delegateserializer-get-update-delegate-class"></span><h2><cite>method</cite> .get_update_delegate_class <cite>(self, instance, initial_data, prevalidated_data) -&gt; Serializer</cite><a class="headerlink" href="#method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer" title="Permalink to this headline">¶</a></h2>
+<span id="delegateserializer-get-update-delegate-class"></span><h2><cite>method</cite> .get_update_delegate_class <cite>(self, instance, initial_data, prevalidated_data) -&gt; Serializer</cite><a class="headerlink" href="#method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><p><cite>required</cite></p>
 <dl class="simple">
@@ -237,46 +145,30 @@ partial updating an model instance. This is the case when the
 
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Yu.
-
-    </p>
+    <p>&#169; Copyright 2021, Yu.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
