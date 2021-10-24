@@ -27,7 +27,7 @@ class TestPaginationPerms(TestCase):
         )
         data = resp.json()
         self.assertEquals(200, resp.status_code)
-        self.assertEquals(0, data.get("total", ""), data)
+        self.assertEquals(0, data.get("objects_count", ""), data)
         # product relation is now deleted
         self.product.refresh_from_db()
         self.assertIsNone(self.product.brand_id)

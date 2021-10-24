@@ -32,7 +32,7 @@ class TestPagination(TestCase):
         resp = self.superuser_client.get("/product?_order_by=priority")
         data = resp.json()
         self.assertDictContainsSubset(
-            {"page": 1, "limit": 50, "total": 101},
+            {"page": 1, "limit": 50, "objects_count": 101},
             data,
         )
         objects = data["objects"]
@@ -63,13 +63,13 @@ class TestPagination(TestCase):
             f"/brand?products__in[]={self.products[1].id},{self.products[2].id},{self.products[3].id}"
         )
         data = resp.json()
-        self.assertEqual(1, data["total"], data)
+        self.assertEqual(1, data["objects_count"], data)
 
     def test_list_next_page(self):
         resp = self.superuser_client.get("/product?_page=2&_order_by=priority")
         data = resp.json()
         self.assertDictContainsSubset(
-            {"page": 2, "limit": 50, "total": 101},
+            {"page": 2, "limit": 50, "objects_count": 101},
             data,
         )
         objects = data["objects"]
@@ -97,7 +97,9 @@ class TestPagination(TestCase):
         )
         data = resp.json()
         objects = data["objects"]
-        self.assertDictContainsSubset({"page": 3, "limit": 10, "total": 101}, data)
+        self.assertDictContainsSubset(
+            {"page": 3, "limit": 10, "objects_count": 101}, data
+        )
         self.assertDictContainsSubset(
             {
                 "id": str(self.products[20].id),
@@ -113,7 +115,9 @@ class TestPagination(TestCase):
         resp = self.superuser_client.get("/product?barcode__exact=product_21")
         data = resp.json()
         objects = data["objects"]
-        self.assertDictContainsSubset({"page": 1, "limit": 50, "total": 1}, data)
+        self.assertDictContainsSubset(
+            {"page": 1, "limit": 50, "objects_count": 1}, data
+        )
         self.assertEqual(len(objects), 1)
         self.assertDictContainsSubset(
             {"barcode": "product_21"},
@@ -126,7 +130,9 @@ class TestPagination(TestCase):
         )
         data = resp.json()
         objects = data["objects"]
-        self.assertDictContainsSubset({"page": 1, "limit": 50, "total": 1}, data)
+        self.assertDictContainsSubset(
+            {"page": 1, "limit": 50, "objects_count": 1}, data
+        )
         self.assertEqual(len(objects), 1)
         self.assertDictContainsSubset(
             {
@@ -151,13 +157,17 @@ class TestPagination(TestCase):
             "/product?barcode__in[]=product_121&barcode__in[]=product_122"
         )
         data = resp.json()
-        self.assertDictContainsSubset({"page": 1, "limit": 50, "total": 0}, data)
+        self.assertDictContainsSubset(
+            {"page": 1, "limit": 50, "objects_count": 0}, data
+        )
         self.assertEqual(len(data["objects"]), 0)
 
     def test_key_name_array_but_empty(self):
         resp = self.superuser_client.get("/product?id__in[]=")
         data = resp.json()
-        self.assertDictContainsSubset({"page": 1, "limit": 50, "total": 0}, data, data)
+        self.assertDictContainsSubset(
+            {"page": 1, "limit": 50, "objects_count": 0}, data, data
+        )
         self.assertEqual(len(data["objects"]), 0)
 
     def test_key_name_array(self):
@@ -166,7 +176,9 @@ class TestPagination(TestCase):
         )
         data = resp.json()
         objects = data["objects"]
-        self.assertDictContainsSubset({"page": 1, "limit": 50, "total": 2}, data)
+        self.assertDictContainsSubset(
+            {"page": 1, "limit": 50, "objects_count": 2}, data
+        )
         self.assertEqual(len(data["objects"]), 2)
         self.assertDictContainsSubset({"barcode": "product_21"}, objects[0])
         self.assertDictContainsSubset({"barcode": "product_22"}, objects[1])
@@ -180,7 +192,9 @@ class TestPagination(TestCase):
         resp = self.superuser_client.get("/product?_order_by=priority")
         data = resp.json()
         objects = data["objects"]
-        self.assertDictContainsSubset({"page": 1, "limit": 50, "total": 101}, data)
+        self.assertDictContainsSubset(
+            {"page": 1, "limit": 50, "objects_count": 101}, data
+        )
         self.assertDictContainsSubset(
             {
                 "id": str(self.products[0].id),
@@ -204,7 +218,9 @@ class TestPagination(TestCase):
         resp = self.superuser_client.get("/product?_order_by=-priority")
         data = resp.json()
         objects = data["objects"]
-        self.assertDictContainsSubset({"page": 1, "limit": 50, "total": 101}, data)
+        self.assertDictContainsSubset(
+            {"page": 1, "limit": 50, "objects_count": 101}, data
+        )
         self.assertDictContainsSubset({"priority": 100}, objects[0])
         self.assertDictContainsSubset({"priority": 99}, objects[1])
 

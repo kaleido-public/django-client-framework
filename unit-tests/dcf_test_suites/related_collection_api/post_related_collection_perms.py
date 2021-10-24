@@ -33,7 +33,7 @@ class TestPostPerms(TestCase):
         self.assertEquals(200, resp.status_code)
         self.product.refresh_from_db()
         self.assertEquals(self.brand, self.product.brand)
-        self.assertEquals(1, data["total"])
+        self.assertEquals(1, data["objects_count"])
         self.assertDictContainsSubset({"id": str(self.product.id)}, data["objects"][0])
 
     def test_no_child_read(self):
@@ -52,7 +52,7 @@ class TestPostPerms(TestCase):
         self.assertEquals(self.brand, self.product.brand, "product should be updated")
         self.assertEqual(1, self.brand.products.count(), "product should be updated")
         self.assertEquals(200, resp.status_code)
-        self.assertEquals(0, data["total"])
+        self.assertEquals(0, data["objects_count"])
 
     def test_no_child_write(self):
         """

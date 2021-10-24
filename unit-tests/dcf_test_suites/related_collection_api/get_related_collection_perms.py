@@ -50,7 +50,7 @@ class TestPaginationPerms(TestCase):
         p.add_perms_shortcut(self.user, Product, "wcd")
         resp = self.user_client.get(f"/brand/{self.brand.id}/products")
         data = resp.json()
-        self.assertEquals(0, data["total"])
+        self.assertEquals(0, data["objects_count"])
         self.assertEquals(len(data["objects"]), 0)
 
     def test_get_with_object_level_perm(self):
