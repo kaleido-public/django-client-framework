@@ -4,6 +4,7 @@ Backend API Reference
 `module` models
 **********************************
 
+.. include:: models/Model.rst
 .. include:: models/Serializable.rst
 .. include:: models/AccessControlled.rst
 

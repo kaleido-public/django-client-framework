@@ -64,7 +64,7 @@ extend the :ref:`Model` base class.
 
         class Product extends Model {
             static readonly objects = new CollectionManager(Product)
-            id: number = 0
+            id!: string
             barcode: string = ""
             brand_id?: number
         }
@@ -95,7 +95,8 @@ class.
             PageResult {
                 page: 1,
                 limit: 50,
-                total: 1,
+                pages_count: 1,
+                objects_count: 1,
                 previous: null,
                 next: null,
                 objects: [ Product { id: 1, barcode: 'xxyy', brand_id: 1 } ]
@@ -121,15 +122,17 @@ First, we first add a `Brand` model:
         import { Model, CollectionManager } from "django-client-framework"
 
         class Product extends Model {
+            _model_name = "Product"
             static readonly objects = new CollectionManager(Product)
-            id: number = 0
+            id!: string
             barcode: string = ""
             brand_id?: number
         }
 
         class Brand extends Model {
+            _model_name = "Brand"
             static readonly objects = new CollectionManager(Brand)
-            id: number = 0
+            id!: string
             name: string = ""
         }
 
@@ -145,17 +148,19 @@ To access the `Brand` object on the product, we add a brand field of the
         import { Model, CollectionManager, RelatedObjectManager } from "django-client-framework"
 
         class Product extends Model {
+            _model_name = "Product"
             static readonly objects = new CollectionManager(Product)
             get brand() { return new RelatedObjectManager(Brand, this, "brand") }
-            id: number = 0
+            id!: string
             barcode: string = ""
             brand_id?: number
         }
 
         class Brand extends Model {
+            _model_name = "Brand"
             static readonly objects = new CollectionManager(Brand)
             get products() { return new RelatedCollectionManager(Product, this, "products") }
-            id: number = 0
+            id!: string
             name: string = ""
         }
 

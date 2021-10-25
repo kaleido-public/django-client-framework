@@ -1,7 +1,7 @@
 .. _AccessControlled:
 
-`class` AccessControlled
-============================
+`class` AccessControlled `extends AbstractDCFModel`
+=========================================================
 
 .. code-block:: py
 

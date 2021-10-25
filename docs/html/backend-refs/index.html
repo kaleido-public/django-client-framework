@@ -45,7 +45,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#class-dcfmodel-extends-abstractdcfmodel"><cite>class</cite> DCFModel <cite>extends AbstractDCFModel</cite></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#class-serializable-extends-abstractdcfmodel"><cite>class</cite> Serializable <cite>extends AbstractDCFModel</cite></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#classmethod-get-serializer-class-cls-version-context"><cite>classmethod</cite> .get_serializer_class <cite>(cls, version, context)</cite></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#property-get-serializer-version-context"><cite>property</cite> .get_serializer <cite>(version, context)</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#method-get-serializer-self-version-context"><cite>method</cite> .get_serializer <cite>(self, version, context)</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#classmethod-get-serialization-cache-timeout-cls"><cite>classmethod</cite> .get_serialization_cache_timeout <cite>(cls)</cite></a></li>
 </ul>
 </li>
@@ -136,8 +136,8 @@ returns a <a class="reference internal" href="#dcfserializer">DCFSerializer</a> 
 <p>Override this method to return the <a class="reference internal" href="#dcfserializer">DCFSerializer</a> class for the model.</p>
 </div></blockquote>
 </div>
-<div class="section" id="property-get-serializer-version-context">
-<span id="serializable-serializer"></span><h4><cite>property</cite> .get_serializer <cite>(version, context)</cite><a class="headerlink" href="#property-get-serializer-version-context" title="Permalink to this headline"></a></h4>
+<div class="section" id="method-get-serializer-self-version-context">
+<span id="serializable-serializer"></span><h4><cite>method</cite> .get_serializer <cite>(self, version, context)</cite><a class="headerlink" href="#method-get-serializer-self-version-context" title="Permalink to this headline"></a></h4>
 <blockquote>
 <div><p>An instance of the <a class="reference internal" href="#dcfserializer">DCFSerializer</a> class returned by
 <a class="reference internal" href="#serializable-get-serializer-class">Serializable.get_serializer_class(…)</a>.</p>

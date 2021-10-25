@@ -1,7 +1,7 @@
 .. _Serializable:
 
-`class` Serializable
-==========================
+`class` Serializable `extends AbstractDCFModel`
+======================================================
 
 .. code-block:: py
 
@@ -16,31 +16,33 @@ This abstract model class provides caches for serialization.
 
 **Inheritance**
 
-Subclasses of `Serializable`_ must override `Serializable.serializer_class()`_ which
-returns a `Serializer`_ class.
+Subclasses of `Serializable`_ must override `Serializable.get_serializer_class(...)`_ which
+returns a `DCFSerializer`_ class.
 
 
-.. _Serializable.serializer_class():
+.. _Serializable.get_serializer_class(...):
 
-`classmethod` .serializer_class `(cls)`
------------------------------------------------------------
+`classmethod` .get_serializer_class `(cls, version, context)`
+-----------------------------------------------------------------
 
     `required`
 
-    Override this method to return the `Serializer`_ class for the model.
+    Override this method to return the `DCFSerializer`_ class for the model.
 
 
 .. _Serializable.serializer:
 
-`property` .serializer
-------------------------------
-    An instance of the `Serializer`_ class returned by
-    `Serializable.serializer_class()`_.
+`method` .get_serializer `(self, version, context)`
+------------------------------------------------------
+    An instance of the `DCFSerializer`_ class returned by
+    `Serializable.get_serializer_class(...)`_.
 
 
 .. _Serializable.get_serialization_cache_timeout():
 
 `classmethod` .get_serialization_cache_timeout `(cls)`
 ---------------------------------------------------------------
-    Override this method to change how long to cache the serialized
-    data in seconds.
+    Override this method to change how long to cache the serialized data in
+    seconds. Setting to ``0`` disables the cache.
+
+    Default: ``0``

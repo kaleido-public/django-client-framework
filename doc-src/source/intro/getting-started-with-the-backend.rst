@@ -144,73 +144,73 @@ To add a model, create a model that extends from
 
 .. code-block:: py
 
-    from django_client_framework.models import Serializable
+    from django_client_framework.models import DCFModel, Serializable
     from django.db.models import CharField
 
-    class Product(Serializable):
+    class Product(DCFModel, Serializable):
         barcode = CharField(max_length=32)
 
 .. seealso::
 
     If you are not familiar with :django:`Model <models/instances>`, you haven't
-    completed the basic tutorial for Django. See [todo].
+    completed the basic tutorial for Django.
 
 The ``Serializable`` requires ``Product`` to implement a class method named
-``.serializer_class()``, which should return a ``ModelSerializer``. This class is
-responsible for converting back and forth betwen a JSON object and a class
-object, ie, serialization and deserialization.
+``.get_serializer_class()``, which should return a ``DCFModelSerializer`` class.
+This class is responsible for converting back and forth betwen a JSON object and
+a class object, ie, serialization and deserialization.
 
 .. seealso::
 
     If you are unfarmiliar with ``ModelSerializer`` in Django Rest Framework,
     complete this tutorial for Django Rest Framework first. [todo]
 
-To define a ``ModelSerializer`` for ``Product``, we create another class that
-inherits from ``ModelSerializer``:
+To define a ``DCFModelSerializer`` for ``Product``, we create another class that
+inherits from ``DCFModelSerializer``:
 
 
 .. code-block:: py
 
-    from django_client_framework.serializers import ModelSerializer
+    from django_client_framework.serializers import DCFModelSerializer
 
-    class ProductSerializer(ModelSerializer):
+    class ProductSerializer(DCFModelSerializer):
         class Meta:
             model = Product
-            exclude = []
+            fields = ["id", "barcode", "brand_id"]
 
 
 .. error::
 
-    Django Client Framework's ``ModelSerializer`` is a subclass of Django Rest
-    Framework's ``ModelSerializer`` class with some methods overriden. Although
+    Django Client Framework's ``DCFModelSerializer`` is a subclass of Django Rest
+    Framework's ``DCFModelSerializer`` class with some methods overriden. Although
     they mostly have the same syntax and usage, do not confuse them with one
     another! You should always use
     ``django_client_framework.serializers.ModelSerializer``. If you use the Django
-    Rest Framework's version of the ``ModelSerializer`` by mistake, then some of
+    Rest Framework's version of the ``DCFModelSerializer`` by mistake, then some of
     our API features won't work!
 
 
-Finally, we return this class from the ``.serializer_class()`` method. The final code
+Finally, we return this class from the ``.get_serializer_class()`` method. The final code
 looks like this:
 
 
 .. code-block:: py
 
     from django_client_framework.models import Serializable
-    from django_client_framework.serializers import ModelSerializer
+    from django_client_framework.serializers import DCFModelSerializer
     from django.db.models import CharField
 
     class Product(Serializable):
         barcode = CharField(max_length=32)
 
         @classmethod
-        def serializer_class(cls):
+        def get_serializer_class(cls):
             return ProductSerializer
 
-    class ProductSerializer(ModelSerializer):
+    class ProductSerializer(DCFModelSerializer):
         class Meta:
             model = Product
-            exclude = []
+            fields = ["id", "barcode", "brand_id"]
 
 
 Now you can run migration to apply the new model.
@@ -248,17 +248,17 @@ To give anyone the read permission to the Product model, we import the
 
 .. code-block:: py
 
-    from django_client_framework.models import Serializable, AccessControlled
-    from django_client_framework.serializers import ModelSerializer
+    from django_client_framework.models import DCFModel, Serializable, AccessControlled
+    from django_client_framework.serializers import DCFModelSerializer
     from django_client_framework.permissions import default_groups, add_perms_shortcut
     from django.db.models import CharField
 
 
-    class Product(Serializable, AccessControlled):
+    class Product(DCFModel, Serializable, AccessControlled):
         barcode = CharField(max_length=32)
 
         @classmethod
-        def serializer_class(cls):
+        def get_serializer_class(cls):
             return ProductSerializer
 
         class PermissionManager(AccessControlled.PermissionManager):
@@ -266,10 +266,10 @@ To give anyone the read permission to the Product model, we import the
                 add_perms_shortcut(default_groups.anyone, product, "r")
 
 
-    class ProductSerializer(ModelSerializer):
+    class ProductSerializer(DCFModelSerializer):
         class Meta:
             model = Product
-            exclude = []
+            fields = ["id", "barcode", "brand_id"]
 
 
 Now to refresh the permission stored in the database, run this in Django shell:
@@ -303,7 +303,7 @@ class.
 .. code-block:: py
 
     from django_client_framework.models import Serializable, AccessControlled
-    from django_client_framework.serializers import ModelSerializer
+    from django_client_framework.serializers import DCFModelSerializer
     from django_client_framework.permissions import default_groups, add_perms_shortcut
     from django.db.models import CharField
     from django_client_framework.api import register_api_model
@@ -313,7 +313,7 @@ class.
         barcode = CharField(max_length=32)
 
         @classmethod
-        def serializer_class(cls):
+        def get_serializer_class(cls):
             return ProductSerializer
 
         class PermissionManager(AccessControlled.PermissionManager):
@@ -321,10 +321,10 @@ class.
                 add_perms_shortcut(default_groups.anyone, product, "r")
 
 
-    class ProductSerializer(ModelSerializer):
+    class ProductSerializer(DCFModelSerializer):
         class Meta:
             model = Product
-            exclude = []
+            fields = ["id", "barcode", "brand_id"]
 
 
 Now that the ``Product`` model is correctly configured, you can create a
@@ -356,7 +356,8 @@ To visit the list of products, send a GET request to this url:
     curl http://localhost:8000/product/
 
     #   {
-    #       total: 1,
+    #       pages_count: 1,
+    #       objects_count: 1,
     #       limit: 50,
     #       page: 1,
     #       objects: [ {id: 1, barcode: "xxyy"} ],
@@ -392,19 +393,19 @@ Therefore, we define the two classes as follows:
 
 .. code-block:: py
 
-    from django_client_framework.models import Serializable, AccessControlled
-    from django_client_framework.serializers import ModelSerializer
+    from django_client_framework.models import DCFModel, Serializable, AccessControlled
+    from django_client_framework.serializers import DCFModelSerializer
     from django_client_framework.permissions import default_groups, add_perms_shortcut
     from django_client_framework.api import register_api_model
     from django.db.models import CharField, ForeignKey, CASCADE
 
 
     @register_api_model
-    class Brand(Serializable, AccessControlled):
+    class Brand(DCFModel, Serializable, AccessControlled):
         name = CharField(max_length=16)
 
         @classmethod
-        def serializer_class(cls):
+        def get_serializer_class(cls):
             return BrandSerializer
 
         class PermissionManager(AccessControlled.PermissionManager):
@@ -412,10 +413,10 @@ Therefore, we define the two classes as follows:
                 add_perms_shortcut(default_groups.anyone, brand, "r")
 
 
-    class BrandSerializer(ModelSerializer):
+    class BrandSerializer(DCFModelSerializer):
         class Meta:
             model = Brand
-            exclude = []
+            fields = ["id", "name"]
 
 
     @register_api_model
@@ -424,7 +425,7 @@ Therefore, we define the two classes as follows:
         brand = ForeignKey("Brand", related_name="products", on_delete=CASCADE, null=True)
 
         @classmethod
-        def serializer_class(cls):
+        def get_serializer_class(cls):
             return ProductSerializer
 
         class PermissionManager(AccessControlled.PermissionManager):
@@ -432,10 +433,10 @@ Therefore, we define the two classes as follows:
                 add_perms_shortcut(default_groups.anyone, product, "r")
 
 
-    class ProductSerializer(ModelSerializer):
+    class ProductSerializer(DCFModelSerializer):
         class Meta:
             model = Product
-            exclude = []
+            fields = ["id", "barcode", "brand_id"]
 
 
 .. warning::
@@ -483,7 +484,8 @@ Conversely, we can retrieve all products under the brand:
     curl http://localhost:8000/brand/1/products
 
     #   {
-    #       total: 1,
+    #       pages_count: 1,
+    #       objects_count: 1,
     #       limit: 50,
     #       page: 1,
     #       objects: [ {id: 1, barcode: "xxyy"} ],

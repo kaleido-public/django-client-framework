@@ -1,10 +1,10 @@
-.. _Serializer:
+.. _DCFSerializer:
 
-`class` Serializer
-=======================
+`class` DCFSerializer `extends Serializer`
+===============================================
 
-An abstract base class of `ModelSerializer`_ and `DelegateSerializer`_.
+An abstract base class of `DCFModelSerializer`_ and `DelegateSerializer`_.
 
 .. code-block:: py
 
-    from django_client_framework.serializers import Serializer
+    from django_client_framework.serializers import DCFSerializer

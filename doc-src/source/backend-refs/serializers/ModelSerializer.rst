@@ -1,11 +1,11 @@
-.. _ModelSerializer:
+.. _DCFModelSerializer:
 
-`class` ModelSerializer `extends Serializer`
+`class` DCFModelSerializer `extends DCFSerializer`
 =====================================================
 
 .. code-block:: py
 
-    from django_client_framework.serializers import ModelSerializer
+    from django_client_framework.serializers import DCFModelSerializer
 
 
 This class is agnostic to :drf:`Django Rest Framework (DRF)'s ModelSerializer
@@ -20,9 +20,9 @@ This class is agnostic to :drf:`Django Rest Framework (DRF)'s ModelSerializer
 
 .. code-block:: py
 
-    from django_client_framework.serializers import ModelSerializer
+    from django_client_framework.serializers import DCFModelSerializer
 
-    class ProductSerializer(ModelSerializer):
+    class ProductSerializer(DCFModelSerializer):
         class Meta:
             model = m.Product
             exclude: list = []

@@ -69,16 +69,15 @@
 
 .. _reset_permissions:
 
-`func` reset_permissions `()`
+`func` reset_permissions `(classes)`
 ===================================
 
     .. code-block:: py
 
         from django_client_framework.permissions import reset_permissions
 
-    Clears all permissions assigned in the application, and for each model that is a
-    subclass of `AccessControlled`_, set up the permissions by calling
-    ``PermissionManager.reset_perms()``.
+    Takes a list of subclass of `AccessControlled`_, sets up the permissions by
+    calling ``PermissionManager.reset_perms()``.
 
     When ever the permission structure changes in your application, you need to call
     this function manually, or automatically in a django data migration.
