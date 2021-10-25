@@ -1,6 +1,6 @@
 # from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import JsonResponse
-from rest_framework.exceptions import APIException, ValidationError
+from rest_framework.exceptions import APIException
 
 
 def transform_drf_exception(exc, current_field=None):
@@ -23,10 +23,8 @@ def transform_drf_exception(exc, current_field=None):
 
 
 def dcf_exception_handler(exc, context):
-    if isinstance(exc, ValidationError):
-        # flatten = transform_drf_exception(exc)
-        flatten = exc.get_full_details()
-        return JsonResponse(flatten, status=400)
+    if isinstance(exc, APIException):
+        return JsonResponse(exc.get_full_details(), status=exc.status_code)
     else:
         # get default behavior
         from rest_framework.views import exception_handler

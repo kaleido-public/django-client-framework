@@ -53,7 +53,7 @@ class TestPatchPerms(TestCase):
         data = resp.json()
         self.assertDictContainsSubset(
             {
-                "detail": "The object has been updated but you have no permission to view it.",
+                "message": "The object has been updated but you have no permission to view it.",
             },
             data,
         )
@@ -125,10 +125,10 @@ class TestPatchPerms(TestCase):
         )
         data = resp.json()
         self.assertDictContainsSubset(
-            data,
             {
-                "detail": "The object has been updated but you have no permission to view it.",
+                "message": "The object has been updated but you have no permission to view it.",
             },
+            data,
         )
         self.pr1.refresh_from_db()
         self.assertEquals(self.pr1.brand, self.br2)

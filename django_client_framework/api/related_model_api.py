@@ -106,7 +106,7 @@ class RelatedModelAPI(BaseModelAPI):
         else:
             return JsonResponse(
                 {
-                    "detail": "Action was successful but you have no permission to view the result.",
+                    "message": "Action was successful but you have no permission to view the result.",
                 }
             )
 

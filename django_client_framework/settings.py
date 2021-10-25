@@ -46,9 +46,11 @@ def install(
         "django_client_framework.exceptions.handlers.ConvertAPIExceptionToJsonResponse",
         "django_currentuser.middleware.ThreadLocalUserMiddleware",
     ]
-    REST_FRAMEWORK[
-        "EXCEPTION_HANDLER"
-    ] = "django_client_framework.exceptions.handlers.dcf_exception_handler"
+    REST_FRAMEWORK.update(
+        {
+            "EXCEPTION_HANDLER": "django_client_framework.exceptions.handlers.dcf_exception_handler",
+        }
+    )
     AUTHENTICATION_BACKENDS += [
         "guardian.backends.ObjectPermissionBackend",
         "django.contrib.auth.backends.ModelBackend",
