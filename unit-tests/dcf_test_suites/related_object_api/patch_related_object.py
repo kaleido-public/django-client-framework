@@ -34,7 +34,9 @@ class TestRetrieve(TestCase):
         )
         self.assertEqual(404, resp.status_code, resp.content)
         data = resp.json()
-        self.assertDictEqual(data, {"detail": f"Not Found: Brand ({UUID(int=23)})"})
+        self.assertDictContainsSubset(
+            {"message": f"Not Found: Brand ({UUID(int=23)})"}, data
+        )
 
     def test_patch_array(self):
         resp = self.superuser_client.patch(
@@ -45,6 +47,6 @@ class TestRetrieve(TestCase):
         self.assertEqual(400, resp.status_code, resp.content)
         data = resp.json()
         self.assertEqual(
-            data["detail"],
+            data["message"],
             f"Expected an object pk in the request body, but received list: ['{UUID(int=23)}', '{UUID(int=24)}']",
         )

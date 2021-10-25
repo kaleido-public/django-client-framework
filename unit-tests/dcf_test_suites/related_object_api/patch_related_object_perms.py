@@ -65,7 +65,7 @@ class TestPatchPerms(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertDictContainsSubset(
             {
-                "detail": "Action was successful but you have no permission to view the result."
+                "message": "Action was successful but you have no permission to view the result."
             },
             resp.json(),
         )
@@ -83,7 +83,7 @@ class TestPatchPerms(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertDictContainsSubset(
             {
-                "detail": "Action was successful but you have no permission to view the result."
+                "message": "Action was successful but you have no permission to view the result."
             },
             resp.json(),
         )

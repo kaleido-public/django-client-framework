@@ -127,7 +127,7 @@ class TestPostPerms(TestCase):
         self.assertEquals(200, resp.status_code)
         data = resp.json()
         self.assertEqual(
-            data["detail"],
+            data["message"],
             "Action was successful but you have no permission to view the result.",
         )
         self.product.refresh_from_db()

@@ -86,7 +86,7 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(200, resp.status_code)
         self.assertDictEqual(
             {
-                "detail": "Action was successful but you have no permission to view the result.",
+                "message": "Action was successful but you have no permission to view the result.",
             },
             data,
         )
