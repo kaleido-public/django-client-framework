@@ -42,13 +42,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/index.html">Introduction to the Framework</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Backend API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-models"><cite>module</cite> models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#class-serializable"><cite>class</cite> Serializable</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#classmethod-serializer-class-cls"><cite>classmethod</cite> .serializer_class <cite>(cls)</cite></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#property-serializer"><cite>property</cite> .serializer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-dcfmodel-extends-abstractdcfmodel"><cite>class</cite> DCFModel <cite>extends AbstractDCFModel</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-serializable-extends-abstractdcfmodel"><cite>class</cite> Serializable <cite>extends AbstractDCFModel</cite></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#classmethod-get-serializer-class-cls-version-context"><cite>classmethod</cite> .get_serializer_class <cite>(cls, version, context)</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#property-get-serializer-version-context"><cite>property</cite> .get_serializer <cite>(version, context)</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#classmethod-get-serialization-cache-timeout-cls"><cite>classmethod</cite> .get_serialization_cache_timeout <cite>(cls)</cite></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#class-accesscontrolled"><cite>class</cite> AccessControlled</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-accesscontrolled-extends-abstractdcfmodel"><cite>class</cite> AccessControlled <cite>extends AbstractDCFModel</cite></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#classmethod-get-permissionmanager-class-cls"><cite>classmethod</cite> .get_permissionmanager_class <cite>(cls)</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#class-permissionmanager"><cite>class</cite> .PermissionManager</a></li>
 </ul>
@@ -60,9 +61,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-serializers"><cite>module</cite> serializers</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#class-serializer"><cite>class</cite> Serializer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#class-modelserializer-extends-serializer"><cite>class</cite> ModelSerializer <cite>extends Serializer</cite></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#class-delegateserializer-extends-serializer"><cite>class</cite> DelegateSerializer <cite>extends Serializer</cite></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-dcfserializer-extends-serializer"><cite>class</cite> DCFSerializer <cite>extends Serializer</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-dcfmodelserializer-extends-dcfserializer"><cite>class</cite> DCFModelSerializer <cite>extends DCFSerializer</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-delegateserializer-extends-dcfserializer"><cite>class</cite> DelegateSerializer <cite>extends DCFSerializer</cite></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#method-get-read-delegate-class-self-instance-serializer"><cite>method</cite> .get_read_delegate_class <cite>(self, instance) -&gt; Serializer</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#method-get-create-delegate-class-self-initial-data-prevalidated-data-serializer"><cite>method</cite> .get_create_delegate_class <cite>(self, initial_data, prevalidated_data) -&gt; Serializer</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer"><cite>method</cite> .get_update_delegate_class <cite>(self, instance, initial_data, prevalidated_data) -&gt; Serializer</cite></a></li>
@@ -73,7 +74,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-permissions"><cite>module</cite> permissions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#func-add-perms-shortcut-user-or-group-model-or-instance-or-queryset-perms-field-name-none"><cite>func</cite> add_perms_shortcut <cite>(user_or_group, model_or_instance_or_queryset, perms, field_name=None)</cite></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#func-has-perms-shortcut-user-or-group-model-or-instance-perms-field-name-none-bool"><cite>func</cite> has_perms_shortcut <cite>(user_or_group, model_or_instance, perms, field_name=None ) -&gt; bool</cite></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#func-reset-permissions"><cite>func</cite> reset_permissions <cite>()</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#func-reset-permissions-classes"><cite>func</cite> reset_permissions <cite>(classes)</cite></a></li>
 </ul>
 </li>
 </ul>
@@ -110,8 +111,13 @@
 <h1>Backend API Reference<a class="headerlink" href="#backend-api-reference" title="Permalink to this headline"></a></h1>
 <div class="section" id="module-models">
 <h2><cite>module</cite> models<a class="headerlink" href="#module-models" title="Permalink to this headline"></a></h2>
-<div class="section" id="class-serializable">
-<span id="serializable"></span><h3><cite>class</cite> Serializable<a class="headerlink" href="#class-serializable" title="Permalink to this headline"></a></h3>
+<div class="section" id="class-dcfmodel-extends-abstractdcfmodel">
+<span id="dcfmodel"></span><h3><cite>class</cite> DCFModel <cite>extends AbstractDCFModel</cite><a class="headerlink" href="#class-dcfmodel-extends-abstractdcfmodel" title="Permalink to this headline"></a></h3>
+<p>Adds a <code class="docutils literal notranslate"><span class="pre">UUID</span></code> primary key and a <code class="docutils literal notranslate"><span class="pre">created_at</span></code> <cite>DateTimeField</cite> to the model.
+Every model must inherit from this class.</p>
+</div>
+<div class="section" id="class-serializable-extends-abstractdcfmodel">
+<span id="serializable"></span><h3><cite>class</cite> Serializable <cite>extends AbstractDCFModel</cite><a class="headerlink" href="#class-serializable-extends-abstractdcfmodel" title="Permalink to this headline"></a></h3>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span>
 </pre></div>
 </div>
@@ -121,32 +127,33 @@
 <p>Any <a class="reference internal" href="../client-refs/index.html#model"><span class="std std-ref">class Model</span></a> to be registered as an API must inherit this class.</p>
 </div>
 <p><strong>Inheritance</strong></p>
-<p>Subclasses of <a class="reference internal" href="#serializable">Serializable</a> must override <a class="reference internal" href="#serializable-serializer-class">Serializable.serializer_class()</a> which
-returns a <a class="reference internal" href="#serializer">Serializer</a> class.</p>
-<div class="section" id="classmethod-serializer-class-cls">
-<span id="serializable-serializer-class"></span><h4><cite>classmethod</cite> .serializer_class <cite>(cls)</cite><a class="headerlink" href="#classmethod-serializer-class-cls" title="Permalink to this headline"></a></h4>
+<p>Subclasses of <a class="reference internal" href="#serializable">Serializable</a> must override <a class="reference internal" href="#serializable-get-serializer-class">Serializable.get_serializer_class(…)</a> which
+returns a <a class="reference internal" href="#dcfserializer">DCFSerializer</a> class.</p>
+<div class="section" id="classmethod-get-serializer-class-cls-version-context">
+<span id="serializable-get-serializer-class"></span><h4><cite>classmethod</cite> .get_serializer_class <cite>(cls, version, context)</cite><a class="headerlink" href="#classmethod-get-serializer-class-cls-version-context" title="Permalink to this headline"></a></h4>
 <blockquote>
 <div><p><cite>required</cite></p>
-<p>Override this method to return the <a class="reference internal" href="#serializer">Serializer</a> class for the model.</p>
+<p>Override this method to return the <a class="reference internal" href="#dcfserializer">DCFSerializer</a> class for the model.</p>
 </div></blockquote>
 </div>
-<div class="section" id="property-serializer">
-<span id="serializable-serializer"></span><h4><cite>property</cite> .serializer<a class="headerlink" href="#property-serializer" title="Permalink to this headline"></a></h4>
+<div class="section" id="property-get-serializer-version-context">
+<span id="serializable-serializer"></span><h4><cite>property</cite> .get_serializer <cite>(version, context)</cite><a class="headerlink" href="#property-get-serializer-version-context" title="Permalink to this headline"></a></h4>
 <blockquote>
-<div><p>An instance of the <a class="reference internal" href="#serializer">Serializer</a> class returned by
-<a class="reference internal" href="#serializable-serializer-class">Serializable.serializer_class()</a>.</p>
+<div><p>An instance of the <a class="reference internal" href="#dcfserializer">DCFSerializer</a> class returned by
+<a class="reference internal" href="#serializable-get-serializer-class">Serializable.get_serializer_class(…)</a>.</p>
 </div></blockquote>
 </div>
 <div class="section" id="classmethod-get-serialization-cache-timeout-cls">
 <span id="serializable-get-serialization-cache-timeout"></span><h4><cite>classmethod</cite> .get_serialization_cache_timeout <cite>(cls)</cite><a class="headerlink" href="#classmethod-get-serialization-cache-timeout-cls" title="Permalink to this headline"></a></h4>
 <blockquote>
-<div><p>Override this method to change how long to cache the serialized
-data in seconds.</p>
+<div><p>Override this method to change how long to cache the serialized data in
+seconds. Setting to <code class="docutils literal notranslate"><span class="pre">0</span></code> disables the cache.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
 </div></blockquote>
 </div>
 </div>
-<div class="section" id="class-accesscontrolled">
-<span id="accesscontrolled"></span><h3><cite>class</cite> AccessControlled<a class="headerlink" href="#class-accesscontrolled" title="Permalink to this headline"></a></h3>
+<div class="section" id="class-accesscontrolled-extends-abstractdcfmodel">
+<span id="accesscontrolled"></span><h3><cite>class</cite> AccessControlled <cite>extends AbstractDCFModel</cite><a class="headerlink" href="#class-accesscontrolled-extends-abstractdcfmodel" title="Permalink to this headline"></a></h3>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">AccessControlled</span>
 </pre></div>
 </div>
@@ -203,16 +210,16 @@ custom prefix.</p>
 </div>
 <div class="section" id="module-serializers">
 <h2><cite>module</cite> serializers<a class="headerlink" href="#module-serializers" title="Permalink to this headline"></a></h2>
-<div class="section" id="class-serializer">
-<span id="serializer"></span><h3><cite>class</cite> Serializer<a class="headerlink" href="#class-serializer" title="Permalink to this headline"></a></h3>
-<p>An abstract base class of <a class="reference internal" href="#modelserializer">ModelSerializer</a> and <a class="reference internal" href="#delegateserializer">DelegateSerializer</a>.</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">Serializer</span>
+<div class="section" id="class-dcfserializer-extends-serializer">
+<span id="dcfserializer"></span><h3><cite>class</cite> DCFSerializer <cite>extends Serializer</cite><a class="headerlink" href="#class-dcfserializer-extends-serializer" title="Permalink to this headline"></a></h3>
+<p>An abstract base class of <a class="reference internal" href="#dcfmodelserializer">DCFModelSerializer</a> and <a class="reference internal" href="#delegateserializer">DelegateSerializer</a>.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFSerializer</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="class-modelserializer-extends-serializer">
-<span id="modelserializer"></span><h3><cite>class</cite> ModelSerializer <cite>extends Serializer</cite><a class="headerlink" href="#class-modelserializer-extends-serializer" title="Permalink to this headline"></a></h3>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<div class="section" id="class-dcfmodelserializer-extends-dcfserializer">
+<span id="dcfmodelserializer"></span><h3><cite>class</cite> DCFModelSerializer <cite>extends DCFSerializer</cite><a class="headerlink" href="#class-dcfmodelserializer-extends-dcfserializer" title="Permalink to this headline"></a></h3>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
 </pre></div>
 </div>
 <p>This class is agnostic to <a class="reference external" href="https://www.django-rest-framework.org/api-guide/serializers/#modelserializer">Django Rest Framework (DRF)’s ModelSerializer</a>. The usage is exactly the same as DRF.</p>
@@ -222,23 +229,23 @@ custom prefix.</p>
 will not work properly!</p>
 </div>
 <p><strong>Example</strong></p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
 
-<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">Product</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="class-delegateserializer-extends-serializer">
-<span id="delegateserializer"></span><h3><cite>class</cite> DelegateSerializer <cite>extends Serializer</cite><a class="headerlink" href="#class-delegateserializer-extends-serializer" title="Permalink to this headline"></a></h3>
+<div class="section" id="class-delegateserializer-extends-dcfserializer">
+<span id="delegateserializer"></span><h3><cite>class</cite> DelegateSerializer <cite>extends DCFSerializer</cite><a class="headerlink" href="#class-delegateserializer-extends-dcfserializer" title="Permalink to this headline"></a></h3>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DelegateSerializer</span>
 </pre></div>
 </div>
 <p>This class allows for multiple serializers to be used on one model class. The
 class conforms to the Serializer interface, therefore, it can be returned from
-the <a class="reference internal" href="#serializable-serializer-class">Serializable.serializer_class()</a> method.  You can dispatch the request to
+the <a class="reference internal" href="#serializable-get-serializer-class">Serializable.get_serializer_class(…)</a> method.  You can dispatch the request to
 one of the serializers.</p>
 <p><strong>Inheritance</strong></p>
 <p>You must override all these methods:
@@ -254,7 +261,7 @@ one of the serializers.</p>
 passed to the constructor.</p>
 </dd>
 </dl>
-<p>Override this method to return a <a class="reference internal" href="#serializer">Serializer</a> class that’s only used for
+<p>Override this method to return a <a class="reference internal" href="#dcfserializer">DCFSerializer</a> class that’s only used for
 model deserialization. This is the case when the <a class="reference internal" href="#delegateserializer">DelegateSerializer</a> is
 initialized with only the <code class="docutils literal notranslate"><span class="pre">instance</span></code> parameter.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">product</span> <span class="o">=</span> <span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
@@ -273,7 +280,7 @@ initialized with only the <code class="docutils literal notranslate"><span class
 the constructor.</p>
 </dd>
 </dl>
-<p>Override this method to return a <a class="reference internal" href="#serializer">Serializer</a> class that’s only used for
+<p>Override this method to return a <a class="reference internal" href="#dcfserializer">DCFSerializer</a> class that’s only used for
 model instance creation. This is the case when the <a class="reference internal" href="#delegateserializer">DelegateSerializer</a> is
 initialized with only the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">delegated</span> <span class="o">=</span> <span class="n">DelegateSerializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;barcode&quot;</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span><span class="p">})</span>
@@ -294,7 +301,7 @@ passed to the constructor.</p>
 the constructor.</p>
 </dd>
 </dl>
-<p>Override this method to return a <a class="reference internal" href="#serializer">Serializer</a> class that’s only used for
+<p>Override this method to return a <a class="reference internal" href="#dcfserializer">DCFSerializer</a> class that’s only used for
 partial updating an model instance. This is the case when the
 <a class="reference internal" href="#delegateserializer">DelegateSerializer</a> is initialized with both the <code class="docutils literal notranslate"><span class="pre">data</span></code> and the
 <code class="docutils literal notranslate"><span class="pre">instance</span></code> parameter.</p>
@@ -385,15 +392,14 @@ account the permissions assigned on the <code class="docutils literal notranslat
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="func-reset-permissions">
-<span id="reset-permissions"></span><h3><cite>func</cite> reset_permissions <cite>()</cite><a class="headerlink" href="#func-reset-permissions" title="Permalink to this headline"></a></h3>
+<div class="section" id="func-reset-permissions-classes">
+<span id="reset-permissions"></span><h3><cite>func</cite> reset_permissions <cite>(classes)</cite><a class="headerlink" href="#func-reset-permissions-classes" title="Permalink to this headline"></a></h3>
 <blockquote>
 <div><div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">reset_permissions</span>
 </pre></div>
 </div>
-<p>Clears all permissions assigned in the application, and for each model that is a
-subclass of <a class="reference internal" href="#accesscontrolled">AccessControlled</a>, set up the permissions by calling
-<code class="docutils literal notranslate"><span class="pre">PermissionManager.reset_perms()</span></code>.</p>
+<p>Takes a list of subclass of <a class="reference internal" href="#accesscontrolled">AccessControlled</a>, sets up the permissions by
+calling <code class="docutils literal notranslate"><span class="pre">PermissionManager.reset_perms()</span></code>.</p>
 <p>When ever the permission structure changes in your application, you need to call
 this function manually, or automatically in a django data migration.</p>
 </div></blockquote>

@@ -24,7 +24,9 @@ class Serializable(AbstractDCFModel, Generic[T]):
 
     @classmethod
     def get_serializer_class(cls, *, version: str, context: Dict[str, Any]) -> Type[T]:
-        raise NotImplementedError(f"{cls} must implement .get_serializer_class()")
+        raise NotImplementedError(
+            f"{cls} must implement .get_serializer_class(version, context)"
+        )
 
     def get_serializer(self, *, version: str, context: Dict[str, Any], **kwargs) -> T:
         return self.get_serializer_class(version=version, context=context)(
@@ -151,5 +153,5 @@ def check_integrity():
             issubclass(sercls, Serializer) or issubclass(sercls, DelegateSerializer)
         ):
             raise NotImplementedError(
-                f"{model}.serializer_class() does not return a Serialzer class "
+                f"{model}.get_serializer_class() does not return a Serialzer class "
             )

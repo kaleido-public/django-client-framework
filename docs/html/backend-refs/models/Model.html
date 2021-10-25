@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>class Serializable extends AbstractDCFModel &mdash; Django Client Framework  documentation</title>
+  <title>class DCFModel extends AbstractDCFModel &mdash; Django Client Framework  documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
@@ -57,9 +57,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li><cite>class</cite> Serializable <cite>extends AbstractDCFModel</cite></li>
+      <li><cite>class</cite> DCFModel <cite>extends AbstractDCFModel</cite></li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/backend-refs/models/Serializable.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/backend-refs/models/Model.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -67,41 +67,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="class-serializable-extends-abstractdcfmodel">
-<span id="serializable"></span><h1><cite>class</cite> Serializable <cite>extends AbstractDCFModel</cite><a class="headerlink" href="#class-serializable-extends-abstractdcfmodel" title="Permalink to this headline"></a></h1>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span>
-</pre></div>
-</div>
-<p>This abstract model class provides caches for serialization.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Any <a class="reference internal" href="../../client-refs/index.html#model"><span class="std std-ref">class Model</span></a> to be registered as an API must inherit this class.</p>
-</div>
-<p><strong>Inheritance</strong></p>
-<p>Subclasses of <a class="reference internal" href="#serializable">Serializable</a> must override <a class="reference internal" href="#serializable-get-serializer-class">Serializable.get_serializer_class(…)</a> which
-returns a <a href="#id1"><span class="problematic" id="id2">`DCFSerializer`_</span></a> class.</p>
-<div class="section" id="classmethod-get-serializer-class-cls-version-context">
-<span id="serializable-get-serializer-class"></span><h2><cite>classmethod</cite> .get_serializer_class <cite>(cls, version, context)</cite><a class="headerlink" href="#classmethod-get-serializer-class-cls-version-context" title="Permalink to this headline"></a></h2>
-<blockquote>
-<div><p><cite>required</cite></p>
-<p>Override this method to return the <a href="#id3"><span class="problematic" id="id4">`DCFSerializer`_</span></a> class for the model.</p>
-</div></blockquote>
-</div>
-<div class="section" id="property-get-serializer-version-context">
-<span id="serializable-serializer"></span><h2><cite>property</cite> .get_serializer <cite>(version, context)</cite><a class="headerlink" href="#property-get-serializer-version-context" title="Permalink to this headline"></a></h2>
-<blockquote>
-<div><p>An instance of the <a href="#id5"><span class="problematic" id="id6">`DCFSerializer`_</span></a> class returned by
-<a class="reference internal" href="#serializable-get-serializer-class">Serializable.get_serializer_class(…)</a>.</p>
-</div></blockquote>
-</div>
-<div class="section" id="classmethod-get-serialization-cache-timeout-cls">
-<span id="serializable-get-serialization-cache-timeout"></span><h2><cite>classmethod</cite> .get_serialization_cache_timeout <cite>(cls)</cite><a class="headerlink" href="#classmethod-get-serialization-cache-timeout-cls" title="Permalink to this headline"></a></h2>
-<blockquote>
-<div><p>Override this method to change how long to cache the serialized data in
-seconds. Setting to <code class="docutils literal notranslate"><span class="pre">0</span></code> disables the cache.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
-</div></blockquote>
-</div>
+  <div class="section" id="class-dcfmodel-extends-abstractdcfmodel">
+<span id="dcfmodel"></span><h1><cite>class</cite> DCFModel <cite>extends AbstractDCFModel</cite><a class="headerlink" href="#class-dcfmodel-extends-abstractdcfmodel" title="Permalink to this headline"></a></h1>
+<p>Adds a <code class="docutils literal notranslate"><span class="pre">UUID</span></code> primary key and a <code class="docutils literal notranslate"><span class="pre">created_at</span></code> <cite>DateTimeField</cite> to the model.
+Every model must inherit from this class.</p>
 </div>
 
 

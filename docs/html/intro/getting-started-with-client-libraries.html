@@ -120,7 +120,7 @@ extend the <a class="reference internal" href="../client-refs/index.html#model">
 
 <span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="nx">brand_id?</span>: <span class="kt">number</span>
 <span class="p">}</span>
@@ -146,7 +146,8 @@ class.</p>
 <span class="cm">    PageResult {</span>
 <span class="cm">        page: 1,</span>
 <span class="cm">        limit: 50,</span>
-<span class="cm">        total: 1,</span>
+<span class="cm">        pages_count: 1,</span>
+<span class="cm">        objects_count: 1,</span>
 <span class="cm">        previous: null,</span>
 <span class="cm">        next: null,</span>
 <span class="cm">        objects: [ Product { id: 1, barcode: &#39;xxyy&#39;, brand_id: 1 } ]</span>
@@ -168,15 +169,17 @@ modify and delete objects. See the full set of APIs here. [todo]</p>
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-3-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-3-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-3-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span> <span class="nx">Model</span><span class="p">,</span> <span class="nx">CollectionManager</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;django-client-framework&quot;</span>
 
 <span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="nx">_model_name</span> <span class="o">=</span> <span class="s2">&quot;Product&quot;</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="nx">brand_id?</span>: <span class="kt">number</span>
 <span class="p">}</span>
 
 <span class="kd">class</span> <span class="nx">Brand</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="nx">_model_name</span> <span class="o">=</span> <span class="s2">&quot;Brand&quot;</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">)</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">name</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -189,17 +192,19 @@ modify and delete objects. See the full set of APIs here. [todo]</p>
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-4-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-4-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-4-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-4-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span> <span class="nx">Model</span><span class="p">,</span> <span class="nx">CollectionManager</span><span class="p">,</span> <span class="nx">RelatedObjectManager</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;django-client-framework&quot;</span>
 
 <span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="nx">_model_name</span> <span class="o">=</span> <span class="s2">&quot;Product&quot;</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
     <span class="nx">get</span> <span class="nx">brand</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="ow">new</span> <span class="nx">RelatedObjectManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s2">&quot;brand&quot;</span><span class="p">)</span> <span class="p">}</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="nx">brand_id?</span>: <span class="kt">number</span>
 <span class="p">}</span>
 
 <span class="kd">class</span> <span class="nx">Brand</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="nx">_model_name</span> <span class="o">=</span> <span class="s2">&quot;Brand&quot;</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">)</span>
     <span class="nx">get</span> <span class="nx">products</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="ow">new</span> <span class="nx">RelatedCollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s2">&quot;products&quot;</span><span class="p">)</span> <span class="p">}</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">name</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 <span class="p">}</span>
 </pre></div>

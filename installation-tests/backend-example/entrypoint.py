@@ -5,6 +5,8 @@ import unittest
 from pathlib import Path
 from subprocess import Popen, SubprocessError, run
 
+from schema import Schema
+
 PROJ = Path("/_out")
 
 
@@ -79,8 +81,8 @@ def create_objects():
         env=env,
         input="""
 from dcf_backend_example.common.models import Product, Brand
-nike = Brand.objects.create(name="nike")
-Product.objects.create(barcode="xxyy", brand=nike)
+nike = Brand.objects.create(id="123e4567-e89b-12d3-a456-426614174000", name="nike")
+Product.objects.create(id="fcd12d1d-5f9f-40b9-a8b8-2d7b8d1f6f2f", barcode="xxyy", brand=nike)
 """,
     )
 
@@ -146,43 +148,57 @@ class Test(unittest.TestCase):
         result = shell("curl http://localhost:8000/product", capture_output=True)
         self.assertEqual(result.returncode, 0)
         response = json.loads(result.stdout)
-        self.assertEqual(response["total"], 1)
-        self.assertEqual(
-            response["objects"],
-            [{"id": 1, "barcode": "xxyy", "brand_id": 1}],
-        )
+        Schema(
+            {
+                "pages_count": 1,
+                "objects_count": 1,
+                "objects": [{"id": str, "barcode": "xxyy", "brand_id": str}],
+            },
+            ignore_extra_keys=True,
+        ).validate(response)
 
     def query_product(self):
-        result = shell("curl http://localhost:8000/product/1", capture_output=True)
+        result = shell(
+            "curl http://localhost:8000/product/fcd12d1d-5f9f-40b9-a8b8-2d7b8d1f6f2f",
+            capture_output=True,
+        )
         self.assertEqual(result.returncode, 0)
         response = json.loads(result.stdout)
-        self.assertEqual(response, {"id": 1, "barcode": "xxyy", "brand_id": 1})
+        Schema({"id": str, "barcode": "xxyy", "brand_id": str}).validate(response)
 
     def query_product_brand(self):
         result = shell(
-            "curl http://localhost:8000/product/1/brand", capture_output=True
+            "curl http://localhost:8000/product/fcd12d1d-5f9f-40b9-a8b8-2d7b8d1f6f2f/brand",
+            capture_output=True,
         )
         self.assertEqual(result.returncode, 0)
         response = json.loads(result.stdout)
-        self.assertEqual(response, {"id": 1, "name": "nike"})
+        Schema({"id": str, "name": "nike"}).validate(response)
 
     def query_brand(self):
-        result = shell("curl http://localhost:8000/brand/1", capture_output=True)
+        result = shell(
+            "curl http://localhost:8000/brand/123e4567-e89b-12d3-a456-426614174000",
+            capture_output=True,
+        )
         self.assertEqual(result.returncode, 0)
         response = json.loads(result.stdout)
-        self.assertEqual(response, {"id": 1, "name": "nike"})
+        Schema({"id": str, "name": "nike"}).validate(response)
 
     def query_brand_product_list(self):
         result = shell(
-            "curl http://localhost:8000/brand/1/products", capture_output=True
+            "curl http://localhost:8000/brand/123e4567-e89b-12d3-a456-426614174000/products",
+            capture_output=True,
         )
         self.assertEqual(result.returncode, 0)
         response = json.loads(result.stdout)
-        self.assertEqual(response["total"], 1)
-        self.assertEqual(
-            response["objects"],
-            [{"id": 1, "barcode": "xxyy", "brand_id": 1}],
-        )
+        Schema(
+            {
+                "pages_count": 1,
+                "objects_count": 1,
+                "objects": [{"id": str, "barcode": "xxyy", "brand_id": str}],
+            },
+            ignore_extra_keys=True,
+        ).validate(response)
 
     def test_main(self):
         server = None

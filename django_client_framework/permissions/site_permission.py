@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, List, Literal, Type, TypeVar, cast, overload
+from typing import Any, List, Literal, Type, TypeVar, cast, overload
 
 from deprecation import deprecated
 from django.contrib.auth import get_user_model
@@ -14,10 +14,8 @@ from django.db.models.query import QuerySet
 from guardian import models as gm
 from guardian import shortcuts as gs
 
+from ..models.abstract.access_controlled import AccessControlled
 from .default_groups import default_groups
-
-if TYPE_CHECKING:
-    from ..models.abstract.access_controlled import AccessControlled
 
 LOG = getLogger(__name__)
 
@@ -243,7 +241,9 @@ def clear_permissions():
         Group.objects.exclude(m.Q(name="anyone") | m.Q(name="logged_in")).delete()
 
 
-def reset_permissions(for_classes: List[Type["AccessControlled"]]):
+def reset_permissions(
+    for_classes: List[Type["AccessControlled"]] = AccessControlled.__subclasses__(),
+):
     # set user self permission
     # must be done after all default users are added
     total_model_count = len(for_classes)

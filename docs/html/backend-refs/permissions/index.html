@@ -143,15 +143,14 @@ account the permissions assigned on the <code class="docutils literal notranslat
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="func-reset-permissions">
-<span id="reset-permissions"></span><h1><cite>func</cite> reset_permissions <cite>()</cite><a class="headerlink" href="#func-reset-permissions" title="Permalink to this headline"></a></h1>
+<div class="section" id="func-reset-permissions-classes">
+<span id="reset-permissions"></span><h1><cite>func</cite> reset_permissions <cite>(classes)</cite><a class="headerlink" href="#func-reset-permissions-classes" title="Permalink to this headline"></a></h1>
 <blockquote>
 <div><div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">reset_permissions</span>
 </pre></div>
 </div>
-<p>Clears all permissions assigned in the application, and for each model that is a
-subclass of <a href="#id3"><span class="problematic" id="id4">`AccessControlled`_</span></a>, set up the permissions by calling
-<code class="docutils literal notranslate"><span class="pre">PermissionManager.reset_perms()</span></code>.</p>
+<p>Takes a list of subclass of <a href="#id3"><span class="problematic" id="id4">`AccessControlled`_</span></a>, sets up the permissions by
+calling <code class="docutils literal notranslate"><span class="pre">PermissionManager.reset_perms()</span></code>.</p>
 <p>When ever the permission structure changes in your application, you need to call
 this function manually, or automatically in a django data migration.</p>
 </div></blockquote>

@@ -1,7 +1,4 @@
-FROM alpine
-
-RUN apk add --no-cache python3 py3-pip postgresql \
-    postgresql-dev gcc python3-dev musl-dev
+FROM python:3
 
 RUN mkdir /_work
 WORKDIR /_work

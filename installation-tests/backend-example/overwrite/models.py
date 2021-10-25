@@ -1,17 +1,17 @@
 from django.db.models import CASCADE, CharField, ForeignKey
 
 from django_client_framework.api import register_api_model
-from django_client_framework.models import AccessControlled, Serializable
+from django_client_framework.models import AccessControlled, DCFModel, Serializable
 from django_client_framework.permissions import add_perms_shortcut, default_groups
-from django_client_framework.serializers import ModelSerializer
+from django_client_framework.serializers import DCFModelSerializer
 
 
 @register_api_model
-class Brand(Serializable, AccessControlled):
+class Brand(DCFModel, Serializable, AccessControlled):
     name = CharField(max_length=16)
 
     @classmethod
-    def serializer_class(cls):
+    def get_serializer_class(cls, version, context):
         return BrandSerializer
 
     class PermissionManager(AccessControlled.PermissionManager):
@@ -19,19 +19,19 @@ class Brand(Serializable, AccessControlled):
             add_perms_shortcut(default_groups.anyone, brand, "r")
 
 
-class BrandSerializer(ModelSerializer):
+class BrandSerializer(DCFModelSerializer):
     class Meta:
         model = Brand
-        exclude = []
+        fields = ["id", "name"]
 
 
 @register_api_model
-class Product(Serializable, AccessControlled):
+class Product(DCFModel, Serializable, AccessControlled):
     barcode = CharField(max_length=32)
     brand = ForeignKey("Brand", related_name="products", on_delete=CASCADE, null=True)
 
     @classmethod
-    def serializer_class(cls):
+    def get_serializer_class(cls, version, context):
         return ProductSerializer
 
     class PermissionManager(AccessControlled.PermissionManager):
@@ -39,7 +39,7 @@ class Product(Serializable, AccessControlled):
             add_perms_shortcut(default_groups.anyone, product, "r")
 
 
-class ProductSerializer(ModelSerializer):
+class ProductSerializer(DCFModelSerializer):
     class Meta:
         model = Product
-        exclude = []
+        fields = ["id", "barcode", "brand_id"]

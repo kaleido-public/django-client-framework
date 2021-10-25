@@ -28,9 +28,20 @@ def install_prettier():
         run(["npm", "-g", "install", "prettier"])
 
 
+def install_poetry():
+    if run(["which", "poetry"]).returncode != 0:
+        run(["pip3", "install", "poetry"])
+
+
+def install_dependencies():
+    run(["poetry", "install"])
+
+
 if __name__ == "__main__":
     install_black()
     install_flake8()
     install_node()
     install_npm()
     install_prettier()
+    install_poetry()
+    install_dependencies()

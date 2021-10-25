@@ -25,7 +25,7 @@ class Brand(DCFModel, Serializable, AccessControlled):
 class BrandSerializer(DCFModelSerializer):
     class Meta:
         model = Brand
-        exclude = []
+        fields = ["id", "name"]
 
 
 @register_api_model
@@ -48,4 +48,4 @@ class Product(DCFModel, Serializable, AccessControlled):
 class ProductSerializer(DCFModelSerializer):
     class Meta:
         model = Product
-        exclude = []
+        fields = ["id", "barcode", "brand_id"]
