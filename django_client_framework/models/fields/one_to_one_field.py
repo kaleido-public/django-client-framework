@@ -10,7 +10,7 @@ from ..abstract import DCFModel
 T = TypeVar("T", bound=DCFModel)
 
 
-class UniqueForeignKey(Generic[T], OneToOneField[T]):
+class UniqueForeignKey(OneToOneField[T], Generic[T]):
     """
     This class fix django's OneToOneField's historical problem, where accessing
     through the reverse relation when the object does not exist would raise an
