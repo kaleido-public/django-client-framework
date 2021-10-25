@@ -694,7 +694,7 @@ language only allows access on defined properties.</p>
 <a class="reference internal" href="#collectionmanager-page">CollectionManager.page(…)</a> type safe? There are two types of difficulties we
 must take into consideration. First, you need to realize that the backend modal
 API such as <code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/product/1</span></code> does not only accept valid properties that are
-defined on the model. In fact, the backend could use <a class="reference internal" href="../backend-refs/index.html#delegateserializer"><span class="std std-ref">class DelegateSerializer extends DCFSerializer</span></a>
+defined on the model. In fact, the backend could use <a class="reference internal" href="../backend-refs/serializers/DelegateSerializer.html#delegateserializer"><span class="std std-ref">class DelegateSerializer extends DCFSerializer</span></a>
 to accept a variaty of key-value pairs. For instance, if a <cite>User</cite> model API is
 designed to change user password, the backend will expect an request such as:</p>
 <div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span>// PATCH /user/1
@@ -705,7 +705,7 @@ designed to change user password, the backend will expect an request such as:</p
 }
 </pre></div>
 </div>
-<p>The backend can achieve this with the <a class="reference internal" href="../backend-refs/index.html#delegateserializer"><span class="std std-ref">class DelegateSerializer extends DCFSerializer</span></a> class. However,
+<p>The backend can achieve this with the <a class="reference internal" href="../backend-refs/serializers/DelegateSerializer.html#delegateserializer"><span class="std std-ref">class DelegateSerializer extends DCFSerializer</span></a> class. However,
 neither <code class="docutils literal notranslate"><span class="pre">old_password</span></code> and <code class="docutils literal notranslate"><span class="pre">new_password</span></code> are keys on the <cite>User</cite> model.</p>
 <p>To resolve this issue, we can consider making the <a class="reference internal" href="#objectmanager-update">ObjectManager.update(…)</a> a
 generic method such as:</p>

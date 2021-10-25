@@ -33,7 +33,7 @@ Others
 
         class Product extends Model {
             static readonly objects = new CollectionManager(Product)
-            id: number = 0
+            id!: string
             barcode: string = ""
             brand_id: number?
             get brand() { return new RelatedObjectManager(Brand, this, "brand") }

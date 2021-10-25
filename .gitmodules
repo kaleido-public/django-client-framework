@@ -1,3 +1,0 @@
-[submodule "clients/django-client-framework-typescript"]
-	path = clients/django-client-framework-typescript
-	url = https://github.com/cozybearca/django-client-framework-typescript.git
