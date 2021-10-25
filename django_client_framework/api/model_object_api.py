@@ -58,8 +58,7 @@ class ModelObjectAPI(BaseModelAPI):
             data=self.request_data,
             partial=True,
         )
-        if not serializer.is_valid(raise_exception=True):
-            raise e.ValidationError("Validation Error")
+        serializer.is_valid(raise_exception=True)
         # User can have either write permission to model, object, or to a field
         # check permission for related objects
         for field_name, field_val in serializer.validated_data.items():
