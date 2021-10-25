@@ -1,7 +1,7 @@
 version: "3"
 services:
-  dcf-test-alpine:
+  unit-tests-ci:
     build:
       context: ..
-      dockerfile: unit-tests/alpine.dockerfile
-    image: dcf-test-alpine
+      dockerfile: unit-tests/Dockerfile
+    image: unit-tests-ci

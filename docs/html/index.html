@@ -113,13 +113,14 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="backend-refs/index.html">Backend API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="backend-refs/index.html#module-models"><cite>module</cite> models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-serializable"><cite>class</cite> Serializable</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#classmethod-serializer-class-cls"><cite>classmethod</cite> .serializer_class <cite>(cls)</cite></a></li>
-<li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#property-serializer"><cite>property</cite> .serializer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-dcfmodel-extends-abstractdcfmodel"><cite>class</cite> DCFModel <cite>extends AbstractDCFModel</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-serializable-extends-abstractdcfmodel"><cite>class</cite> Serializable <cite>extends AbstractDCFModel</cite></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#classmethod-get-serializer-class-cls-version-context"><cite>classmethod</cite> .get_serializer_class <cite>(cls, version, context)</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#property-get-serializer-version-context"><cite>property</cite> .get_serializer <cite>(version, context)</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#classmethod-get-serialization-cache-timeout-cls"><cite>classmethod</cite> .get_serialization_cache_timeout <cite>(cls)</cite></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-accesscontrolled"><cite>class</cite> AccessControlled</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-accesscontrolled-extends-abstractdcfmodel"><cite>class</cite> AccessControlled <cite>extends AbstractDCFModel</cite></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#classmethod-get-permissionmanager-class-cls"><cite>classmethod</cite> .get_permissionmanager_class <cite>(cls)</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#class-permissionmanager"><cite>class</cite> .PermissionManager</a></li>
 </ul>
@@ -131,9 +132,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="backend-refs/index.html#module-serializers"><cite>module</cite> serializers</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-serializer"><cite>class</cite> Serializer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-modelserializer-extends-serializer"><cite>class</cite> ModelSerializer <cite>extends Serializer</cite></a></li>
-<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-delegateserializer-extends-serializer"><cite>class</cite> DelegateSerializer <cite>extends Serializer</cite></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-dcfserializer-extends-serializer"><cite>class</cite> DCFSerializer <cite>extends Serializer</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-dcfmodelserializer-extends-dcfserializer"><cite>class</cite> DCFModelSerializer <cite>extends DCFSerializer</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-delegateserializer-extends-dcfserializer"><cite>class</cite> DelegateSerializer <cite>extends DCFSerializer</cite></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#method-get-read-delegate-class-self-instance-serializer"><cite>method</cite> .get_read_delegate_class <cite>(self, instance) -&gt; Serializer</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#method-get-create-delegate-class-self-initial-data-prevalidated-data-serializer"><cite>method</cite> .get_create_delegate_class <cite>(self, initial_data, prevalidated_data) -&gt; Serializer</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer"><cite>method</cite> .get_update_delegate_class <cite>(self, instance, initial_data, prevalidated_data) -&gt; Serializer</cite></a></li>
@@ -144,7 +145,7 @@
 <li class="toctree-l2"><a class="reference internal" href="backend-refs/index.html#module-permissions"><cite>module</cite> permissions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#func-add-perms-shortcut-user-or-group-model-or-instance-or-queryset-perms-field-name-none"><cite>func</cite> add_perms_shortcut <cite>(user_or_group, model_or_instance_or_queryset, perms, field_name=None)</cite></a></li>
 <li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#func-has-perms-shortcut-user-or-group-model-or-instance-perms-field-name-none-bool"><cite>func</cite> has_perms_shortcut <cite>(user_or_group, model_or_instance, perms, field_name=None ) -&gt; bool</cite></a></li>
-<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#func-reset-permissions"><cite>func</cite> reset_permissions <cite>()</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#func-reset-permissions-classes"><cite>func</cite> reset_permissions <cite>(classes)</cite></a></li>
 </ul>
 </li>
 </ul>

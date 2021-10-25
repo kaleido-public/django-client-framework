@@ -6,21 +6,23 @@ import {
 } from "django-client-framework"
 
 class Product extends Model {
+    _model_name = "Product"
     static readonly objects = new CollectionManager(Product)
     get brand() {
         return new RelatedObjectManager(Brand, this, "brand")
     }
-    id: number = 0
+    id!: string
     barcode: string = ""
     brand_id?: number
 }
 
 class Brand extends Model {
+    _model_name = "Brand"
     static readonly objects = new CollectionManager(Brand)
     get products() {
         return new RelatedCollectionManager(Product, this, "products")
     }
-    id: number = 0
+    id!: string
     name: string = ""
 }
 

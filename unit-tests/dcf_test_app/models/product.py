@@ -2,8 +2,7 @@ import logging
 
 from django_client_framework import models as m
 from django_client_framework.api import register_api_model
-from django_client_framework.models import Serializable
-from django_client_framework.models.abstract.model import DCFModel
+from django_client_framework.models import DCFModel, Serializable
 from django_client_framework.serializers.model_serializer import DCFModelSerializer
 
 LOG = logging.getLogger(__name__)

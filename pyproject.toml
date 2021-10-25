@@ -34,6 +34,7 @@ flake8 = "^3.9.2"
 pylint = "^2.10.2"
 autoflake = "^1.4"
 isort = "^5.9.3"
+schema = "^0.7.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

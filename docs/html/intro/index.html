@@ -301,64 +301,64 @@ follows:</p>
 <h3>Add a Serializable model<a class="headerlink" href="#add-a-serializable-model" title="Permalink to this headline"></a></h3>
 <p>To add a model, create a model that extends from
 <code class="docutils literal notranslate"><span class="pre">django_client_framework.models.Serializable</span></code>. For instance:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
 
-<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">):</span>
     <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p>If you are not familiar with <a class="reference external" href="https://docs.djangoproject.com/en/3.1/ref/models/instances">Model</a>, you haven’t
-completed the basic tutorial for Django. See [todo].</p>
+completed the basic tutorial for Django.</p>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">Serializable</span></code> requires <code class="docutils literal notranslate"><span class="pre">Product</span></code> to implement a class method named
-<code class="docutils literal notranslate"><span class="pre">.serializer_class()</span></code>, which should return a <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code>. This class is
-responsible for converting back and forth betwen a JSON object and a class
-object, ie, serialization and deserialization.</p>
+<code class="docutils literal notranslate"><span class="pre">.get_serializer_class()</span></code>, which should return a <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> class.
+This class is responsible for converting back and forth betwen a JSON object and
+a class object, ie, serialization and deserialization.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p>If you are unfarmiliar with <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> in Django Rest Framework,
 complete this tutorial for Django Rest Framework first. [todo]</p>
 </div>
-<p>To define a <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> for <code class="docutils literal notranslate"><span class="pre">Product</span></code>, we create another class that
-inherits from <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code>:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<p>To define a <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> for <code class="docutils literal notranslate"><span class="pre">Product</span></code>, we create another class that
+inherits from <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
 
-<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
-        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">,</span> <span class="s2">&quot;brand_id&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="admonition error">
 <p class="admonition-title">Error</p>
-<p>Django Client Framework’s <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> is a subclass of Django Rest
-Framework’s <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> class with some methods overriden. Although
+<p>Django Client Framework’s <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> is a subclass of Django Rest
+Framework’s <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> class with some methods overriden. Although
 they mostly have the same syntax and usage, do not confuse them with one
 another! You should always use
 <code class="docutils literal notranslate"><span class="pre">django_client_framework.serializers.ModelSerializer</span></code>. If you use the Django
-Rest Framework’s version of the <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> by mistake, then some of
+Rest Framework’s version of the <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> by mistake, then some of
 our API features won’t work!</p>
 </div>
-<p>Finally, we return this class from the <code class="docutils literal notranslate"><span class="pre">.serializer_class()</span></code> method. The final code
+<p>Finally, we return this class from the <code class="docutils literal notranslate"><span class="pre">.get_serializer_class()</span></code> method. The final code
 looks like this:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span>
-<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
 
 <span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">):</span>
     <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ProductSerializer</span>
 
-<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
-        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">,</span> <span class="s2">&quot;brand_id&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Now you can run migration to apply the new model.</p>
@@ -387,17 +387,17 @@ named <code class="docutils literal notranslate"><span class="pre">PermissionMan
 <p>To give anyone the read permission to the Product model, we import the
 <code class="docutils literal notranslate"><span class="pre">default_groups.anyone</span></code> and <code class="docutils literal notranslate"><span class="pre">add_perms_shortcut</span></code> from
 <code class="docutils literal notranslate"><span class="pre">django_client_framework.permissions</span></code> and use them to set the permissions.</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
-<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
 <span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span><span class="p">,</span> <span class="n">add_perms_shortcut</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
 
 
-<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
     <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ProductSerializer</span>
 
     <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
@@ -405,10 +405,10 @@ named <code class="docutils literal notranslate"><span class="pre">PermissionMan
             <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
-        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">,</span> <span class="s2">&quot;brand_id&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Now to refresh the permission stored in the database, run this in Django shell:</p>
@@ -434,7 +434,7 @@ the permission is changed on a model.</p>
 <code class="docutils literal notranslate"><span class="pre">&#64;register_api_model</span></code> decorator. Add <code class="docutils literal notranslate"><span class="pre">&#64;register_api_model</span></code> to the <cite>Product</cite>
 class.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
-<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
 <span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span><span class="p">,</span> <span class="n">add_perms_shortcut</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
 <span class="kn">from</span> <span class="nn">django_client_framework.api</span> <span class="kn">import</span> <span class="n">register_api_model</span>
@@ -444,7 +444,7 @@ class.</p>
     <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ProductSerializer</span>
 
     <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
@@ -452,10 +452,10 @@ class.</p>
             <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
-        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">,</span> <span class="s2">&quot;brand_id&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Now that the <code class="docutils literal notranslate"><span class="pre">Product</span></code> model is correctly configured, you can create a
@@ -477,7 +477,8 @@ class.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/product/
 
 <span class="c1">#   {</span>
-<span class="c1">#       total: 1,</span>
+<span class="c1">#       pages_count: 1,</span>
+<span class="c1">#       objects_count: 1,</span>
 <span class="c1">#       limit: 50,</span>
 <span class="c1">#       page: 1,</span>
 <span class="c1">#       objects: [ {id: 1, barcode: &quot;xxyy&quot;} ],</span>
@@ -505,19 +506,19 @@ this link for more details. [todo]</p>
 can add the <code class="docutils literal notranslate"><span class="pre">Brand</span></code> class in Django. A brand can have multiple products.
 Conversely, a product is made by one brand.</p>
 <p>Therefore, we define the two classes as follows:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
-<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">ModelSerializer</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
 <span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span><span class="p">,</span> <span class="n">add_perms_shortcut</span>
 <span class="kn">from</span> <span class="nn">django_client_framework.api</span> <span class="kn">import</span> <span class="n">register_api_model</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">CASCADE</span>
 
 
 <span class="nd">@register_api_model</span>
-<span class="k">class</span> <span class="nc">Brand</span><span class="p">(</span><span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Brand</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">BrandSerializer</span>
 
     <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
@@ -525,10 +526,10 @@ Conversely, a product is made by one brand.</p>
             <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">brand</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">BrandSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">BrandSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Brand</span>
-        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">]</span>
 
 
 <span class="nd">@register_api_model</span>
@@ -537,7 +538,7 @@ Conversely, a product is made by one brand.</p>
     <span class="n">brand</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;Brand&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;products&quot;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ProductSerializer</span>
 
     <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
@@ -545,10 +546,10 @@ Conversely, a product is made by one brand.</p>
             <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
-        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">,</span> <span class="s2">&quot;brand_id&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -583,7 +584,8 @@ same as the query below, which returns the same brand object.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/brand/1/products
 
 <span class="c1">#   {</span>
-<span class="c1">#       total: 1,</span>
+<span class="c1">#       pages_count: 1,</span>
+<span class="c1">#       objects_count: 1,</span>
 <span class="c1">#       limit: 50,</span>
 <span class="c1">#       page: 1,</span>
 <span class="c1">#       objects: [ {id: 1, barcode: &quot;xxyy&quot;} ],</span>
@@ -656,7 +658,7 @@ extend the <a class="reference internal" href="../client-refs/index.html#model">
 
 <span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="nx">brand_id?</span>: <span class="kt">number</span>
 <span class="p">}</span>
@@ -682,7 +684,8 @@ class.</p>
 <span class="cm">    PageResult {</span>
 <span class="cm">        page: 1,</span>
 <span class="cm">        limit: 50,</span>
-<span class="cm">        total: 1,</span>
+<span class="cm">        pages_count: 1,</span>
+<span class="cm">        objects_count: 1,</span>
 <span class="cm">        previous: null,</span>
 <span class="cm">        next: null,</span>
 <span class="cm">        objects: [ Product { id: 1, barcode: &#39;xxyy&#39;, brand_id: 1 } ]</span>
@@ -704,15 +707,17 @@ modify and delete objects. See the full set of APIs here. [todo]</p>
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-5-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-5-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-5-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-5-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span> <span class="nx">Model</span><span class="p">,</span> <span class="nx">CollectionManager</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;django-client-framework&quot;</span>
 
 <span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="nx">_model_name</span> <span class="o">=</span> <span class="s2">&quot;Product&quot;</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="nx">brand_id?</span>: <span class="kt">number</span>
 <span class="p">}</span>
 
 <span class="kd">class</span> <span class="nx">Brand</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="nx">_model_name</span> <span class="o">=</span> <span class="s2">&quot;Brand&quot;</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">)</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">name</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 <span class="p">}</span>
 </pre></div>
@@ -725,17 +730,19 @@ modify and delete objects. See the full set of APIs here. [todo]</p>
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-6-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-6-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-6-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-6-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span> <span class="nx">Model</span><span class="p">,</span> <span class="nx">CollectionManager</span><span class="p">,</span> <span class="nx">RelatedObjectManager</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;django-client-framework&quot;</span>
 
 <span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="nx">_model_name</span> <span class="o">=</span> <span class="s2">&quot;Product&quot;</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
     <span class="nx">get</span> <span class="nx">brand</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="ow">new</span> <span class="nx">RelatedObjectManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s2">&quot;brand&quot;</span><span class="p">)</span> <span class="p">}</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="nx">brand_id?</span>: <span class="kt">number</span>
 <span class="p">}</span>
 
 <span class="kd">class</span> <span class="nx">Brand</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="nx">_model_name</span> <span class="o">=</span> <span class="s2">&quot;Brand&quot;</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">)</span>
     <span class="nx">get</span> <span class="nx">products</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="ow">new</span> <span class="nx">RelatedCollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s2">&quot;products&quot;</span><span class="p">)</span> <span class="p">}</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">name</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 <span class="p">}</span>
 </pre></div>

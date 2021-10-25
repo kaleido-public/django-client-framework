@@ -4,15 +4,15 @@ default: clean
 
 .PHONY: ci
 ci: alpine-base
-	docker-compose run --rm dcf-test-alpine ./manage.py test --no-input -v2 -p "*.py"
+	docker-compose run --rm unit-tests-ci ./manage.py test --no-input -v2 -p "*.py"
 
 .PHONY: alpine-base
 alpine-base:
-	docker-compose build dcf-test-alpine
+	docker-compose build unit-tests-ci
 
 .PHONY: sh
 sh: alpine-base
-	docker-compose run --rm dcf-test-alpine sh
+	docker-compose run --rm unit-tests-ci sh
 
 .PHONY: clean
 clean:

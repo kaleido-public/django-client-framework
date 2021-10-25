@@ -134,7 +134,7 @@ new one.</p>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-0-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
     <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
-    <span class="nx">id</span>: <span class="kt">number</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
     <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="nx">brand_id</span>: <span class="kt">number?</span>
     <span class="nx">get</span> <span class="nx">brand</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="ow">new</span> <span class="nx">RelatedObjectManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s2">&quot;brand&quot;</span><span class="p">)</span> <span class="p">}</span>
@@ -694,7 +694,7 @@ language only allows access on defined properties.</p>
 <a class="reference internal" href="#collectionmanager-page">CollectionManager.page(…)</a> type safe? There are two types of difficulties we
 must take into consideration. First, you need to realize that the backend modal
 API such as <code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/product/1</span></code> does not only accept valid properties that are
-defined on the model. In fact, the backend could use <a class="reference internal" href="../backend-refs/serializers/DelegateSerializer.html#delegateserializer"><span class="std std-ref">class DelegateSerializer extends Serializer</span></a>
+defined on the model. In fact, the backend could use <a class="reference internal" href="../backend-refs/index.html#delegateserializer"><span class="std std-ref">class DelegateSerializer extends DCFSerializer</span></a>
 to accept a variaty of key-value pairs. For instance, if a <cite>User</cite> model API is
 designed to change user password, the backend will expect an request such as:</p>
 <div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span>// PATCH /user/1
@@ -705,7 +705,7 @@ designed to change user password, the backend will expect an request such as:</p
 }
 </pre></div>
 </div>
-<p>The backend can achieve this with the <a class="reference internal" href="../backend-refs/serializers/DelegateSerializer.html#delegateserializer"><span class="std std-ref">class DelegateSerializer extends Serializer</span></a> class. However,
+<p>The backend can achieve this with the <a class="reference internal" href="../backend-refs/index.html#delegateserializer"><span class="std std-ref">class DelegateSerializer extends DCFSerializer</span></a> class. However,
 neither <code class="docutils literal notranslate"><span class="pre">old_password</span></code> and <code class="docutils literal notranslate"><span class="pre">new_password</span></code> are keys on the <cite>User</cite> model.</p>
 <p>To resolve this issue, we can consider making the <a class="reference internal" href="#objectmanager-update">ObjectManager.update(…)</a> a
 generic method such as:</p>

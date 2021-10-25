@@ -9,3 +9,4 @@ django-guardian
 django-currentuser
 ipromise
 deprecation
+schema

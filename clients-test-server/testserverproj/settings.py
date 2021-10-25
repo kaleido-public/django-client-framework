@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
+import django_client_framework.settings
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -123,8 +125,6 @@ STATIC_URL = "/static/"
 
 REST_FRAMEWORK = {}
 AUTHENTICATION_BACKENDS = []
-
-import django_client_framework.settings
 
 django_client_framework.settings.install(
     INSTALLED_APPS, REST_FRAMEWORK, MIDDLEWARE, AUTHENTICATION_BACKENDS
