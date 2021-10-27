@@ -102,17 +102,6 @@ class BaseModelAPI(GenericAPIView):
     models: List[Type[Serializable]] = []
     filter_backends = [DCFFilterBackend]
 
-    def __init__(self, **kwargs):
-        """
-        Constructor. Called in the URLconf; can contain helpful extra
-        keyword arguments, and other things.
-        """
-        # Go through keyword arguments, and either save their values to our
-        # instance, or raise an error.
-        for key, value in kwargs.items():
-            print(key, value)
-            setattr(self, key, value)
-
     @property
     def version(self) -> str:
         return getattr(self, "kwargs", {}).get("version", "default")
