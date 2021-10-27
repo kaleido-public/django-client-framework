@@ -7,7 +7,6 @@ import orjson
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models.base import Model
-from django.db.models.query import QuerySet
 from django.http.request import QueryDict
 from django.utils.functional import cached_property
 from ipromise import overrides
@@ -23,12 +22,11 @@ from rest_framework.views import APIView
 from django_client_framework.models.abstract.user import DCFAbstractUser
 
 from .. import exceptions as e
-from .. import permissions as p
 from ..models import get_user_model
-from ..models.abstract import Searchable
 from ..models.abstract.serializable import Serializable
 from ..permissions.site_permission import has_perms_shortcut
 from ..serializers import DCFSerializer
+from .filter_backend import DCFFilterBackend
 
 LOG = getLogger(__name__)
 
@@ -102,6 +100,7 @@ class BaseModelAPI(GenericAPIView):
     pagination_class = ApiPagination
 
     models: List[Type[Serializable]] = []
+    filter_backends = [DCFFilterBackend]
 
     def __init__(self, **kwargs):
         """
@@ -154,73 +153,6 @@ class BaseModelAPI(GenericAPIView):
     def request_data(self):
         """Returns cached self.get_request_data(self.request)"""
         return self.get_request_data(self.request)
-
-    def __filter_queryset_by_param(self, queryset):
-        """
-        Support generic filtering, eg: /products?name__in[]=abc&name__in[]=def
-        """
-        querydict = {}
-        for key in self.request.query_params:
-            if "[]" in key:
-                # Could be products?id__in[]=1,2,3 or
-                # products?id__in[]=1&id__in[]=2. These are just different ways
-                # to encode a list in the query param. They mean the same thing.
-                # The querylist could be ["1,2,3", "1", "1"] in this case.
-                querylist = self.request.query_params.getlist(key, [])
-                normalized_querylist = []  # normalize to [1,2,3]
-                # "products?id__in[]=" gets translated to <QueryDict:
-                # {'id__in[]': ['']}> this is a compromise we want to make,
-                # because there is no way standard way to represent an empty
-                # list in the query string.
-                if len(querylist) == 1 and querylist[0] == "":
-                    normalized_querylist = []
-                else:
-                    for q in querylist:
-                        normalized_querylist += q.split(",")
-                querydict[key[:-2]] = normalized_querylist
-
-            elif key == "_fulltext" and (
-                searchtext := self.request.query_params.get(key)
-            ):
-                if issubclass(self.model, Searchable):
-                    queryset = self.model.filter_by_text_search(
-                        searchtext, queryset=queryset
-                    )
-                else:
-                    raise e.ParseError(
-                        f"{self.model.__name__} does not support full text search"
-                    )
-            elif key and key[0] != "_":  # ignore pagination keys
-                val = self.request.query_params.get(key, None)
-                if val == "true":
-                    val = True
-                elif val == "false":
-                    val = False
-                querydict[key] = val
-
-        try:
-            return queryset.filter(**querydict)
-        except Exception as exept:
-            raise e.ParseError(str(exept))
-
-    def __order_queryset_by_param(self, queryset: QuerySet):
-        """
-        Support generic filtering, eg: /products/?_order_by=name
-        """
-        by = self.request.query_params.getlist("_order_by", ["-created_at"])
-        by_arr = by[0].strip().split(",")
-        try:
-            return queryset.order_by(*by_arr)
-        except Exception as execpt:
-            raise e.ParseError(str(execpt))
-
-    @overrides(GenericAPIView)
-    def filter_queryset(self, queryset):
-        return self.__order_queryset_by_param(
-            self.__filter_queryset_by_param(
-                p.filter_queryset_by_perms_shortcut("r", self.user_object, queryset)
-            )
-        ).distinct()
 
     @cached_property
     def model(self) -> Type[Serializable[Any]]:
