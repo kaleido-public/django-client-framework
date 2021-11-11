@@ -7,7 +7,14 @@ from django.db.models import *
 
 from django_client_framework.models.abstract.user import DCFAbstractUser
 
-from .abstract import AccessControlled, DCFModel, DjangoModel, Searchable, Serializable
+from .abstract import (
+    AccessControlled,
+    DCFModel,
+    DjangoModel,
+    RateLimited,
+    Searchable,
+    Serializable,
+)
 from .fields import PriceField, UniqueForeignKey
 from .lookup import *
 from .search_feature import SearchFeature

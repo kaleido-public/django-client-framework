@@ -16,6 +16,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.throttling import BaseThrottle
 from rest_framework.utils.encoders import JSONEncoder
 from rest_framework.views import APIView
 
@@ -23,6 +24,7 @@ from django_client_framework.models.abstract.user import DCFAbstractUser
 
 from .. import exceptions as e
 from ..models import get_user_model
+from ..models.abstract.rate_limited import RateLimited
 from ..models.abstract.serializable import Serializable
 from ..permissions.site_permission import has_perms_shortcut
 from ..serializers import DCFSerializer
@@ -253,3 +255,9 @@ class BaseModelAPI(GenericAPIView):
         kwargs.setdefault("context", {})
         kwargs["context"].update(self.get_serializer_context())
         return serializer_class(*args, **kwargs)
+
+    @overrides(APIView)
+    def get_throttles(self) -> List[BaseThrottle]:
+        if issubclass(self.model, RateLimited):
+            return [self.model.get_ratemanager(self.request, self)]
+        return []

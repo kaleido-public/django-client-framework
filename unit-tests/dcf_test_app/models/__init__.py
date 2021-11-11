@@ -7,3 +7,4 @@ from django_client_framework.models import *
 
 from .brand import *
 from .product import *
+from .throttled import *
