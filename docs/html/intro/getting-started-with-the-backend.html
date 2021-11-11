@@ -6,6 +6,7 @@
   <title>Getting Started with the Backend &mdash; Django Client Framework  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -16,6 +17,8 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -69,28 +72,30 @@
              
   <div class="section" id="getting-started-with-the-backend">
 <h1>Getting Started with the Backend<a class="headerlink" href="#getting-started-with-the-backend" title="Permalink to this headline"></a></h1>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>This section assumes that you are familiar with Django. For a beginner’s
-guide for Django, see this link [todo].</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This guide assumes that you are familiar with Django. Before starting, you
+may want to go through Django’s tutorial first:
+<a class="reference external" href="https://docs.djangoproject.com/en/3.2/">https://docs.djangoproject.com/en/3.2/</a></p>
 </div>
 <div class="section" id="installation-with-pip3-git">
 <h2>Installation with pip3+git<a class="headerlink" href="#installation-with-pip3-git" title="Permalink to this headline"></a></h2>
-<p>Django Client Framework (Django) requires <code class="docutils literal notranslate"><span class="pre">python3.6+</span></code> and <code class="docutils literal notranslate"><span class="pre">Django</span> <span class="pre">3.0+</span></code>. To
-install Django Client Framework from the GitHub repository, run this in your
-shell:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install --user git+https://github.com/cozybearca/django-client-framework.git#egg<span class="o">=</span>django_client_framework
+<p>Django Client Framework (Django) requires <code class="docutils literal notranslate"><span class="pre">python3.8+</span></code> and <code class="docutils literal notranslate"><span class="pre">Django</span> <span class="pre">3.0+</span></code>. To
+install Django Client Framework from the GitHub repository:</p>
+<dl>
+<dt>With <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</dt><dd><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install git+https://github.com/kaleido-public/django-client-framework.git@staging
 </pre></div>
 </div>
+</dd>
+<dt>With <code class="docutils literal notranslate"><span class="pre">poetry</span></code>:</dt><dd><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry add git+https://github.com/kaleido-public/django-client-framework.git@staging
+</pre></div>
+</div>
+</dd>
+</dl>
 </div>
 <div class="section" id="configure-django-s-settings-py-file">
 <h2>Configure Django’s settings.py file<a class="headerlink" href="#configure-django-s-settings-py-file" title="Permalink to this headline"></a></h2>
-<p>In <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> for your Django app, simply add at the end of the file:</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>If you are not familiar with <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>, you haven’t completed the basic
-tutorial for Django. See [todo].</p>
-</div>
+<p>In <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> for your Django app, simply add <em>at the end of the file</em>:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">django_client_framework.settings</span>
 <span class="n">django_client_framework</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">install</span><span class="p">(</span>
     <span class="n">INSTALLED_APPS</span><span class="p">,</span>
@@ -152,11 +157,6 @@ because the <code class="docutils literal notranslate"><span class="pre">.instal
 <h2>Add routing handlers to <code class="docutils literal notranslate"><span class="pre">urls.py</span></code><a class="headerlink" href="#add-routing-handlers-to-urls-py" title="Permalink to this headline"></a></h2>
 <p>Next, append Django Client Framework’s API route handlers to your app’s
 <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> file:</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>If you are not familiar with <code class="docutils literal notranslate"><span class="pre">urls.py</span></code>, you haven’t completed the basic
-tutorial for Django. See [todo].</p>
-</div>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">include</span>
 <span class="kn">import</span> <span class="nn">django_client_framework.api.urls</span>
 
@@ -199,21 +199,11 @@ follows:</p>
     <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>If you are not familiar with <a class="reference external" href="https://docs.djangoproject.com/en/3.1/ref/models/instances">Model</a>, you haven’t
-completed the basic tutorial for Django.</p>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">Serializable</span></code> requires <code class="docutils literal notranslate"><span class="pre">Product</span></code> to implement a class method named
-<code class="docutils literal notranslate"><span class="pre">.get_serializer_class()</span></code>, which should return a <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> class.
-This class is responsible for converting back and forth betwen a JSON object and
-a class object, ie, serialization and deserialization.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>If you are unfarmiliar with <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> in Django Rest Framework,
-complete this tutorial for Django Rest Framework first. [todo]</p>
-</div>
-<p>To define a <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> for <code class="docutils literal notranslate"><span class="pre">Product</span></code>, we create another class that
+<p>The <code class="docutils literal notranslate"><span class="pre">Serializable</span></code> class requires <code class="docutils literal notranslate"><span class="pre">Product</span></code> to implement a class method
+named <code class="docutils literal notranslate"><span class="pre">.get_serializer_class()</span></code>, which should return a <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code>
+class. This class is responsible for converting back and forth betwen a JSON
+object and a class object, ie, serialization and deserialization.</p>
+<p>To define a <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> for <code class="docutils literal notranslate"><span class="pre">Product</span></code>, create another class that
 inherits from <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code>:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
 
@@ -225,25 +215,20 @@ inherits from <code class="docutils literal notranslate"><span class="pre">DCFMo
 </div>
 <div class="admonition error">
 <p class="admonition-title">Error</p>
-<p>Django Client Framework’s <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> is a subclass of Django Rest
-Framework’s <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> class with some methods overriden. Although
-they mostly have the same syntax and usage, do not confuse them with one
-another! You should always use
-<code class="docutils literal notranslate"><span class="pre">django_client_framework.serializers.ModelSerializer</span></code>. If you use the Django
-Rest Framework’s version of the <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> by mistake, then some of
-our API features won’t work!</p>
+<p><cite>DCFModelSerializer</cite> is a subclass of <cite>ModelSerializer</cite> in Django Rest
+Framework. Always use <cite>DCFModelSerializer</cite>, or the APIs don’t work!</p>
 </div>
 <p>Finally, we return this class from the <code class="docutils literal notranslate"><span class="pre">.get_serializer_class()</span></code> method. The final code
 looks like this:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span>
 <span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
 
-<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">):</span>
     <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ProductSerializer</span>
 
 <span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
@@ -257,11 +242,6 @@ looks like this:</p>
 python3 ./manage.py migrate
 </pre></div>
 </div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>If you are not familiar with Django’s migration system, you haven’t
-completed the basic tutorial for Django. See [todo].</p>
-</div>
 </div>
 <div class="section" id="make-an-accesscontrolled-model">
 <h2>Make an AccessControlled model<a class="headerlink" href="#make-an-accesscontrolled-model" title="Permalink to this headline"></a></h2>
@@ -269,15 +249,15 @@ completed the basic tutorial for Django. See [todo].</p>
 default, all objects are only readable and writable only to superusers. Next, we
 will give the read permission to the anyone user group, so that the product list
 is publically visible to anyone visiting our site.</p>
-<p>To manage model permission, <code class="docutils literal notranslate"><span class="pre">Product</span></code> needs to extend the <cite>AccessControlled</cite>
+<p>To manage model permission, <code class="docutils literal notranslate"><span class="pre">Product</span></code> needs to extend the <code class="docutils literal notranslate"><span class="pre">AccessControlled</span></code>
 class, and overrides a class method named <code class="docutils literal notranslate"><span class="pre">.get_permissionmanager_class()</span></code>. The
 <code class="docutils literal notranslate"><span class="pre">.get_permissionmanager_class()</span></code> class method should return a
 <code class="docutils literal notranslate"><span class="pre">PermissionManager</span></code> class that implements a method named <code class="docutils literal notranslate"><span class="pre">.add_perms(instance)</span></code>.
 The default implementation of <code class="docutils literal notranslate"><span class="pre">.get_permissionmanager_class()</span></code> looks for a class
 named <code class="docutils literal notranslate"><span class="pre">PermissionManager</span></code> in the model class.</p>
 <p>To give anyone the read permission to the Product model, we import the
-<code class="docutils literal notranslate"><span class="pre">default_groups.anyone</span></code> and <code class="docutils literal notranslate"><span class="pre">add_perms_shortcut</span></code> from
-<code class="docutils literal notranslate"><span class="pre">django_client_framework.permissions</span></code> and use them to set the permissions.</p>
+<code class="docutils literal notranslate"><span class="pre">default_groups.anyone</span></code> and <a class="reference internal" href="../backend-refs/index.html#add-perms-shortcut"><span class="std std-ref">add_perms_shortcut(…)</span></a> from <code class="docutils literal notranslate"><span class="pre">django_client_framework.permissions</span></code> and use
+them to set the permissions.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
 <span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
 <span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span><span class="p">,</span> <span class="n">add_perms_shortcut</span>
@@ -288,7 +268,7 @@ named <code class="docutils literal notranslate"><span class="pre">PermissionMan
     <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ProductSerializer</span>
 
     <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
@@ -313,15 +293,14 @@ named <code class="docutils literal notranslate"><span class="pre">PermissionMan
 <span class="n">reset_permissions</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Consider running <code class="docutils literal notranslate"><span class="pre">reset_permissions()</span></code> during the django migrations whenever
-the permission is changed on a model.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Consider running <code class="docutils literal notranslate"><span class="pre">reset_permissions()</span></code> after the django migrations.</p>
 </div>
 </div>
 <div class="section" id="query-objects-via-http-requests">
 <h2>Query objects via HTTP requests<a class="headerlink" href="#query-objects-via-http-requests" title="Permalink to this headline"></a></h2>
-<p>We need to expose the <code class="docutils literal notranslate"><span class="pre">Product</span></code> model to the RESTful API by using the
+<p>We need to expose the <code class="docutils literal notranslate"><span class="pre">Product</span></code> model to the REST API by using the
 <code class="docutils literal notranslate"><span class="pre">&#64;register_api_model</span></code> decorator. Add <code class="docutils literal notranslate"><span class="pre">&#64;register_api_model</span></code> to the <cite>Product</cite>
 class.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
@@ -335,7 +314,7 @@ class.</p>
     <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ProductSerializer</span>
 
     <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
@@ -387,8 +366,7 @@ class.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p>Besides retrieving the object, creation, deleting, and modifications are
-also supported through POST, DELETE, PUT RESTful requests respectively. See
-this link for more details. [todo]</p>
+also supported through POST, DELETE, PUT REST requests respectively.</p>
 </div>
 </div>
 <div class="section" id="query-relational-objects-via-http">
@@ -409,7 +387,7 @@ Conversely, a product is made by one brand.</p>
     <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">BrandSerializer</span>
 
     <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
@@ -429,7 +407,7 @@ Conversely, a product is made by one brand.</p>
     <span class="n">brand</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;Brand&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;products&quot;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ProductSerializer</span>
 
     <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
@@ -442,10 +420,6 @@ Conversely, a product is made by one brand.</p>
         <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">,</span> <span class="s2">&quot;brand_id&quot;</span><span class="p">]</span>
 </pre></div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Don’t forget to apply migrations whenever the models are changed.</p>
 </div>
 <p>After applying migrations, add a <code class="docutils literal notranslate"><span class="pre">Product</span></code> object, and a <code class="docutils literal notranslate"><span class="pre">Brand</span></code> object:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">nike</span> <span class="o">=</span> <span class="n">Brand</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nike&quot;</span><span class="p">)</span>

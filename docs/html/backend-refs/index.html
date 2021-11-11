@@ -6,6 +6,7 @@
   <title>Backend API Reference &mdash; Django Client Framework  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -16,6 +17,8 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -51,7 +54,11 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#class-accesscontrolled-extends-abstractdcfmodel"><cite>class</cite> AccessControlled <cite>extends AbstractDCFModel</cite></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#classmethod-get-permissionmanager-class-cls"><cite>classmethod</cite> .get_permissionmanager_class <cite>(cls)</cite></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#class-permissionmanager"><cite>class</cite> .PermissionManager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#class-permissionmanager"><cite>class</cite> PermissionManager</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#class-ratelimited-extends-abstractdcfmodel"><cite>class</cite> RateLimited <cite>extends AbstractDCFModel</cite></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#class-ratemanager"><cite>class</cite> RateManager</a></li>
 </ul>
 </li>
 </ul>
@@ -66,7 +73,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#class-delegateserializer-extends-dcfserializer"><cite>class</cite> DelegateSerializer <cite>extends DCFSerializer</cite></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#method-get-read-delegate-class-self-instance-serializer"><cite>method</cite> .get_read_delegate_class <cite>(self, instance) -&gt; Serializer</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#method-get-create-delegate-class-self-initial-data-prevalidated-data-serializer"><cite>method</cite> .get_create_delegate_class <cite>(self, initial_data, prevalidated_data) -&gt; Serializer</cite></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer"><cite>method</cite> .get_update_delegate_class <cite>(self, instance, initial_data, prevalidated_data) -&gt; Serializer</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer-bool"><cite>method</cite> .get_update_delegate_class <cite>(self, instance, initial_data, prevalidated_data) -&gt; Serializer, bool</cite></a></li>
 </ul>
 </li>
 </ul>
@@ -75,6 +82,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#func-add-perms-shortcut-user-or-group-model-or-instance-or-queryset-perms-field-name-none"><cite>func</cite> add_perms_shortcut <cite>(user_or_group, model_or_instance_or_queryset, perms, field_name=None)</cite></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#func-has-perms-shortcut-user-or-group-model-or-instance-perms-field-name-none-bool"><cite>func</cite> has_perms_shortcut <cite>(user_or_group, model_or_instance, perms, field_name=None ) -&gt; bool</cite></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#func-reset-permissions-classes"><cite>func</cite> reset_permissions <cite>(classes)</cite></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#misc">Misc.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#context">Context</a></li>
 </ul>
 </li>
 </ul>
@@ -124,7 +135,7 @@ Every model must inherit from this class.</p>
 <p>This abstract model class provides caches for serialization.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Any <a class="reference internal" href="../client-refs/index.html#model"><span class="std std-ref">class Model</span></a> to be registered as an API must inherit this class.</p>
+<p>Any <a class="reference internal" href="../client-refs/index.html#model"><span class="std std-ref">DCFModel</span></a> to be registered as an API must inherit this class.</p>
 </div>
 <p><strong>Inheritance</strong></p>
 <p>Subclasses of <a class="reference internal" href="#serializable">Serializable</a> must override <a class="reference internal" href="#serializable-get-serializer-class">Serializable.get_serializer_class(…)</a> which
@@ -134,6 +145,34 @@ returns a <a class="reference internal" href="#dcfserializer">DCFSerializer</a> 
 <blockquote>
 <div><p><cite>required</cite></p>
 <p>Override this method to return the <a class="reference internal" href="#dcfserializer">DCFSerializer</a> class for the model.</p>
+<dl>
+<dt>Parameters:</dt><dd><dl>
+<dt><code class="docutils literal notranslate"><span class="pre">version</span></code></dt><dd><p>By default, this is a string <code class="docutils literal notranslate"><span class="pre">&quot;default&quot;</span></code>. If there’s a path
+parameter named <code class="docutils literal notranslate"><span class="pre">version</span></code> in the <cite>urls.py</cite> of the API route, this
+received the value of that argument. You can use this to return
+different serializers for different versions of the api.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># urls.py</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;/api/&lt;str:version&gt;/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">django_client_framework</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># models/product.py</span>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">):</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;v2&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ProductSerializerV2</span>
+        <span class="k">return</span> <span class="n">ProductSerializer</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">context</span></code></dt><dd><p>See <a class="reference internal" href="#context">Context</a>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </div></blockquote>
 </div>
 <div class="section" id="method-get-serializer-self-version-context">
@@ -160,9 +199,10 @@ seconds. Setting to <code class="docutils literal notranslate"><span class="pre"
 <p>This abstract model class provides the permission structure for its subclasses.</p>
 <p><strong>Inheritance</strong></p>
 <p>Subclasses of <a class="reference internal" href="#accesscontrolled">AccessControlled</a> can optionally override the
-<cite>.get_permissionmanager_class(cls)</cite> which returns a <a class="reference internal" href="#accesscontrolled-permissionmanager">AccessControlled.PermissionManager</a> class.</p>
+<a class="reference internal" href="#get-permissionmanager-class">.get_permissionmanager_class()</a> classmethod which returns a
+<a class="reference internal" href="#accesscontrolled-permissionmanager">AccessControlled.PermissionManager</a> class.</p>
 <div class="section" id="classmethod-get-permissionmanager-class-cls">
-<span id="accesscontrolled-get-permissionmanager-class"></span><h4><cite>classmethod</cite> .get_permissionmanager_class <cite>(cls)</cite><a class="headerlink" href="#classmethod-get-permissionmanager-class-cls" title="Permalink to this headline"></a></h4>
+<span id="accesscontrolled-get-permissionmanager-class"></span><span id="get-permissionmanager-class"></span><h4><cite>classmethod</cite> .get_permissionmanager_class <cite>(cls)</cite><a class="headerlink" href="#classmethod-get-permissionmanager-class-cls" title="Permalink to this headline"></a></h4>
 <blockquote>
 <div><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -173,9 +213,74 @@ defines the object permission.</p>
 </div></blockquote>
 </div>
 <div class="section" id="class-permissionmanager">
-<span id="accesscontrolled-permissionmanager"></span><h4><cite>class</cite> .PermissionManager<a class="headerlink" href="#class-permissionmanager" title="Permalink to this headline"></a></h4>
+<span id="accesscontrolled-permissionmanager"></span><h4><cite>class</cite> PermissionManager<a class="headerlink" href="#class-permissionmanager" title="Permalink to this headline"></a></h4>
 <p>This is a nested class in <a class="reference internal" href="#accesscontrolled">AccessControlled</a> whose subclasses should be
 returned from <a class="reference internal" href="#accesscontrolled-get-permissionmanager-class">AccessControlled.get_permissionmanager_class()</a>.</p>
+<div class="section" id="method-add-perms-self-instance">
+<h5><cite>method</cite> add_perms <cite>(self, instance)</cite><a class="headerlink" href="#method-add-perms-self-instance" title="Permalink to this headline"></a></h5>
+<blockquote>
+<div><p>Add permissions to the model instance.</p>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="class-ratelimited-extends-abstractdcfmodel">
+<span id="ratelimited"></span><h3><cite>class</cite> RateLimited <cite>extends AbstractDCFModel</cite><a class="headerlink" href="#class-ratelimited-extends-abstractdcfmodel" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">RateLimited</span>
+</pre></div>
+</div>
+<p>This base model class provides customization to the api rate limit.</p>
+</div></blockquote>
+<div class="section" id="class-ratemanager">
+<h4><cite>class</cite> RateManager<a class="headerlink" href="#class-ratemanager" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><p>A nested class in <a class="reference internal" href="#ratelimited">RateLimited</a>.</p>
+</div></blockquote>
+<div class="section" id="method-get-rate-self-queryset-user-action-version-context-str">
+<h5><cite>method</cite> get_rate <cite>(self, queryset, user, action, version, context) -&gt; str</cite><a class="headerlink" href="#method-get-rate-self-queryset-user-action-version-context-str" title="Permalink to this headline"></a></h5>
+<blockquote>
+<div><dl class="simple">
+<dt>Parameters</dt><dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">queryset</span></code></dt><dd><p>The current resource being accessed.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">user</span></code></dt><dd><p>The current authenticated user. Same as <code class="docutils literal notranslate"><span class="pre">context[&quot;request&quot;].user</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">action</span></code></dt><dd><p>One of <code class="docutils literal notranslate"><span class="pre">read</span></code>, <code class="docutils literal notranslate"><span class="pre">write</span></code>, <code class="docutils literal notranslate"><span class="pre">create</span></code>, <code class="docutils literal notranslate"><span class="pre">delete</span></code></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">version</span></code></dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">&lt;version:str&gt;</span></code> url path parameter of the current route, or <code class="docutils literal notranslate"><span class="pre">&quot;default&quot;</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">context</span></code></dt><dd><p>See <a class="reference internal" href="#context">Context</a>.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns</dt><dd><p>A string in the format of <cite>number/period</cite>, where the <cite>number</cite> is how
+many times the request is allowed, and the <cite>period</cite> is one of <code class="docutils literal notranslate"><span class="pre">day</span></code>,
+<code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">sec</span></code>.
+Examples: <code class="docutils literal notranslate"><span class="pre">&quot;3600/day&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;60/min&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;1/sec&quot;</span></code></p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="method-get-record-key-self-queryset-user-ipid-action-version-context-str">
+<h5><cite>method</cite> get_record_key <cite>(self, queryset, user, ipid, action, version, context) -&gt; str</cite><a class="headerlink" href="#method-get-record-key-self-queryset-user-ipid-action-version-context-str" title="Permalink to this headline"></a></h5>
+<blockquote>
+<div><dl>
+<dt>Parameters</dt><dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">ipid</span></code></dt><dd><p>A string that uniquely identifies the IP address of the current
+user. This is not necessarily the IP address.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns</dt><dd><p>A key used to identify the same request. Each time a request is
+processed, a timestamp is recorded with the key. When the next request
+of the same key comes in, the timestamp is checked against the allowed
+frequency.</p>
+<p>By default, returns <code class="docutils literal notranslate"><span class="pre">hash([queryset.model,</span> <span class="pre">user,</span> <span class="pre">ip,</span> <span class="pre">action])</span></code>.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
 </div>
 </div>
 </div>
@@ -188,7 +293,7 @@ returned from <a class="reference internal" href="#accesscontrolled-get-permissi
 <div class="section" id="const-urlpatterns">
 <span id="urlpatterns"></span><h3><cite>const</cite> urlpatterns<a class="headerlink" href="#const-urlpatterns" title="Permalink to this headline"></a></h3>
 <blockquote>
-<div><p>This global constant contains the routing handlers for models’ RESTful APIs. You
+<div><p>This global constant contains the routing handlers for models’ REST APIs. You
 can include <code class="docutils literal notranslate"><span class="pre">django_client_framework.api.urls</span></code> to your custom <code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code>
 in any <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> file. Then the handlers will become available with your
 custom prefix.</p>
@@ -248,15 +353,16 @@ class conforms to the Serializer interface, therefore, it can be returned from
 the <a class="reference internal" href="#serializable-get-serializer-class">Serializable.get_serializer_class(…)</a> method.  You can dispatch the request to
 one of the serializers.</p>
 <p><strong>Inheritance</strong></p>
-<p>You must override all these methods:
-<a class="reference internal" href="#delegateserializer-get-create-delegate-class">DelegateSerializer.get_create_delegate_class(…)</a>,
-<a class="reference internal" href="#delegateserializer-get-update-delegate-class">DelegateSerializer.get_update_delegate_class(…)</a>,
-<a class="reference internal" href="#delegateserializer-get-read-delegate-class">DelegateSerializer.get_read_delegate_class(…)</a>.</p>
+<p>You must override all these methods:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#delegateserializer-get-create-delegate-class">DelegateSerializer.get_create_delegate_class(…)</a>,</p></li>
+<li><p><a class="reference internal" href="#delegateserializer-get-update-delegate-class">DelegateSerializer.get_update_delegate_class(…)</a>,</p></li>
+<li><p><a class="reference internal" href="#delegateserializer-get-read-delegate-class">DelegateSerializer.get_read_delegate_class(…)</a>.</p></li>
+</ul>
 <div class="section" id="method-get-read-delegate-class-self-instance-serializer">
 <span id="delegateserializer-get-read-delegate-class"></span><h4><cite>method</cite> .get_read_delegate_class <cite>(self, instance) -&gt; Serializer</cite><a class="headerlink" href="#method-get-read-delegate-class-self-instance-serializer" title="Permalink to this headline"></a></h4>
 <blockquote>
-<div><p><cite>required</cite></p>
-<dl class="simple">
+<div><dl class="simple">
 <dt>instance</dt><dd><p>The model instance to be serialized. This is the <code class="docutils literal notranslate"><span class="pre">instance</span></code> parameter
 passed to the constructor.</p>
 </dd>
@@ -266,7 +372,7 @@ model deserialization. This is the case when the <a class="reference internal" h
 initialized with only the <code class="docutils literal notranslate"><span class="pre">instance</span></code> parameter.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">product</span> <span class="o">=</span> <span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
 <span class="n">delegated</span> <span class="o">=</span> <span class="n">DelegateSerializer</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">product</span><span class="p">)</span>
-<span class="n">delegated</span><span class="o">.</span><span class="n">data</span> <span class="o">//</span> <span class="n">deserialization</span>
+<span class="n">delegated</span><span class="o">.</span><span class="n">data</span> <span class="c1"># deserialization</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -274,8 +380,7 @@ initialized with only the <code class="docutils literal notranslate"><span class
 <div class="section" id="method-get-create-delegate-class-self-initial-data-prevalidated-data-serializer">
 <span id="delegateserializer-get-create-delegate-class"></span><h4><cite>method</cite> .get_create_delegate_class <cite>(self, initial_data, prevalidated_data) -&gt; Serializer</cite><a class="headerlink" href="#method-get-create-delegate-class-self-initial-data-prevalidated-data-serializer" title="Permalink to this headline"></a></h4>
 <blockquote>
-<div><p><cite>required</cite></p>
-<dl class="simple">
+<div><dl class="simple">
 <dt>initial_data</dt><dd><p>The data to be deserialized. This is the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter passed to
 the constructor.</p>
 </dd>
@@ -284,16 +389,15 @@ the constructor.</p>
 model instance creation. This is the case when the <a class="reference internal" href="#delegateserializer">DelegateSerializer</a> is
 initialized with only the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">delegated</span> <span class="o">=</span> <span class="n">DelegateSerializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;barcode&quot;</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span><span class="p">})</span>
-<span class="n">product</span> <span class="o">=</span> <span class="n">delegated</span><span class="o">.</span><span class="n">save</span><span class="p">()</span> <span class="o">//</span> <span class="n">serialization</span>
+<span class="n">product</span> <span class="o">=</span> <span class="n">delegated</span><span class="o">.</span><span class="n">save</span><span class="p">()</span> <span class="c1"># serialization</span>
 </pre></div>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer">
-<span id="delegateserializer-get-update-delegate-class"></span><h4><cite>method</cite> .get_update_delegate_class <cite>(self, instance, initial_data, prevalidated_data) -&gt; Serializer</cite><a class="headerlink" href="#method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer" title="Permalink to this headline"></a></h4>
+<div class="section" id="method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer-bool">
+<span id="delegateserializer-get-update-delegate-class"></span><h4><cite>method</cite> .get_update_delegate_class <cite>(self, instance, initial_data, prevalidated_data) -&gt; Serializer, bool</cite><a class="headerlink" href="#method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer-bool" title="Permalink to this headline"></a></h4>
 <blockquote>
-<div><p><cite>required</cite></p>
-<dl class="simple">
+<div><dl class="simple">
 <dt>instance</dt><dd><p>The model instance to be serialized. This is the <code class="docutils literal notranslate"><span class="pre">instance</span></code> parameter
 passed to the constructor.</p>
 </dd>
@@ -307,7 +411,7 @@ partial updating an model instance. This is the case when the
 <code class="docutils literal notranslate"><span class="pre">instance</span></code> parameter.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">product</span> <span class="o">=</span> <span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
 <span class="n">delegated</span> <span class="o">=</span> <span class="n">DelegateSerializer</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">product</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;barcode&quot;</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span><span class="p">})</span>
-<span class="n">delegated</span><span class="o">.</span><span class="n">save</span><span class="p">()</span> <span class="o">//</span> <span class="n">updates</span> <span class="n">barcode</span>
+<span class="n">delegated</span><span class="o">.</span><span class="n">save</span><span class="p">()</span> <span class="c1"># updates barcode</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -324,8 +428,8 @@ partial updating an model instance. This is the case when the
 </div>
 <p>Gives user/group permission for a model/object, or a particular property on the
 model/object.</p>
-<dl class="simple">
-<dt>Paramenters</dt><dd><dl class="simple">
+<dl>
+<dt>Paramenters</dt><dd><dl>
 <dt>user_or_group</dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">User</span></code> or a <code class="docutils literal notranslate"><span class="pre">Group</span></code> object to give permissions to.</p>
 </dd>
 <dt>model_or_instance_or_queryset</dt><dd><p>Accepts a model class, or an instance or a queryset of the model.</p>
@@ -348,7 +452,8 @@ model/object.</p>
 </dd>
 </dl>
 </dd>
-<dt>field_name <cite>=None</cite></dt><dd><p>Accepts a property named that’s defined on the model. If this argument
+<dt>field_name</dt><dd><p><cite>optional</cite></p>
+<p>Accepts a property named that’s defined on the model. If this argument
 is present, then the permission is for the model/object field. Otherwise
 the permission is applied to the model/object.</p>
 </dd>
@@ -357,7 +462,7 @@ the permission is applied to the model/object.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>See defails about <a class="reference internal" href="../intro/manage-backend-permissions.html#permission-concepts-and-management"><span class="std std-ref">Permission Concepts and Management</span></a>.</p>
+<p>See defails about <a class="reference internal" href="../intro/index.html#permission-concepts-and-management"><span class="std std-ref">Permission Concepts and Management</span></a>.</p>
 </div>
 </div></blockquote>
 </div>
@@ -368,7 +473,7 @@ the permission is applied to the model/object.</p>
 </pre></div>
 </div>
 <p>Checks if the user/group has a particular model/object/field permission.
-Agnostic to <a href="#id1"><span class="problematic" id="id2">`add_perms_shortcut(...)`_</span></a>. This function respects the inclusion of
+Agnostic to <a class="reference internal" href="#add-perms-shortcut">add_perms_shortcut(…)</a>. This function respects the inclusion of
 permissions, ie <cite>model &gt; object &gt; model field &gt; object field</cite>. Also take into
 account the permissions assigned on the <code class="docutils literal notranslate"><span class="pre">default_groups.anyone</span></code> group.</p>
 <dl class="simple">
@@ -388,7 +493,7 @@ account the permissions assigned on the <code class="docutils literal notranslat
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>See defails about <a class="reference internal" href="../intro/manage-backend-permissions.html#permission-concepts-and-management"><span class="std std-ref">Permission Concepts and Management</span></a>.</p>
+<p>See defails about <a class="reference internal" href="../intro/index.html#permission-concepts-and-management"><span class="std std-ref">Permission Concepts and Management</span></a>.</p>
 </div>
 </div></blockquote>
 </div>
@@ -402,6 +507,32 @@ account the permissions assigned on the <code class="docutils literal notranslat
 calling <code class="docutils literal notranslate"><span class="pre">PermissionManager.reset_perms()</span></code>.</p>
 <p>When ever the permission structure changes in your application, you need to call
 this function manually, or automatically in a django data migration.</p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="misc">
+<h2>Misc.<a class="headerlink" href="#misc" title="Permalink to this headline"></a></h2>
+<div class="section" id="context">
+<h3>Context<a class="headerlink" href="#context" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><p>This is a dictionary containing:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="s2">&quot;locale&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+    <span class="s2">&quot;view&quot;</span><span class="p">:</span> <span class="n">APIView</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">version</span></code>, <code class="docutils literal notranslate"><span class="pre">locale</span></code></dt><dd><p>Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;default&quot;</span></code>. If there’s a path parameter named
+<code class="docutils literal notranslate"><span class="pre">version</span></code> or <code class="docutils literal notranslate"><span class="pre">locale</span></code>, then they receives the value of that.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">request</span></code></dt><dd><p>The DRF <code class="docutils literal notranslate"><span class="pre">Request</span></code> object.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">view</span></code></dt><dd><p>The DRF <code class="docutils literal notranslate"><span class="pre">View</span></code> object.</p>
+</dd>
+</dl>
 </div></blockquote>
 </div>
 </div>

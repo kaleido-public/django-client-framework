@@ -74,7 +74,7 @@ by the Django Client Framework, which is extremely similar to the Django's:
    and the backend API server based on Django. You need to install both components
    into your project.
 
-Internally, a communication protocol based on RESTful API is used between the
+Internally, a communication protocol based on REST API is used between the
 frontend and the backend. The protocol is considered an internal detail of the
 Django Client Framework, and you should not need to worry about it.
 

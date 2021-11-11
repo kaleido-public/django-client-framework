@@ -1,6 +1,6 @@
-.. _Supported_RESTful_API:
+.. _Supported_REST_API:
 
-Supported Methods of the RESTful API
+Supported Methods of the REST API
 =====================================
 
 Types of routes

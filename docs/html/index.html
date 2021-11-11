@@ -6,6 +6,7 @@
   <title>Table of Contents &mdash; Django Client Framework  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/tabs.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -16,6 +17,8 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -96,7 +99,7 @@
 <li class="toctree-l3"><a class="reference internal" href="intro/index.html#retrieve-a-relational-object">Retrieve a relational object</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="intro/index.html#supported-methods-of-the-restful-api">Supported Methods of the RESTful API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro/index.html#supported-methods-of-the-rest-api">Supported Methods of the REST API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="intro/index.html#types-of-routes">Types of routes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="intro/index.html#supported-http-methods-and-meanings">Supported HTTP methods and meanings</a></li>
 </ul>
@@ -106,9 +109,10 @@
 <li class="toctree-l3"><a class="reference internal" href="intro/index.html#levels-of-permissions">Levels of permissions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="intro/index.html#default-users">Default users</a></li>
 <li class="toctree-l3"><a class="reference internal" href="intro/index.html#default-groups">Default groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="intro/index.html#permissions-for-restful-requests">Permissions for RESTful requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/index.html#permissions-for-rest-requests">Permissions for REST requests</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="intro/index.html#api-rate-limiting">API Rate Limiting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="backend-refs/index.html">Backend API Reference</a><ul>
@@ -122,7 +126,18 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-accesscontrolled-extends-abstractdcfmodel"><cite>class</cite> AccessControlled <cite>extends AbstractDCFModel</cite></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#classmethod-get-permissionmanager-class-cls"><cite>classmethod</cite> .get_permissionmanager_class <cite>(cls)</cite></a></li>
-<li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#class-permissionmanager"><cite>class</cite> .PermissionManager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#class-permissionmanager"><cite>class</cite> PermissionManager</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="backend-refs/index.html#method-add-perms-self-instance"><cite>method</cite> add_perms <cite>(self, instance)</cite></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-ratelimited-extends-abstractdcfmodel"><cite>class</cite> RateLimited <cite>extends AbstractDCFModel</cite></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#class-ratemanager"><cite>class</cite> RateManager</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="backend-refs/index.html#method-get-rate-self-queryset-user-action-version-context-str"><cite>method</cite> get_rate <cite>(self, queryset, user, action, version, context) -&gt; str</cite></a></li>
+<li class="toctree-l5"><a class="reference internal" href="backend-refs/index.html#method-get-record-key-self-queryset-user-ipid-action-version-context-str"><cite>method</cite> get_record_key <cite>(self, queryset, user, ipid, action, version, context) -&gt; str</cite></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -137,7 +152,7 @@
 <li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#class-delegateserializer-extends-dcfserializer"><cite>class</cite> DelegateSerializer <cite>extends DCFSerializer</cite></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#method-get-read-delegate-class-self-instance-serializer"><cite>method</cite> .get_read_delegate_class <cite>(self, instance) -&gt; Serializer</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#method-get-create-delegate-class-self-initial-data-prevalidated-data-serializer"><cite>method</cite> .get_create_delegate_class <cite>(self, initial_data, prevalidated_data) -&gt; Serializer</cite></a></li>
-<li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer"><cite>method</cite> .get_update_delegate_class <cite>(self, instance, initial_data, prevalidated_data) -&gt; Serializer</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="backend-refs/index.html#method-get-update-delegate-class-self-instance-initial-data-prevalidated-data-serializer-bool"><cite>method</cite> .get_update_delegate_class <cite>(self, instance, initial_data, prevalidated_data) -&gt; Serializer, bool</cite></a></li>
 </ul>
 </li>
 </ul>
@@ -146,6 +161,10 @@
 <li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#func-add-perms-shortcut-user-or-group-model-or-instance-or-queryset-perms-field-name-none"><cite>func</cite> add_perms_shortcut <cite>(user_or_group, model_or_instance_or_queryset, perms, field_name=None)</cite></a></li>
 <li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#func-has-perms-shortcut-user-or-group-model-or-instance-perms-field-name-none-bool"><cite>func</cite> has_perms_shortcut <cite>(user_or_group, model_or_instance, perms, field_name=None ) -&gt; bool</cite></a></li>
 <li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#func-reset-permissions-classes"><cite>func</cite> reset_permissions <cite>(classes)</cite></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="backend-refs/index.html#misc">Misc.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="backend-refs/index.html#context">Context</a></li>
 </ul>
 </li>
 </ul>

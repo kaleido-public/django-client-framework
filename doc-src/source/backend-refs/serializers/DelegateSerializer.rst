@@ -16,9 +16,10 @@ one of the serializers.
 **Inheritance**
 
 You must override all these methods:
-`DelegateSerializer.get_create_delegate_class(...)`_,
-`DelegateSerializer.get_update_delegate_class(...)`_,
-`DelegateSerializer.get_read_delegate_class(...)`_.
+
+* `DelegateSerializer.get_create_delegate_class(...)`_,
+* `DelegateSerializer.get_update_delegate_class(...)`_,
+* `DelegateSerializer.get_read_delegate_class(...)`_.
 
 
 
@@ -26,8 +27,6 @@ You must override all these methods:
 
 `method` .get_read_delegate_class `(self, instance) -> Serializer`
 -----------------------------------------------------------------------------------------------------------
-
-    `required`
 
     instance
         The model instance to be serialized. This is the ``instance`` parameter
@@ -41,15 +40,13 @@ You must override all these methods:
 
         product = Product.objects.first()
         delegated = DelegateSerializer(instance=product)
-        delegated.data // deserialization
+        delegated.data # deserialization
 
 
 .. _DelegateSerializer.get_create_delegate_class(...):
 
 `method` .get_create_delegate_class `(self, initial_data, prevalidated_data) -> Serializer`
 ---------------------------------------------------------------------------------------------------------
-
-    `required`
 
     initial_data
         The data to be deserialized. This is the ``data`` parameter passed to
@@ -62,15 +59,13 @@ You must override all these methods:
     .. code-block:: py
 
         delegated = DelegateSerializer(data={"barcode": "xxyy"})
-        product = delegated.save() // serialization
+        product = delegated.save() # serialization
 
 
 .. _DelegateSerializer.get_update_delegate_class(...):
 
-`method` .get_update_delegate_class `(self, instance, initial_data, prevalidated_data) -> Serializer`
+`method` .get_update_delegate_class `(self, instance, initial_data, prevalidated_data) -> Serializer, bool`
 --------------------------------------------------------------------------------------------------------------
-
-    `required`
 
     instance
         The model instance to be serialized. This is the ``instance`` parameter
@@ -89,6 +84,6 @@ You must override all these methods:
 
         product = Product.objects.first()
         delegated = DelegateSerializer(instance=product, data={"barcode": "xxyy"})
-        delegated.save() // updates barcode
+        delegated.save() # updates barcode
 
 

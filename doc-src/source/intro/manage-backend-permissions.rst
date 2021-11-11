@@ -20,7 +20,7 @@ Types of permissions
 --------------------
 
 There are four types of permissions: `read`, `write`, `create`, `delete`. These
-permissions are checked when users access the RESTful API. In particular, when
+permissions are checked when users access the REST API. In particular, when
 accessing the model collection, the model object, and the related object APIs,
 the permissions allow for the following HTTP methods:
 
@@ -102,7 +102,7 @@ Example
 
 
 
-Permissions for RESTful requests
+Permissions for REST requests
 -------------------------------------------
 
 The permission system has the following designs:
@@ -142,7 +142,7 @@ The permission system has the following designs:
         * the reverse relation field of the old related objects (eg, the ``.brand`` field for every old `product` being removed from the `brand`'s ``.products`` set)
         * the reverse relation field of the new related objects (eg, the ``.brand`` field for every new `proudct` being added to the `brand`'s ``.products`` set)
 
-The permission system affects the RESTful API request handlers. For each type of
+The permission system affects the REST API request handlers. For each type of
 requests, the handling algorithm is as the following:
 
 **Collection API**, `eg, /product/`
