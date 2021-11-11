@@ -7,7 +7,7 @@ Getting Starting with Client Libraries
     Backend`_". In this section, we assume the `Product` and `Brand` models are
     correctly set up.
 
-Instead of sending HTTP requests manually to query the backend RESTful API,
+Instead of sending HTTP requests manually to query the backend REST API,
 Django Client Framework's client libraries support quering the backend in
 frontend's native programming language, with a set of APIs that are similar to
 Django's `QuerySet`.

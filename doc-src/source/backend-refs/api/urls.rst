@@ -9,7 +9,7 @@ This module defines a global constant ``urlpatterns``.
 `const` urlpatterns
 =========================
 
-    This global constant contains the routing handlers for models' RESTful APIs. You
+    This global constant contains the routing handlers for models' REST APIs. You
     can include ``django_client_framework.api.urls`` to your custom ``urlpatterns``
     in any ``urls.py`` file. Then the handlers will become available with your
     custom prefix.

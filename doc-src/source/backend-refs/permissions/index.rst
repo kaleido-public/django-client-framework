@@ -1,4 +1,4 @@
-.. _add_perms_shortcut:
+.. _add_perms_shortcut(...):
 
 `func` add_perms_shortcut `(user_or_group, model_or_instance_or_queryset, perms, field_name=None)`
 ========================================================================================================
@@ -24,7 +24,9 @@
                 :``c``: create - allows ``POST``, ``PUT``
                 :``d``: delete - allows ``DELETE``
 
-        field_name `=None`
+        field_name
+            `optional`
+
             Accepts a property named that's defined on the model. If this argument
             is present, then the permission is for the model/object field. Otherwise
             the permission is applied to the model/object.
@@ -33,7 +35,7 @@
         See defails about :ref:`permission-concepts-and-management`.
 
 
-.. _has_perms_shortcut:
+.. _has_perms_shortcut(...):
 
 `func` has_perms_shortcut `(user_or_group, model_or_instance, perms, field_name=None ) -> bool`
 ===========================================================================================================================

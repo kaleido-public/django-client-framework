@@ -6,6 +6,7 @@
   <title>class AccessControlled extends AbstractDCFModel &mdash; Django Client Framework  documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -16,6 +17,8 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -75,9 +78,10 @@
 <p>This abstract model class provides the permission structure for its subclasses.</p>
 <p><strong>Inheritance</strong></p>
 <p>Subclasses of <a class="reference internal" href="#accesscontrolled">AccessControlled</a> can optionally override the
-<cite>.get_permissionmanager_class(cls)</cite> which returns a <a class="reference internal" href="#accesscontrolled-permissionmanager">AccessControlled.PermissionManager</a> class.</p>
+<a class="reference internal" href="#get-permissionmanager-class">.get_permissionmanager_class()</a> classmethod which returns a
+<a class="reference internal" href="#accesscontrolled-permissionmanager">AccessControlled.PermissionManager</a> class.</p>
 <div class="section" id="classmethod-get-permissionmanager-class-cls">
-<span id="accesscontrolled-get-permissionmanager-class"></span><h2><cite>classmethod</cite> .get_permissionmanager_class <cite>(cls)</cite><a class="headerlink" href="#classmethod-get-permissionmanager-class-cls" title="Permalink to this headline"></a></h2>
+<span id="accesscontrolled-get-permissionmanager-class"></span><span id="get-permissionmanager-class"></span><h2><cite>classmethod</cite> .get_permissionmanager_class <cite>(cls)</cite><a class="headerlink" href="#classmethod-get-permissionmanager-class-cls" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -88,9 +92,15 @@ defines the object permission.</p>
 </div></blockquote>
 </div>
 <div class="section" id="class-permissionmanager">
-<span id="accesscontrolled-permissionmanager"></span><h2><cite>class</cite> .PermissionManager<a class="headerlink" href="#class-permissionmanager" title="Permalink to this headline"></a></h2>
+<span id="accesscontrolled-permissionmanager"></span><h2><cite>class</cite> PermissionManager<a class="headerlink" href="#class-permissionmanager" title="Permalink to this headline"></a></h2>
 <p>This is a nested class in <a class="reference internal" href="#accesscontrolled">AccessControlled</a> whose subclasses should be
 returned from <a class="reference internal" href="#accesscontrolled-get-permissionmanager-class">AccessControlled.get_permissionmanager_class()</a>.</p>
+<div class="section" id="method-add-perms-self-instance">
+<h3><cite>method</cite> add_perms <cite>(self, instance)</cite><a class="headerlink" href="#method-add-perms-self-instance" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><p>Add permissions to the model instance.</p>
+</div></blockquote>
+</div>
 </div>
 </div>
 

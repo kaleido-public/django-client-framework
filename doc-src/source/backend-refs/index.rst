@@ -4,9 +4,10 @@ Backend API Reference
 `module` models
 **********************************
 
-.. include:: models/Model.rst
+.. include:: models/DCFModel.rst
 .. include:: models/Serializable.rst
 .. include:: models/AccessControlled.rst
+.. include:: models/RateLimited.rst
 
 `module` api.urls
 **********************************
@@ -26,5 +27,11 @@ Backend API Reference
 `module` permissions
 **********************************
 
-
 .. include:: permissions/index.rst
+
+
+
+Misc.
+**********************************
+
+.. include:: ./misc.rst

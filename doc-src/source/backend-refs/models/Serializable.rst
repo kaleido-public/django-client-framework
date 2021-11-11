@@ -11,7 +11,7 @@ This abstract model class provides caches for serialization.
 
 .. note::
 
-    Any :ref:`Model` to be registered as an API must inherit this class.
+    Any :ref:`DCFModel <Model>` to be registered as an API must inherit this class.
 
 
 **Inheritance**
@@ -28,6 +28,35 @@ returns a `DCFSerializer`_ class.
     `required`
 
     Override this method to return the `DCFSerializer`_ class for the model.
+
+    Parameters:
+        ``version``
+            By default, this is a string ``"default"``. If there's a path
+            parameter named ``version`` in the `urls.py` of the API route, this
+            received the value of that argument. You can use this to return
+            different serializers for different versions of the api.
+
+            .. code-block:: py
+
+                # urls.py
+                urlpatterns = [
+                    path("/api/<str:version>/", include(django_client_framework.api.urls)),
+                ]
+
+            .. code-block:: py
+
+                # models/product.py
+                class Product(DCFModel, Serializable):
+
+                    @classmethod
+                    def get_serializer_class(cls, version, context):
+                        if version == "v2":
+                            return ProductSerializerV2
+                        return ProductSerializer
+
+
+        ``context``
+            See `Context`_.
 
 
 .. _Serializable.serializer:

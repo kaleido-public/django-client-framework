@@ -1,33 +1,34 @@
 Getting Started with the Backend
 ================================
 
-.. seealso::
+.. warning::
 
-    This section assumes that you are familiar with Django. For a beginner's
-    guide for Django, see this link [todo].
+    This guide assumes that you are familiar with Django. Before starting, you
+    may want to go through Django's tutorial first:
+    https://docs.djangoproject.com/en/3.2/
 
 
 Installation with pip3+git
 --------------------------
 
-Django Client Framework (Django) requires ``python3.6+`` and ``Django 3.0+``. To
-install Django Client Framework from the GitHub repository, run this in your
-shell:
+Django Client Framework (Django) requires ``python3.8+`` and ``Django 3.0+``. To
+install Django Client Framework from the GitHub repository:
 
-.. code-block:: bash
+With ``pip``:
+    .. code-block:: bash
 
-    pip3 install --user git+https://github.com/cozybearca/django-client-framework.git#egg=django_client_framework
+        pip3 install git+https://github.com/kaleido-public/django-client-framework.git@staging
+
+With ``poetry``:
+    .. code-block:: bash
+
+        poetry add git+https://github.com/kaleido-public/django-client-framework.git@staging
 
 
 Configure Django's settings.py file
 -----------------------------------
 
-In ``settings.py`` for your Django app, simply add at the end of the file:
-
-.. seealso::
-
-    If you are not familiar with ``settings.py``, you haven't completed the basic
-    tutorial for Django. See [todo].
+In ``settings.py`` for your Django app, simply add *at the end of the file*:
 
 .. code-block:: py
 
@@ -96,12 +97,6 @@ Add routing handlers to ``urls.py``
 Next, append Django Client Framework's API route handlers to your app's
 ``urls.py`` file:
 
-.. seealso::
-
-    If you are not familiar with ``urls.py``, you haven't completed the basic
-    tutorial for Django. See [todo].
-
-
 .. code-block:: py
 
     from django.urls import path, include
@@ -150,22 +145,14 @@ To add a model, create a model that extends from
     class Product(DCFModel, Serializable):
         barcode = CharField(max_length=32)
 
-.. seealso::
 
-    If you are not familiar with :django:`Model <models/instances>`, you haven't
-    completed the basic tutorial for Django.
+The ``Serializable`` class requires ``Product`` to implement a class method
+named ``.get_serializer_class()``, which should return a ``DCFModelSerializer``
+class. This class is responsible for converting back and forth betwen a JSON
+object and a class object, ie, serialization and deserialization.
 
-The ``Serializable`` requires ``Product`` to implement a class method named
-``.get_serializer_class()``, which should return a ``DCFModelSerializer`` class.
-This class is responsible for converting back and forth betwen a JSON object and
-a class object, ie, serialization and deserialization.
 
-.. seealso::
-
-    If you are unfarmiliar with ``ModelSerializer`` in Django Rest Framework,
-    complete this tutorial for Django Rest Framework first. [todo]
-
-To define a ``DCFModelSerializer`` for ``Product``, we create another class that
+To define a ``DCFModelSerializer`` for ``Product``, create another class that
 inherits from ``DCFModelSerializer``:
 
 
@@ -181,13 +168,8 @@ inherits from ``DCFModelSerializer``:
 
 .. error::
 
-    Django Client Framework's ``DCFModelSerializer`` is a subclass of Django Rest
-    Framework's ``DCFModelSerializer`` class with some methods overriden. Although
-    they mostly have the same syntax and usage, do not confuse them with one
-    another! You should always use
-    ``django_client_framework.serializers.ModelSerializer``. If you use the Django
-    Rest Framework's version of the ``DCFModelSerializer`` by mistake, then some of
-    our API features won't work!
+    `DCFModelSerializer` is a subclass of `ModelSerializer` in Django Rest
+    Framework. Always use `DCFModelSerializer`, or the APIs don't work!
 
 
 Finally, we return this class from the ``.get_serializer_class()`` method. The final code
@@ -196,15 +178,15 @@ looks like this:
 
 .. code-block:: py
 
-    from django_client_framework.models import Serializable
+    from django_client_framework.models import DCFModel, Serializable
     from django_client_framework.serializers import DCFModelSerializer
     from django.db.models import CharField
 
-    class Product(Serializable):
+    class Product(DCFModel, Serializable):
         barcode = CharField(max_length=32)
 
         @classmethod
-        def get_serializer_class(cls):
+        def get_serializer_class(cls, version, context):
             return ProductSerializer
 
     class ProductSerializer(DCFModelSerializer):
@@ -221,11 +203,6 @@ Now you can run migration to apply the new model.
     python3 ./manage.py migrate
 
 
-.. seealso::
-
-    If you are not familiar with Django's migration system, you haven't
-    completed the basic tutorial for Django. See [todo].
-
 
 Make an AccessControlled model
 ------------------------------
@@ -235,7 +212,7 @@ default, all objects are only readable and writable only to superusers. Next, we
 will give the read permission to the anyone user group, so that the product list
 is publically visible to anyone visiting our site.
 
-To manage model permission, ``Product`` needs to extend the `AccessControlled`
+To manage model permission, ``Product`` needs to extend the ``AccessControlled``
 class, and overrides a class method named ``.get_permissionmanager_class()``. The
 ``.get_permissionmanager_class()`` class method should return a
 ``PermissionManager`` class that implements a method named ``.add_perms(instance)``.
@@ -243,8 +220,9 @@ The default implementation of ``.get_permissionmanager_class()`` looks for a cla
 named ``PermissionManager`` in the model class.
 
 To give anyone the read permission to the Product model, we import the
-``default_groups.anyone`` and ``add_perms_shortcut`` from
-``django_client_framework.permissions`` and use them to set the permissions.
+``default_groups.anyone`` and :ref:`add_perms_shortcut(...)
+<add_perms_shortcut(...)>` from ``django_client_framework.permissions`` and use
+them to set the permissions.
 
 .. code-block:: py
 
@@ -258,7 +236,7 @@ To give anyone the read permission to the Product model, we import the
         barcode = CharField(max_length=32)
 
         @classmethod
-        def get_serializer_class(cls):
+        def get_serializer_class(cls, version, context):
             return ProductSerializer
 
         class PermissionManager(AccessControlled.PermissionManager):
@@ -286,16 +264,15 @@ Now to refresh the permission stored in the database, run this in Django shell:
 
     reset_permissions()
 
-.. warning::
+.. note::
 
-    Consider running ``reset_permissions()`` during the django migrations whenever
-    the permission is changed on a model.
+    Consider running ``reset_permissions()`` after the django migrations.
 
 
 Query objects via HTTP requests
 -------------------------------
 
-We need to expose the ``Product`` model to the RESTful API by using the
+We need to expose the ``Product`` model to the REST API by using the
 ``@register_api_model`` decorator. Add ``@register_api_model`` to the `Product`
 class.
 
@@ -313,7 +290,7 @@ class.
         barcode = CharField(max_length=32)
 
         @classmethod
-        def get_serializer_class(cls):
+        def get_serializer_class(cls, version, context):
             return ProductSerializer
 
         class PermissionManager(AccessControlled.PermissionManager):
@@ -377,8 +354,7 @@ To visit the specific product, send a GET request to this url:
 .. seealso::
 
     Besides retrieving the object, creation, deleting, and modifications are
-    also supported through POST, DELETE, PUT RESTful requests respectively. See
-    this link for more details. [todo]
+    also supported through POST, DELETE, PUT REST requests respectively.
 
 
 Query relational objects via HTTP
@@ -405,7 +381,7 @@ Therefore, we define the two classes as follows:
         name = CharField(max_length=16)
 
         @classmethod
-        def get_serializer_class(cls):
+        def get_serializer_class(cls, version, context):
             return BrandSerializer
 
         class PermissionManager(AccessControlled.PermissionManager):
@@ -425,7 +401,7 @@ Therefore, we define the two classes as follows:
         brand = ForeignKey("Brand", related_name="products", on_delete=CASCADE, null=True)
 
         @classmethod
-        def get_serializer_class(cls):
+        def get_serializer_class(cls, version, context):
             return ProductSerializer
 
         class PermissionManager(AccessControlled.PermissionManager):
@@ -438,10 +414,6 @@ Therefore, we define the two classes as follows:
             model = Product
             fields = ["id", "barcode", "brand_id"]
 
-
-.. warning::
-
-    Don't forget to apply migrations whenever the models are changed.
 
 After applying migrations, add a ``Product`` object, and a ``Brand`` object:
 

@@ -6,6 +6,7 @@
   <title>Permission Concepts and Management &mdash; Django Client Framework  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -16,6 +17,8 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -82,7 +85,7 @@ structure depending on the user and object relations.</p>
 <div class="section" id="types-of-permissions">
 <h2>Types of permissions<a class="headerlink" href="#types-of-permissions" title="Permalink to this headline"></a></h2>
 <p>There are four types of permissions: <cite>read</cite>, <cite>write</cite>, <cite>create</cite>, <cite>delete</cite>. These
-permissions are checked when users access the RESTful API. In particular, when
+permissions are checked when users access the REST API. In particular, when
 accessing the model collection, the model object, and the related object APIs,
 the permissions allow for the following HTTP methods:</p>
 <blockquote>
@@ -166,8 +169,8 @@ using the <code class="docutils literal notranslate"><span class="pre">&#64;regi
 </dd>
 </dl>
 </div>
-<div class="section" id="permissions-for-restful-requests">
-<h2>Permissions for RESTful requests<a class="headerlink" href="#permissions-for-restful-requests" title="Permalink to this headline"></a></h2>
+<div class="section" id="permissions-for-rest-requests">
+<h2>Permissions for REST requests<a class="headerlink" href="#permissions-for-rest-requests" title="Permalink to this headline"></a></h2>
 <p>The permission system has the following designs:</p>
 <blockquote>
 <div><p>1. A <code class="docutils literal notranslate"><span class="pre">PermissionDenied</span></code> exception can be raised from anywhere of the
@@ -207,7 +210,7 @@ the <code class="docutils literal notranslate"><span class="pre">write</span></c
 </ul>
 </div></blockquote>
 </div></blockquote>
-<p>The permission system affects the RESTful API request handlers. For each type of
+<p>The permission system affects the REST API request handlers. For each type of
 requests, the handling algorithm is as the following:</p>
 <p><strong>Collection API</strong>, <cite>eg, /product/</cite></p>
 <blockquote>

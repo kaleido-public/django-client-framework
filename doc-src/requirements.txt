@@ -2,3 +2,4 @@ sphinx
 sphinx-tabs
 sphinx-rtd-theme
 sphinx-js
+sphinx_copybutton

@@ -12,9 +12,12 @@ This abstract model class provides the permission structure for its subclasses.
 **Inheritance**
 
 Subclasses of `AccessControlled`_ can optionally override the
-`.get_permissionmanager_class(cls)` which returns a `AccessControlled.PermissionManager`_ class.
+`.get_permissionmanager_class()`_ classmethod which returns a
+`AccessControlled.PermissionManager`_ class.
 
 
+
+.. _.get_permissionmanager_class():
 .. _AccessControlled.get_permissionmanager_class():
 
 `classmethod` .get_permissionmanager_class `(cls)`
@@ -26,9 +29,13 @@ Subclasses of `AccessControlled`_ can optionally override the
 
 .. _AccessControlled.PermissionManager:
 
-`class` .PermissionManager
+`class` PermissionManager
 -------------------------------------
 
 This is a nested class in `AccessControlled`_ whose subclasses should be
 returned from `AccessControlled.get_permissionmanager_class()`_.
 
+
+`method` add_perms `(self, instance)`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Add permissions to the model instance.
