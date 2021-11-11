@@ -1,6 +1,10 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
 
+from django_client_framework.api import rate_limit
+
+rate_limit.default = "120/min"
+
 
 class TestRateLimited(TestCase):
     def test_spam_get(self):

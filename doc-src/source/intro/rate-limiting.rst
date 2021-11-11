@@ -25,3 +25,10 @@ Requets``.
 
         def get_ratelimitmanager(self):
             return RateLimitManager()
+
+To set the default limit:
+
+.. code-block:: py
+
+    from django_client_framework.api import rate_limit
+    rate_limit.default = "120/min"
