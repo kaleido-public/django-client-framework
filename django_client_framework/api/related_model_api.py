@@ -6,6 +6,7 @@ from django.db.models import Model
 from django.db.models.fields import related_descriptors
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.db.models.fields.reverse_related import ManyToManyRel, ManyToOneRel
+from django.db.models.query import QuerySet
 from django.http.response import JsonResponse
 from django.utils.functional import cached_property
 from ipromise import overrides
@@ -266,7 +267,10 @@ class RelatedModelAPI(BaseModelAPI):
 
     @property
     def queryset(self):
-        return self.field_val.all()
+        if self.is_related_collection_api:
+            return self.field_val.all()
+        else:
+            return QuerySet(model=self.field_model).all()
 
     @overrides(APIView)
     def check_permissions(self, request):

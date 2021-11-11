@@ -20,6 +20,7 @@ from rest_framework.throttling import BaseThrottle
 from rest_framework.utils.encoders import JSONEncoder
 from rest_framework.views import APIView
 
+from django_client_framework.api.rate_limit import DefaultRateManager
 from django_client_framework.models.abstract.user import DCFAbstractUser
 
 from .. import exceptions as e
@@ -260,4 +261,4 @@ class BaseModelAPI(GenericAPIView):
     def get_throttles(self) -> List[BaseThrottle]:
         if issubclass(self.model, RateLimited):
             return [self.model.get_ratemanager(self.request, self)]
-        return []
+        return [DefaultRateManager(self.model, self.request, self)]

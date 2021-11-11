@@ -3,6 +3,7 @@ from __future__ import annotations
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, Type, TypeVar
 
+from django.db.models.base import Model
 from rest_framework.request import Request
 from rest_framework.throttling import SimpleRateThrottle
 from rest_framework.views import APIView
@@ -26,7 +27,7 @@ class RateLimited(AbstractDCFModel[T], Generic[T]):
 
     class RateManager(SimpleRateThrottle):
         def __init__(
-            self, model: Type[RateLimited], request: Request, view: BaseModelAPI
+            self, model: Type[Model], request: Request, view: BaseModelAPI
         ) -> None:
             self.model = model
             self.request = request
