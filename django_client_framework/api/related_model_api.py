@@ -4,8 +4,12 @@ from uuid import UUID
 
 from django.db.models import Model
 from django.db.models.fields import related_descriptors
-from django.db.models.fields.related import ForeignKey, ManyToManyField
-from django.db.models.fields.reverse_related import ManyToManyRel, ManyToOneRel
+from django.db.models.fields.related import ForeignKey, ForeignObject, ManyToManyField
+from django.db.models.fields.reverse_related import (
+    ManyToManyRel,
+    ManyToOneRel,
+    OneToOneRel,
+)
 from django.db.models.query import QuerySet
 from django.http.response import JsonResponse
 from django.utils.functional import cached_property
@@ -121,15 +125,14 @@ class RelatedModelAPI(BaseModelAPI):
         self.__assert_object_field_perm(self.model_object, "r", self.field_name)
         if self.is_related_object_api:
             if self.field_val:
-                self.__assert_object_field_perm(
-                    self.field_val, "r", self.field.related_query_name()
-                )
+                if not p.has_perms_shortcut(self.user_object, self.field_val, "r"):
+                    raise APIPermissionDenied(self.field_val, "r")
                 serializer = self.get_serializer(instance=self.field_val)
                 return Response(serializer.data)
             else:
                 raise e.NotFound()
         else:
-            queryset = self.filter_queryset(self.get_queryset())
+            queryset = self.filter_queryset(self.queryset)
             assert self.paginator
             page: Iterable[Serializable] = self.paginator.paginate_queryset(
                 queryset, self.request, view=self
@@ -282,11 +285,13 @@ class RelatedModelAPI(BaseModelAPI):
 
     @cached_property
     def is_related_object_api(self):
-        return isinstance(self.field, ForeignKey)
+        return isinstance(self.field, ForeignKey) or isinstance(
+            self.field, OneToOneRel  # OneToOneRel is used by UniqueForeignKey
+        )
 
     @cached_property
     def is_related_collection_api(self):
-        return not isinstance(self.field, ForeignKey)
+        return not self.is_related_object_api
 
     @overrides(BaseModelAPI)
     def get_serializer_class(self):
