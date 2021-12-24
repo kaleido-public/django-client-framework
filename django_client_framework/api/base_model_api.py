@@ -2,6 +2,7 @@ import math
 from logging import getLogger
 from typing import Any, Dict, List, Optional, Type, cast
 from uuid import UUID
+from django.db.models.query import QuerySet
 
 import orjson
 from django.conf import settings
@@ -175,7 +176,7 @@ class BaseModelAPI(GenericAPIView):
 
     @property
     def queryset(self):
-        return self.model.objects.all()
+        return QuerySet(model=self.model).all()
 
     def __handle_permission_denied(self, error: APIPermissionDenied):
         shortcuts = {
