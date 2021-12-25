@@ -20,7 +20,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models as m
 from django.db import transaction
 from django.db.models.base import Model, ModelBase
-from django.db.models.query import QuerySet
 from guardian import models as gm
 from guardian import shortcuts as gs
 
@@ -96,9 +95,9 @@ def get_permission_for_model(
 def filter_queryset_by_perms_shortcut(
     perms: str,
     user_or_group: AbstractUser | Group,
-    queryset: QuerySet[T],
+    queryset: m.QuerySet[T],
     field_name: str | None = None,
-) -> QuerySet[T]:
+) -> m.QuerySet[T]:
     r"""
     Filters queryset by keeping objects that user_or_group has all permissions
     specified by perms. If field_name is specified, additionally include objects
@@ -138,7 +137,7 @@ def filter_queryset_by_perms_shortcut(
 
 def add_perms_shortcut(
     user_or_group: AbstractUser | Group,
-    model_or_instance_or_queryset: Type[Model] | Model | QuerySet,
+    model_or_instance_or_queryset: Type[Model] | Model | m.QuerySet,
     perms: str,
     field_name: Optional[str] = None,
 ) -> None:
@@ -151,7 +150,7 @@ def add_perms_shortcut(
     if isinstance(model_or_instance_or_queryset, m.Model):
         instance = model_or_instance_or_queryset
         model = instance.__class__
-    elif isinstance(model_or_instance_or_queryset, QuerySet):
+    elif isinstance(model_or_instance_or_queryset, m.QuerySet):
         instance = model_or_instance_or_queryset
         model = model_or_instance_or_queryset.model
     elif model_or_instance_or_queryset.__class__ is ModelBase:
@@ -169,7 +168,7 @@ def add_perms_shortcut(
 @deprecated(details="use add_perms_shortcut(...) instead")
 def set_perms_shortcut(
     user_or_group: AbstractUser | Group,
-    model_or_instance_or_queryset: Type[Model] | Model | QuerySet,
+    model_or_instance_or_queryset: Type[Model] | Model | m.QuerySet,
     perms: str,
     field_name: Optional[str] = None,
 ) -> None:

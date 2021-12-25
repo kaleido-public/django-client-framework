@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db import models as m
 
-from .model import AbstractDCFModel
+from .model import AbstractDCFModel, T
 
 LOG = getLogger(__name__)
 
@@ -15,22 +15,24 @@ if TYPE_CHECKING:
     from ...serializers.serializer import DCFSerializer
 
 
-S = TypeVar("S", bound="DCFSerializer")
+D = TypeVar("D")
 
 
-class Serializable(AbstractDCFModel, Generic[S]):
+class Serializable(AbstractDCFModel, Generic[T, D]):
     class Meta:
         abstract = True
 
     @classmethod
-    def get_serializer_class(cls, *, version: str, context: Dict[str, Any]) -> Type[S]:
+    def get_serializer_class(
+        cls, *, version: str, context: Dict[str, Any]
+    ) -> Type[DCFSerializer[T, D]]:
         raise NotImplementedError(
             f"{cls} must implement .get_serializer_class(version, context)"
         )
 
     def get_serializer(
         self, *, version: str, context: Dict[str, Any], **kwargs: Any
-    ) -> S:
+    ) -> DCFSerializer[T, D]:
         return self.get_serializer_class(version=version, context=context)(
             instance=self, **kwargs
         )
@@ -40,7 +42,7 @@ class Serializable(AbstractDCFModel, Generic[S]):
         *,
         version: str,
         context: Dict[str, Any] = {},
-        serializer: Optional[S] = None,
+        serializer: Optional[DCFSerializer[T, D]] = None,
         ignore_cache: bool = False,
     ) -> Any:
         if ignore_cache or self.get_cache_timeout() == 0:
@@ -60,12 +62,12 @@ class Serializable(AbstractDCFModel, Generic[S]):
         *,
         version: str,
         context: Dict[str, Any] = {},
-        serializer: Optional[S] = None,
-    ) -> Any:
+        serializer: Optional[DCFSerializer[T, D]] = None,
+    ) -> D:
         if serializer:
             return serializer.to_representation(self)
         else:
-            return dict(self.get_serializer(version=version, context=context).data)
+            return self.get_serializer(version=version, context=context).data
 
     def get_extra_content_to_hash(self) -> List[Any]:
         return []
@@ -92,7 +94,7 @@ class Serializable(AbstractDCFModel, Generic[S]):
         *,
         version: str,
         context: Dict[str, Any] = {},
-        serializer: Optional[S] = None,
+        serializer: Optional[DCFSerializer[T, D]] = None,
     ) -> Any:
         timeout = self.get_cache_timeout()
         if timeout == 0:

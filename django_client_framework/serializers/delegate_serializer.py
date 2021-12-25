@@ -1,22 +1,20 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, Tuple, Type, TypeVar
+from typing import Any, Dict, Generic, Optional, Tuple, Type
 
 from django.utils.functional import cached_property
+
+from django_client_framework.models.abstract.model import T
+from django_client_framework.models.abstract.serializable import D
 
 from .. import exceptions as e
 from .serializer import DCFSerializer
 
 LOG = getLogger(__name__)
 
-if TYPE_CHECKING:
-    from ..models.abstract.model import DCFModel
 
-T = TypeVar("T", bound="DCFModel")
-
-
-class DelegateSerializer(DCFSerializer[T], Generic[T]):
+class DelegateSerializer(DCFSerializer[T, D], Generic[T, D]):
     """
     Any subclass can provide read, create, update delegate serializers dynamically.
     """
@@ -24,7 +22,7 @@ class DelegateSerializer(DCFSerializer[T], Generic[T]):
     def __init__(
         self,
         instance: Optional[T] = None,
-        data: Optional[Any] = None,
+        data: Optional[D] = None,
         *,
         context: Dict[str, Any] = {},
         **kwargs: Any,
@@ -69,7 +67,7 @@ class DelegateSerializer(DCFSerializer[T], Generic[T]):
     def delete_obj(self):
         return self.delegate.delete_obj()
 
-    def get_delegate(self, raise_exception: bool = False) -> DCFSerializer[T]:
+    def get_delegate(self, raise_exception: bool = False) -> DCFSerializer[T, D]:
         delegate = None
 
         if self.is_update:
@@ -133,7 +131,7 @@ class DelegateSerializer(DCFSerializer[T], Generic[T]):
         return delegate
 
     @cached_property
-    def delegate(self) -> DCFSerializer[T]:
+    def delegate(self) -> DCFSerializer[T, D]:
         if ret := self.get_delegate():
             return ret
         else:
@@ -151,7 +149,7 @@ class DelegateSerializer(DCFSerializer[T], Generic[T]):
         self,
         initial_data: Dict[str, Any],
         prevalidated_data: Optional[Dict[str, Any]],
-    ) -> Type[DCFSerializer[T]]:
+    ) -> Type[DCFSerializer[T, D]]:
         raise NotImplementedError(
             f"{self.__class__} must implement .get_create_delegate_class()"
         )
@@ -161,12 +159,12 @@ class DelegateSerializer(DCFSerializer[T], Generic[T]):
         instance: T,
         initial_data: Dict[str, Any],
         prevalidated_data: Optional[Dict[str, Any]],
-    ) -> Tuple[Type[DCFSerializer[T]], bool]:
+    ) -> Tuple[Type[DCFSerializer[T, D]], bool]:
         raise NotImplementedError(
             f"{self.__class__} must implement .get_update_delegate_class()"
         )
 
-    def get_read_delegate_class(self) -> Type[DCFSerializer[T]]:
+    def get_read_delegate_class(self) -> Type[DCFSerializer[T, D]]:
         raise NotImplementedError(
             f"{self.__class__} must implement .get_read_delegate_class()"
         )

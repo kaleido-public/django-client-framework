@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, List
 
 from django.db import models as m
+from django.db.models.manager import Manager
 
 from django_client_framework.api import register_api_model
 from django_client_framework.models import DCFModel, Serializable
@@ -14,9 +15,8 @@ if TYPE_CHECKING:
 
 
 @register_api_model
-class Brand(DCFModel, Serializable):
-    class Meta:
-        pass
+class Brand(DCFModel["Brand"], Serializable):
+    objects: Manager["Brand"] = Manager()
 
     name = m.CharField(max_length=100, unique=True, null=True)
     priority = m.IntegerField(default=1)

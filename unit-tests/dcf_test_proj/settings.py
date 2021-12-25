@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+from typing import Any, Dict, List
 
 import django_client_framework.settings
 
@@ -27,7 +28,7 @@ SECRET_KEY = "9-dtfx#_oh+78f45-a^d&ra&si$^uup@u-xcnep8t%y*^vt_d6"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: List[str] = []
 
 
 # Application definition
@@ -122,8 +123,8 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-REST_FRAMEWORK = {}
-AUTHENTICATION_BACKENDS = []
+REST_FRAMEWORK: Dict[str, Any] = {}
+AUTHENTICATION_BACKENDS: List[str] = []
 
 django_client_framework.settings.install(
     INSTALLED_APPS=INSTALLED_APPS,
