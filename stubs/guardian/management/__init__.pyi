@@ -1,0 +1,6 @@
+from typing import Any
+
+def get_init_anonymous_user(User): ...
+def create_anonymous_user(sender, **kwargs) -> None: ...
+
+guardian_app: Any
