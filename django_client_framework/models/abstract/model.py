@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import base64
-from typing import ClassVar, Generic, TypeVar
+from typing import Generic, TypeVar
 from uuid import UUID, uuid4
 
 from django.db.models import Model as DjangoModel
@@ -16,7 +16,7 @@ class AbstractDCFModel(DjangoModel, Generic[T]):
     class Meta:
         abstract = True
 
-    objects: ClassVar[Manager[DjangoModel]]
+    objects: Manager[T]
     id: UUIDField
     _meta: Options[T]
 

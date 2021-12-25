@@ -7,7 +7,6 @@
     "/home/yuli/django-client-framework",
     "./unit-tests"
   ],
-  "python.analysis.typeCheckingMode": "basic",
   "python.analysis.stubPath": "./stubs",
   "python.analysis.diagnosticSeverityOverrides": {
     "reportWildcardImportFromLibrary": "none",
@@ -31,5 +30,6 @@
     ".vscode/*.py",
     "**/*.pyi",
     "**/stubs"
-  ]
+  ],
+  "mypy.runUsingActiveInterpreter": true
 }

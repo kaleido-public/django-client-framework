@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Iterable, List, Optional, Type
+from typing import Iterable, List, Optional, Type
 from uuid import UUID
 
 from django.db.models import Model
@@ -258,7 +258,7 @@ class RelatedModelAPI(BaseModelAPI):
         return getattr(self.model_object, self.field_name)
 
     @cached_property
-    def field_model(self) -> Type[Serializable[Any]]:
+    def field_model(self) -> Type[Serializable]:
         return self.field.related_model  # type: ignore
 
     @cached_property

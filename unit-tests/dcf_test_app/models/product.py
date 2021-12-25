@@ -1,4 +1,7 @@
 import logging
+from typing import Any
+
+from django.db.models.manager import Manager
 
 from django_client_framework import models as m
 from django_client_framework.api import register_api_model
@@ -9,9 +12,8 @@ LOG = logging.getLogger(__name__)
 
 
 @register_api_model
-class Product(DCFModel, Serializable):
-    class Meta:
-        pass
+class Product(DCFModel["Product"], Serializable["Product", Any]):
+    objects: Manager["Product"] = Manager()
 
     barcode = m.CharField(max_length=255, blank=True, default="")
     priority = m.IntegerField(default=1)
@@ -25,7 +27,7 @@ class Product(DCFModel, Serializable):
         return ProductSerializer
 
 
-class ProductSerializer(DCFModelSerializer["Product"]):
+class ProductSerializer(DCFModelSerializer["Product", Any]):
     class Meta:
         model = Product
         fields = ["id", "priority", "brand_id", "barcode"]

@@ -1,25 +1,27 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, Optional
 
 from rest_framework.serializers import Serializer as DRFSerializer
 
+from ..models.abstract.model import T
+from ..models.abstract.serializable import D
+
 if TYPE_CHECKING:
-    from ..models import DCFModel
-
-T = TypeVar("T", bound="DCFModel[Any]")
+    pass
 
 
-class DCFSerializer(DRFSerializer, Generic[T]):
+class DCFSerializer(DRFSerializer, Generic[T, D]):
     # Every attribute / method in this class must also be added to the
     # DelegateSerializer, otherwise the DelegateSerializer breaks.
 
-    instance: T | None
+    instance: Optional[T]
+    data: D  # type: ignore
 
     def update(self, instance: T, validated_data: Any) -> T:
         return super().update(instance, validated_data)
 
-    def create(self, validated_data: T) -> T:
+    def create(self, validated_data: Any) -> T:
         return super().create(validated_data)
 
     def save(self, **kwargs: Any) -> T:

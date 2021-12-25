@@ -113,7 +113,7 @@ class BaseModelAPI(GenericAPIView):
         return getattr(self, "kwargs", {}).get("version", "default")
 
     @cached_property
-    def __name_to_model(self) -> Dict[str, Type[Serializable[Any]]]:
+    def __name_to_model(self) -> Dict[str, Type[Serializable]]:
         return {self.__model_name(model): model for model in self.models}
 
     @overrides(APIView)
@@ -150,7 +150,7 @@ class BaseModelAPI(GenericAPIView):
         return self.get_request_data(self.request)
 
     @cached_property
-    def model(self) -> Type[Serializable[Any]]:
+    def model(self) -> Type[Serializable]:
         model_name = self.kwargs["model"]
         if model_name not in self.__name_to_model:
             valid_models = ", ".join(self.__name_to_model.keys())
@@ -169,7 +169,7 @@ class BaseModelAPI(GenericAPIView):
             return default
 
     @cached_property
-    def model_object(self) -> Serializable[Any]:
+    def model_object(self) -> Serializable:
         pk = self.kwargs["pk"]
         return get_object_or_404(self.model, pk=pk)
 
@@ -231,7 +231,7 @@ class BaseModelAPI(GenericAPIView):
         return get_user_model().get_anonymous()
 
     def assert_pks_exist_or_raise_404(
-        self, model: Type[Serializable[Any]], pks: List[UUID]
+        self, model: Type[Serializable], pks: List[UUID]
     ) -> None:
         queryset = model.objects.filter(pk__in=pks)
         if queryset.count() != len(pks):

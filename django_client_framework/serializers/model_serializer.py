@@ -1,11 +1,22 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, Generic, List, Type, TypeVar, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    cast,
+)
 
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models.fields import UUIDField as DjangoUUIDField
 from django.db.models.fields.related import ForeignKey
+from django.db.models.query import QuerySet
 from django.utils.functional import cached_property
 from ipromise.overrides import overrides
 from rest_framework.fields import UUIDField as DRFUUIDField
@@ -34,6 +45,7 @@ def get_model_field(model, key, default=None):
 
 
 T = TypeVar("T", bound="DCFModel")
+D = TypeVar("D")
 
 
 class UniqueID(UniqueValidator):
@@ -60,7 +72,11 @@ class DCFUUIDField(DRFUUIDField):
         return data
 
 
-class DCFModelSerializer(DCFSerializer[T], DRFModelSerializer, Generic[T]):
+class DCFModelSerializer(DCFSerializer[T, D], DRFModelSerializer[T], Generic[T, D]):
+
+    instance: Optional[T]
+    data: D  # type: ignore
+
     @cached_property
     def serializer_field_mapping(self):
         mapping = cast(Any, super().serializer_field_mapping)
@@ -119,7 +135,9 @@ class DCFModelSerializer(DCFSerializer[T], DRFModelSerializer, Generic[T]):
                     "read_only": False,
                     "required": False,
                     "allow_null": False,
-                    "validators": [UniqueID(queryset=self.Meta.model.objects.all())],
+                    "validators": [
+                        UniqueID(queryset=QuerySet(model=self.Meta.model).all())
+                    ],
                 }
             )
 
@@ -154,7 +172,7 @@ class DCFModelSerializer(DCFSerializer[T], DRFModelSerializer, Generic[T]):
     def __check_undefined_fields(self, raise_exception):
         """Enforces that each field passing through the Serializer must be
         declared in the Meta.fields, for added Security."""
-        valid_fields = self.fields.keys()
+        valid_fields = list(self.fields.keys())
         input_fields = self.initial_data.keys()
 
         if extra_fields := list(set(input_fields) - set(valid_fields)):
