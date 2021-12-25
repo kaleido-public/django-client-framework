@@ -1,0 +1,9 @@
+from . import checks as checks
+from typing import Any
+
+default_app_config: str
+VERSION: Any
+
+def get_version(): ...
+def monkey_patch_user(): ...
+def monkey_patch_group(): ...
