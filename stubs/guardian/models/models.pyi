@@ -1,8 +1,12 @@
+from typing import Any
+
 from django.db import models
 from guardian.compat import user_model_label as user_model_label
 from guardian.ctypes import get_content_type as get_content_type
-from guardian.managers import GroupObjectPermissionManager as GroupObjectPermissionManager, UserObjectPermissionManager as UserObjectPermissionManager
-from typing import Any
+from guardian.managers import (
+    GroupObjectPermissionManager as GroupObjectPermissionManager,
+)
+from guardian.managers import UserObjectPermissionManager as UserObjectPermissionManager
 
 class BaseObjectPermission(models.Model):
     permission: Any
@@ -25,7 +29,9 @@ class UserObjectPermissionBase(BaseObjectPermission):
         abstract: bool
         unique_together: Any
 
-class UserObjectPermissionAbstract(UserObjectPermissionBase, BaseGenericObjectPermission):
+class UserObjectPermissionAbstract(
+    UserObjectPermissionBase, BaseGenericObjectPermission
+):
     class Meta(UserObjectPermissionBase.Meta, BaseGenericObjectPermission.Meta):
         abstract: bool
         unique_together: Any
@@ -41,7 +47,9 @@ class GroupObjectPermissionBase(BaseObjectPermission):
         abstract: bool
         unique_together: Any
 
-class GroupObjectPermissionAbstract(GroupObjectPermissionBase, BaseGenericObjectPermission):
+class GroupObjectPermissionAbstract(
+    GroupObjectPermissionBase, BaseGenericObjectPermission
+):
     class Meta(GroupObjectPermissionBase.Meta, BaseGenericObjectPermission.Meta):
         abstract: bool
         unique_together: Any

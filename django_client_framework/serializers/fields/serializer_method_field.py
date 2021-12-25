@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
+
 from rest_framework import serializers as s
 from rest_framework.fields import Field
-
 
 _IN = TypeVar("_IN")  # Instance Type
 _VT = TypeVar("_VT")  # Value Type

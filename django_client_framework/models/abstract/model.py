@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import base64
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import ClassVar, Generic, TypeVar
 from uuid import UUID, uuid4
 
 from django.db.models import Model as DjangoModel
-from django.db.models.base import ModelBase
 from django.db.models.fields import DateTimeField, UUIDField
 from django.db.models.manager import Manager
 from django.db.models.options import Options
-
 
 T = TypeVar("T", bound="DjangoModel")
 

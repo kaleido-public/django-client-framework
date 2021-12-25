@@ -1,9 +1,11 @@
+from typing import Any
+
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import AbstractBaseUser, AbstractUser
 from django.db import models
 from guardian.mixins import GuardianUserMixin as GuardianUserMixin
-from guardian.models import GroupObjectPermissionBase as GroupObjectPermissionBase, UserObjectPermissionBase as UserObjectPermissionBase
-from typing import Any
+from guardian.models import GroupObjectPermissionBase as GroupObjectPermissionBase
+from guardian.models import UserObjectPermissionBase as UserObjectPermissionBase
 
 class Post(models.Model):
     title: Any

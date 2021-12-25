@@ -1,5 +1,6 @@
-from . import checks as checks
 from typing import Any
+
+from . import checks as checks
 
 default_app_config: str
 VERSION: Any

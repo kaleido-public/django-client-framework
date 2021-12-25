@@ -1,14 +1,15 @@
 from __future__ import annotations
+
 import math
 from logging import getLogger
 from typing import Any, Dict, List, Optional, Type, cast
 from uuid import UUID
-from django.db.models.query import QuerySet
 
 import orjson
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models.base import Model
+from django.db.models.query import QuerySet
 from django.http.request import QueryDict
 from django.utils.functional import cached_property
 from ipromise import overrides

@@ -1,6 +1,9 @@
-from guardian.ctypes import get_content_type as get_content_type
-from guardian.utils import get_group_obj_perms_model as get_group_obj_perms_model, get_identity as get_identity, get_user_obj_perms_model as get_user_obj_perms_model
 from typing import Any
+
+from guardian.ctypes import get_content_type as get_content_type
+from guardian.utils import get_group_obj_perms_model as get_group_obj_perms_model
+from guardian.utils import get_identity as get_identity
+from guardian.utils import get_user_obj_perms_model as get_user_obj_perms_model
 
 class ObjectPermissionChecker:
     def __init__(self, user_or_group: Any | None = ...) -> None: ...

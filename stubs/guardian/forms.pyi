@@ -1,6 +1,11 @@
-from django import forms
-from guardian.shortcuts import assign_perm as assign_perm, get_group_perms as get_group_perms, get_perms_for_model as get_perms_for_model, get_user_perms as get_user_perms, remove_perm as remove_perm
 from typing import Any
+
+from django import forms
+from guardian.shortcuts import assign_perm as assign_perm
+from guardian.shortcuts import get_group_perms as get_group_perms
+from guardian.shortcuts import get_perms_for_model as get_perms_for_model
+from guardian.shortcuts import get_user_perms as get_user_perms
+from guardian.shortcuts import remove_perm as remove_perm
 
 class BaseObjectPermissionsForm(forms.Form):
     obj: Any

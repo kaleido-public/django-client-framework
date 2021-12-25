@@ -1,6 +1,9 @@
-from guardian.shortcuts import get_objects_for_user as get_objects_for_user
-from guardian.utils import get_40x_or_None as get_40x_or_None, get_anonymous_user as get_anonymous_user, get_user_obj_perms_model as get_user_obj_perms_model
 from typing import Any
+
+from guardian.shortcuts import get_objects_for_user as get_objects_for_user
+from guardian.utils import get_40x_or_None as get_40x_or_None
+from guardian.utils import get_anonymous_user as get_anonymous_user
+from guardian.utils import get_user_obj_perms_model as get_user_obj_perms_model
 
 UserObjectPermission: Any
 
@@ -21,7 +24,9 @@ class PermissionRequiredMixin:
     def get_required_permissions(self, request: Any | None = ...): ...
     def get_permission_object(self): ...
     def check_permissions(self, request): ...
-    def on_permission_check_fail(self, request, response, obj: Any | None = ...) -> None: ...
+    def on_permission_check_fail(
+        self, request, response, obj: Any | None = ...
+    ) -> None: ...
     request: Any
     args: Any
     kwargs: Any

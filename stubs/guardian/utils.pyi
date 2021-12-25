@@ -1,6 +1,7 @@
+from typing import Any
+
 from guardian.ctypes import get_content_type as get_content_type
 from guardian.exceptions import NotUserNorGroup as NotUserNorGroup
-from typing import Any
 
 logger: Any
 abspath: Any
