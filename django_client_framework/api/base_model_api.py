@@ -1,3 +1,4 @@
+from __future__ import annotations
 import math
 from logging import getLogger
 from typing import Any, Dict, List, Optional, Type, cast
@@ -38,8 +39,8 @@ LOG = getLogger(__name__)
 class APIPermissionDenied(Exception):
     def __init__(
         self,
-        model_or_instance,
-        perm,
+        model_or_instance: Type[Model] | Model,
+        perm: str,
         field: Optional[str] = None,
     ) -> None:
         self.perm = perm
@@ -123,7 +124,7 @@ class BaseModelAPI(GenericAPIView):
         except APIPermissionDenied as error:
             self.__handle_permission_denied(error)
 
-    def get_request_data(self, request: Request):
+    def get_request_data(self, request: Request) -> Dict:
         """
         Excludes special keys and returns only the instance related data.
         """
@@ -171,14 +172,14 @@ class BaseModelAPI(GenericAPIView):
         pk = self.kwargs["pk"]
         return get_object_or_404(self.model, pk=pk)
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> Type[DCFSerializer]:
         raise NotImplementedError("Must override")
 
     @property
     def queryset(self):
         return QuerySet(model=self.model).all()
 
-    def __handle_permission_denied(self, error: APIPermissionDenied):
+    def __handle_permission_denied(self, error: APIPermissionDenied) -> None:
         shortcuts = {
             "r": "read",
             "w": "write",
@@ -230,7 +231,7 @@ class BaseModelAPI(GenericAPIView):
 
     def assert_pks_exist_or_raise_404(
         self, model: Type[Serializable[Any]], pks: List[UUID]
-    ):
+    ) -> None:
         queryset = model.objects.filter(pk__in=pks)
         if queryset.count() != len(pks):
             for pk in pks:

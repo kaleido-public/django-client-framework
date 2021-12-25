@@ -12,7 +12,7 @@ def monkeypatch_djangotypes():
         cls.__class_getitem__ = classmethod(lambda cls, *args, **kwargs: cls)  # type: ignore [attr-defined]
 
 
-def monkeypatch_abstract_generic():
+def monkeypatch_abstract_generic() -> None:
     # Monkey patch for django-types See
     # https://github.com/typeddjango/django-stubs/issues/299 in settings.py
     from typing import Generic

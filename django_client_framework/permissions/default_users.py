@@ -1,3 +1,4 @@
+from typing import Callable, Dict
 from ..models import get_user_model
 
 
@@ -14,7 +15,7 @@ def do_nothing(group):
 
 class DefaultUsers:
 
-    usernames = {}
+    usernames: Dict[str, Callable] = {}
 
     def __getattr__(self, name):
         if name in self.usernames:

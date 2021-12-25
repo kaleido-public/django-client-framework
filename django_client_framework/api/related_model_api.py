@@ -4,7 +4,7 @@ from uuid import UUID
 
 from django.db.models import Model
 from django.db.models.fields import related_descriptors
-from django.db.models.fields.related import ForeignKey, ForeignObject, ManyToManyField
+from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.db.models.fields.reverse_related import (
     ManyToManyRel,
     ManyToOneRel,
@@ -115,7 +115,9 @@ class RelatedModelAPI(BaseModelAPI):
                 }
             )
 
-    def __assert_object_field_perm(self, instance: Model, perm: str, field_name: str):
+    def __assert_object_field_perm(
+        self, instance: Model, perm: str, field_name: str
+    ) -> None:
         if not p.has_perms_shortcut(
             self.user_object, instance, perm, field_name=field_name
         ):
