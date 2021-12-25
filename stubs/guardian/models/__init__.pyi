@@ -1,10 +1,8 @@
-from .models import (
-    BaseGenericObjectPermission as BaseGenericObjectPermission,
-    BaseObjectPermission as BaseObjectPermission,
-    GroupObjectPermission as GroupObjectPermission,
-    GroupObjectPermissionAbstract as GroupObjectPermissionAbstract,
-    GroupObjectPermissionBase as GroupObjectPermissionBase,
-    UserObjectPermission as UserObjectPermission,
-    UserObjectPermissionAbstract as UserObjectPermissionAbstract,
-    UserObjectPermissionBase as UserObjectPermissionBase,
-)
+from .models import BaseGenericObjectPermission as BaseGenericObjectPermission
+from .models import BaseObjectPermission as BaseObjectPermission
+from .models import GroupObjectPermission as GroupObjectPermission
+from .models import GroupObjectPermissionAbstract as GroupObjectPermissionAbstract
+from .models import GroupObjectPermissionBase as GroupObjectPermissionBase
+from .models import UserObjectPermission as UserObjectPermission
+from .models import UserObjectPermissionAbstract as UserObjectPermissionAbstract
+from .models import UserObjectPermissionBase as UserObjectPermissionBase

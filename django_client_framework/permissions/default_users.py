@@ -1,4 +1,5 @@
 from typing import Callable, Dict
+
 from ..models import get_user_model
 
 

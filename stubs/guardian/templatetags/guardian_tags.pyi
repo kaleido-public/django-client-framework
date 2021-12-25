@@ -1,7 +1,8 @@
+from typing import Any
+
 from django import template
 from guardian.core import ObjectPermissionChecker as ObjectPermissionChecker
 from guardian.exceptions import NotUserNorGroup as NotUserNorGroup
-from typing import Any
 
 register: Any
 
@@ -10,7 +11,9 @@ class ObjectPermissionsNode(template.Node):
     obj: Any
     context_var: Any
     checker: Any
-    def __init__(self, for_whom, obj, context_var, checker: Any | None = ...) -> None: ...
+    def __init__(
+        self, for_whom, obj, context_var, checker: Any | None = ...
+    ) -> None: ...
     user: Any
     group: Any
     def render(self, context): ...

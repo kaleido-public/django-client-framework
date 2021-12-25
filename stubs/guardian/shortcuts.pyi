@@ -1,17 +1,16 @@
+from typing import Any
+
 from guardian.core import ObjectPermissionChecker as ObjectPermissionChecker
 from guardian.ctypes import get_content_type as get_content_type
+from guardian.exceptions import MixedContentTypeError as MixedContentTypeError
 from guardian.exceptions import (
-    MixedContentTypeError as MixedContentTypeError,
     MultipleIdentityAndObjectError as MultipleIdentityAndObjectError,
-    WrongAppError as WrongAppError,
 )
-from guardian.utils import (
-    get_anonymous_user as get_anonymous_user,
-    get_group_obj_perms_model as get_group_obj_perms_model,
-    get_identity as get_identity,
-    get_user_obj_perms_model as get_user_obj_perms_model,
-)
-from typing import Any
+from guardian.exceptions import WrongAppError as WrongAppError
+from guardian.utils import get_anonymous_user as get_anonymous_user
+from guardian.utils import get_group_obj_perms_model as get_group_obj_perms_model
+from guardian.utils import get_identity as get_identity
+from guardian.utils import get_user_obj_perms_model as get_user_obj_perms_model
 
 GroupObjectPermission: Any
 UserObjectPermission: Any

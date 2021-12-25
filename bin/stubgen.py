@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
 import re
 import sys
-from mypy.stubgen import main
-import os
-import django
 from pathlib import Path
 
+import django
+from mypy.stubgen import main
 
 if __name__ == "__main__":
     sys.path.append(str(Path("./dcf_dummy_proj").absolute()))
