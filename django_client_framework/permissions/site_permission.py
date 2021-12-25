@@ -1,10 +1,20 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, List, Literal, Type, TypeVar, cast, overload
+from typing import (
+    Any,
+    Iterable,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    Type,
+    TypeVar,
+    cast,
+    overload,
+)
 
 from deprecation import deprecated
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import models as m
@@ -13,6 +23,9 @@ from django.db.models.base import Model, ModelBase
 from django.db.models.query import QuerySet
 from guardian import models as gm
 from guardian import shortcuts as gs
+
+from django_client_framework.models import get_user_model
+from django_client_framework.models.abstract.model import DCFModel
 
 from ..models.abstract.access_controlled import AccessControlled
 from .default_groups import default_groups
@@ -48,9 +61,9 @@ def get_permission_for_model(
     shortcut: str,
     model: Type[Model],
     *,
-    string,
-    field_name,
-):
+    string: bool,
+    field_name: Optional[str],
+) -> str | Permission:
     """
     Returns permission object for model and field.
     If string is True, then returns the Permission object's full codename as string.
@@ -109,11 +122,12 @@ def filter_queryset_by_perms_shortcut(
                 get_permission_for_model(s, queryset.model, string=True, field_name=f)
                 for s in perms.lower()
             ]
-            union |= (
+            fn: Any = (
                 gs.get_objects_for_group
                 if isinstance(u, Group)
                 else gs.get_objects_for_user
-            )(
+            )
+            union |= fn(
                 u,
                 perms=perm_full_strs,
                 accept_global_perms=True,
@@ -127,8 +141,8 @@ def add_perms_shortcut(
     user_or_group: AbstractUser | Group,
     model_or_instance_or_queryset: Type[Model] | Model | QuerySet,
     perms: str,
-    field_name: str | None = None,
-):
+    field_name: Optional[str] = None,
+) -> None:
     """
     Adds model or object permission depending on whether model_or_instance_or_queryset
     is a model.
@@ -158,8 +172,8 @@ def set_perms_shortcut(
     user_or_group: AbstractUser | Group,
     model_or_instance_or_queryset: Type[Model] | Model | QuerySet,
     perms: str,
-    field_name: str | None = None,
-):
+    field_name: Optional[str] = None,
+) -> None:
     return add_perms_shortcut(
         user_or_group, model_or_instance_or_queryset, perms, field_name
     )
@@ -169,8 +183,8 @@ def has_perms_shortcut(
     user_or_group: AbstractUser | Group,
     model_or_instance: Type[Model] | Model,
     perms: str,
-    field_name: str | None = None,
-):
+    field_name: Optional[str] = None,
+) -> bool:
     """
     Check if user has all permissions as indicated by perms. For example, when
     perms="rw", returns True only if the user has both read and write
@@ -191,7 +205,7 @@ def has_perms_shortcut(
     if isinstance(user_or_group, User) and user_or_group.is_superuser:
         return True
 
-    def disjunction(s: str):
+    def disjunction(s: str) -> Iterator[bool]:
         for u in set([default_groups.anyone, user_or_group]):
             for f in set([None, field_name]):
                 perm = get_permission_for_model(s, model, string=False, field_name=f)
@@ -220,7 +234,7 @@ def has_perms_shortcut(
                         yield True
         yield False
 
-    def conjunction():
+    def conjunction() -> Iterator[bool]:
         for s in perms.lower():
             if any(disjunction(s)):
                 yield True
@@ -242,8 +256,10 @@ def clear_permissions():
 
 
 def reset_permissions(
-    for_classes: List[Type["AccessControlled"]] = AccessControlled.__subclasses__(),
-):
+    for_classes: List[
+        Type["AccessControlled[Any]"]
+    ] = AccessControlled.__subclasses__(),
+) -> None:
     # set user self permission
     # must be done after all default users are added
     total_model_count = len(for_classes)
@@ -253,8 +269,10 @@ def reset_permissions(
         LOG.warn(f"Resetting permissions for model {model.__name__}")
         total = model.objects.count()
         current = 0
-        instance: AccessControlled
-        for instance in model.objects.all():
+        for instance in cast(
+            Iterable[AccessControlled[Any]],
+            model.objects.all(),
+        ):
             current += 1
             percentage = current * 100 / total
             LOG.info(

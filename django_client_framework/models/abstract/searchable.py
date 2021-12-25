@@ -86,10 +86,8 @@ class Searchable(AbstractDCFModel[T], Generic[T]):
 
     @classmethod
     def update_all_search_feature(cls):
-        instance: cls
-        cls.objects: Manager[cls]
         for instance in cls.objects.all():
-            instance.update_or_create_searchfeature()
+            cast(Searchable, instance).update_or_create_searchfeature()
 
 
 @receiver(post_save)

@@ -15,20 +15,22 @@ if TYPE_CHECKING:
     from ...serializers.serializer import DCFSerializer
 
 
-T = TypeVar("T", bound="DCFSerializer")
+S = TypeVar("S", bound="DCFSerializer")
 
 
-class Serializable(AbstractDCFModel, Generic[T]):
+class Serializable(AbstractDCFModel, Generic[S]):
     class Meta:
         abstract = True
 
     @classmethod
-    def get_serializer_class(cls, *, version: str, context: Dict[str, Any]) -> Type[T]:
+    def get_serializer_class(cls, *, version: str, context: Dict[str, Any]) -> Type[S]:
         raise NotImplementedError(
             f"{cls} must implement .get_serializer_class(version, context)"
         )
 
-    def get_serializer(self, *, version: str, context: Dict[str, Any], **kwargs) -> T:
+    def get_serializer(
+        self, *, version: str, context: Dict[str, Any], **kwargs: Any
+    ) -> S:
         return self.get_serializer_class(version=version, context=context)(
             instance=self, **kwargs
         )
@@ -38,8 +40,8 @@ class Serializable(AbstractDCFModel, Generic[T]):
         *,
         version: str,
         context: Dict[str, Any] = {},
-        serializer: Optional[T] = None,
-        ignore_cache=False,
+        serializer: Optional[S] = None,
+        ignore_cache: bool = False,
     ) -> Any:
         if ignore_cache or self.get_cache_timeout() == 0:
             return self.get_json(
@@ -58,7 +60,7 @@ class Serializable(AbstractDCFModel, Generic[T]):
         *,
         version: str,
         context: Dict[str, Any] = {},
-        serializer: Optional[T] = None,
+        serializer: Optional[S] = None,
     ) -> Any:
         if serializer:
             return serializer.to_representation(self)
@@ -88,10 +90,10 @@ class Serializable(AbstractDCFModel, Generic[T]):
     def cached_json(
         self,
         *,
-        version,
+        version: str,
         context: Dict[str, Any] = {},
-        serializer: Optional[T] = None,
-    ):
+        serializer: Optional[S] = None,
+    ) -> Any:
         timeout = self.get_cache_timeout()
         if timeout == 0:
             return self.get_json(
@@ -148,7 +150,9 @@ def check_integrity():
             )
 
     for model in Serializable.__subclasses__():
-        sercls = model.get_serializer_class(version="default", context={})
+        sercls: Type[Serializer] = model.get_serializer_class(
+            version="default", context={}
+        )
         if not (
             issubclass(sercls, Serializer) or issubclass(sercls, DelegateSerializer)
         ):

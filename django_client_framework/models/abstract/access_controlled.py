@@ -16,7 +16,7 @@ T = TypeVar("T", bound="DCFModel")
 _T = TypeVar("_T", bound="DCFModel")
 
 
-class AccessControlled(AbstractDCFModel[T], Generic[T]):
+class AccessControlled(AbstractDCFModel["AccessControlled[T]"], Generic[T]):
     class Meta:
         abstract = True
 
@@ -25,10 +25,10 @@ class AccessControlled(AbstractDCFModel[T], Generic[T]):
     )
 
     class PermissionManager(Generic[_T]):
-        def add_perms(self, instance: _T):
+        def add_perms(self, instance: _T) -> None:
             raise NotImplementedError()
 
-        def reset_perms(self, instance: _T):
+        def reset_perms(self, instance: _T) -> None:
             LOG.debug(f"resetting permission for {instance}")
             cast(Any, instance).userobjectpermissions.all().delete()
             self.add_perms(instance)
@@ -55,7 +55,7 @@ class AccessControlled(AbstractDCFModel[T], Generic[T]):
 
         return manager
 
-    def update_perms(self):
+    def update_perms(self) -> None:
         self.get_permissionmanager_class()().reset_perms(self)
 
     def __init_subclass__(cls) -> None:

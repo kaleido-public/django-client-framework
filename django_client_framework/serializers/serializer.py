@@ -25,7 +25,7 @@ class DCFSerializer(DRFSerializer, Generic[T]):
     def save(self, **kwargs: Any) -> T:
         return super().save(**kwargs)
 
-    def delete(self, instance: T):
+    def delete(self, instance: T) -> None:
         instance.delete()
 
     def create_obj(self) -> T:

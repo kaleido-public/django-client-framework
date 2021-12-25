@@ -16,6 +16,7 @@ from rest_framework.utils.model_meta import RelationInfo
 from rest_framework.validators import UniqueValidator
 
 from django_client_framework.exceptions import ValidationError
+from django_client_framework.models.abstract.serializable import Serializable
 
 from .serializer import DCFSerializer
 
@@ -77,7 +78,7 @@ class DCFModelSerializer(DCFSerializer[T], DRFModelSerializer, Generic[T]):
         `Meta.fields` option is not specified.
         """
 
-        def append_id(field_name: str, relation_info: RelationInfo):
+        def append_id(field_name: str, relation_info: RelationInfo) -> str:
             if isinstance(relation_info.model_field, ForeignKey):
                 return field_name + "_id"
             else:
@@ -195,8 +196,8 @@ class DCFModelSerializer(DCFSerializer[T], DRFModelSerializer, Generic[T]):
 
 
 class GenerateJsonSchemaDecorator:
-    for_model_read: Dict[Type[DCFModel], List[Type[DCFSerializer]]] = {}
-    for_model_write: Dict[Type[DCFModel], List[Type[DCFSerializer]]] = {}
+    for_model_read: Dict[Type[Serializable], List[Type[DCFSerializer]]] = {}
+    for_model_write: Dict[Type[Serializable], List[Type[DCFSerializer]]] = {}
 
     def __call__(self, for_model):
         def decorator(serializer_class):

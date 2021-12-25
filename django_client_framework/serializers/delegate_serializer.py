@@ -23,12 +23,12 @@ class DelegateSerializer(DCFSerializer[T], Generic[T]):
 
     def __init__(
         self,
-        instance: T = None,
-        data: Any = None,
+        instance: Optional[T] = None,
+        data: Optional[Any] = None,
         *,
         context: Dict[str, Any] = {},
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         self.is_read = self.is_create = self.is_update = False
         self.serializer_kwargs = kwargs
         self.instance = instance
@@ -57,7 +57,7 @@ class DelegateSerializer(DCFSerializer[T], Generic[T]):
     def save(self, **kwargs: Any) -> T:
         return self.delegate.save(**kwargs)
 
-    def delete(self, instance: T):
+    def delete(self, instance: T) -> None:
         return self.delegate.delete(instance)
 
     def create_obj(self) -> T:

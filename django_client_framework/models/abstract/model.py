@@ -11,26 +11,19 @@ from django.db.models.manager import Manager
 from django.db.models.options import Options
 
 
-class DCFModelBase(ModelBase):
-    def __new__(cls, name, bases, attrs, **kwargs):
-        for b in bases:
-            attrs.update(b.__dict__)
-        return super().__new__(name, bases, attrs, **kwargs)
-
-
-T = TypeVar("T", bound="DCFModel")
+T = TypeVar("T", bound="DjangoModel")
 
 
 class AbstractDCFModel(DjangoModel, Generic[T]):
     class Meta:
         abstract = True
 
-    objects: ClassVar[Manager[T]]
-    id: Any
+    objects: ClassVar[Manager[DjangoModel]]
+    id: UUIDField
     _meta: Options[T]
 
 
-class DCFModel(AbstractDCFModel[T], Generic[T]):
+class DCFModel(AbstractDCFModel[T]):
     class Meta:
         abstract = True
 
