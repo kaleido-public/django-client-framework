@@ -1,22 +1,34 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Optional
+from typing import *
+from typing import _ProtocolMeta  # type: ignore
 
 from rest_framework.serializers import Serializer as DRFSerializer
+from rest_framework.serializers import SerializerMetaclass
 
-from ..models.abstract.model import T
 from ..models.abstract.serializable import D
+from ..models.abstract.model import IDCFModel
 
-if TYPE_CHECKING:
-    pass
+T1 = TypeVar("T1", bound="IDCFModel", covariant=True)
+D1 = TypeVar("D1", covariant=True)
 
 
-class DCFSerializer(DRFSerializer, Generic[T, D]):
+class IDCFSerializer(Generic[T1, D1]):
+    def to_serializer(self) -> DCFSerializer:
+        return cast(DCFSerializer, self)
+
+
+from ..models.abstract.serializable import T
+
+
+class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
     # Every attribute / method in this class must also be added to the
     # DelegateSerializer, otherwise the DelegateSerializer breaks.
 
     instance: Optional[T]
-    data: D  # type: ignore
+
+    def get_locale(self) -> str | None:
+        return self.context.get("locale")
 
     def update(self, instance: T, validated_data: Any) -> T:
         return super().update(instance, validated_data)
@@ -26,6 +38,13 @@ class DCFSerializer(DRFSerializer, Generic[T, D]):
 
     def save(self, **kwargs: Any) -> T:
         return super().save(**kwargs)
+
+    def to_representation(self, instance: T) -> D:
+        return cast(D, dict(super().to_representation(instance)))
+
+    @property
+    def data(self) -> D:  # type: ignore
+        return cast(D, dict(super().data))
 
     def delete(self, instance: T) -> None:
         instance.delete()

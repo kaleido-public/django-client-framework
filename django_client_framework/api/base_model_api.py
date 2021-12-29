@@ -24,12 +24,13 @@ from rest_framework.utils.encoders import JSONEncoder
 from rest_framework.views import APIView
 
 from django_client_framework.api.rate_limit import DefaultRateManager
+from django_client_framework.models.abstract.model import IDCFModel
 from django_client_framework.models.abstract.user import DCFAbstractUser
 
 from .. import exceptions as e
 from ..models import get_user_model
 from ..models.abstract.rate_limited import RateLimited
-from ..models.abstract.serializable import Serializable
+from ..models.abstract.serializable import ISerializable
 from ..permissions.site_permission import has_perms_shortcut
 from ..serializers import DCFSerializer
 from .filter_backend import DCFFilterBackend
@@ -40,7 +41,7 @@ LOG = getLogger(__name__)
 class APIPermissionDenied(Exception):
     def __init__(
         self,
-        model_or_instance: Type[Model] | Model,
+        model_or_instance: Type[IDCFModel] | IDCFModel,
         perm: str,
         field: Optional[str] = None,
     ) -> None:
@@ -105,7 +106,7 @@ class BaseModelAPI(GenericAPIView):
     renderer_classes = [DCFJSONRenderer]
     pagination_class = ApiPagination
 
-    models: List[Type[Serializable]] = []
+    models: List[Type[ISerializable]] = []
     filter_backends = [DCFFilterBackend]
 
     @property
@@ -113,7 +114,7 @@ class BaseModelAPI(GenericAPIView):
         return getattr(self, "kwargs", {}).get("version", "default")
 
     @cached_property
-    def __name_to_model(self) -> Dict[str, Type[Serializable]]:
+    def __name_to_model(self) -> Dict[str, Type[ISerializable]]:
         return {self.__model_name(model): model for model in self.models}
 
     @overrides(APIView)
@@ -150,7 +151,7 @@ class BaseModelAPI(GenericAPIView):
         return self.get_request_data(self.request)
 
     @cached_property
-    def model(self) -> Type[Serializable]:
+    def model(self) -> Type[ISerializable]:
         model_name = self.kwargs["model"]
         if model_name not in self.__name_to_model:
             valid_models = ", ".join(self.__name_to_model.keys())
@@ -159,7 +160,7 @@ class BaseModelAPI(GenericAPIView):
             )
         return self.__name_to_model[model_name]
 
-    def __model_name(self, model: Type[Model]) -> str:
+    def __model_name(self, model: Type[ISerializable]) -> str:
         return model._meta.model_name or model._meta.label_lower.split(".")[-1]
 
     def get_model_field(self, key, default=None):
@@ -169,16 +170,16 @@ class BaseModelAPI(GenericAPIView):
             return default
 
     @cached_property
-    def model_object(self) -> Serializable:
+    def model_object(self) -> ISerializable:
         pk = self.kwargs["pk"]
-        return get_object_or_404(self.model, pk=pk)
+        return get_object_or_404(self.model, pk=pk)  # type: ignore
 
     def get_serializer_class(self) -> Type[DCFSerializer]:
         raise NotImplementedError("Must override")
 
     @property
     def queryset(self):
-        return QuerySet(model=self.model).all()
+        return QuerySet(model=self.model.as_model_type()).all()
 
     def __handle_permission_denied(self, error: APIPermissionDenied) -> None:
         shortcuts = {
@@ -192,7 +193,7 @@ class BaseModelAPI(GenericAPIView):
             inst: Model = error.model_or_instance
             target = f"{inst._meta.model_name}({inst.pk})"
         else:
-            modl: Type[Model] = error.model_or_instance
+            modl = cast(Type[IDCFModel], error.model_or_instance)
             target = f"{modl.__name__}"
         if not settings.DEBUG and not has_perms_shortcut(
             self.user_object, error.model_or_instance, "r", field_name=error.field
@@ -231,7 +232,7 @@ class BaseModelAPI(GenericAPIView):
         return get_user_model().get_anonymous()
 
     def assert_pks_exist_or_raise_404(
-        self, model: Type[Serializable], pks: List[UUID]
+        self, model: Type[ISerializable], pks: List[UUID]
     ) -> None:
         queryset = model.objects.filter(pk__in=pks)
         if queryset.count() != len(pks):

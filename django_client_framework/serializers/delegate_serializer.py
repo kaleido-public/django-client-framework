@@ -1,20 +1,19 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Dict, Generic, Optional, Tuple, Type
+from typing import Any, Dict, Optional, Tuple, Type
 
 from django.utils.functional import cached_property
 
-from django_client_framework.models.abstract.model import T
 from django_client_framework.models.abstract.serializable import D
 
 from .. import exceptions as e
-from .serializer import DCFSerializer
+from .serializer import DCFSerializer, T
 
 LOG = getLogger(__name__)
 
 
-class DelegateSerializer(DCFSerializer[T, D], Generic[T, D]):
+class DelegateSerializer(DCFSerializer[T, D]):
     """
     Any subclass can provide read, create, update delegate serializers dynamically.
     """
@@ -179,7 +178,7 @@ class DelegateSerializer(DCFSerializer[T, D], Generic[T, D]):
     def data(self):
         return self.read_delegate.data
 
-    def to_representation(self, instance: T) -> T:
+    def to_representation(self, instance: T) -> D:
         return self.read_delegate.to_representation(instance)
 
     def is_valid(self, raise_exception: bool = False) -> bool:

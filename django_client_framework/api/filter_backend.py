@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, List, Type
+from typing import TYPE_CHECKING, Any, Dict, List, TypeVar
 
 from django.core.exceptions import FieldDoesNotExist
-from django.db.models.base import Model
 from django.db.models.fields.related import RelatedField
 from django.db.models.fields.reverse_related import ForeignObjectRel
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
 from rest_framework import filters
 
+from django_client_framework.models.abstract.model import DCFModel
 from django_client_framework.models.abstract.user import DCFAbstractUser
 
 from .. import exceptions as e
@@ -23,6 +23,9 @@ if TYPE_CHECKING:
     from rest_framework.request import Request
 
     from .base_model_api import BaseModelAPI
+
+
+T = TypeVar("T", bound="DCFModel")
 
 
 class DCFFilterBackend(filters.BaseFilterBackend):
@@ -42,8 +45,8 @@ class DCFFilterBackend(filters.BaseFilterBackend):
         return queryset.distinct()
 
     def __order_queryset_by_param(
-        self, request: Request, queryset: QuerySet, view: BaseModelAPI
-    ) -> QuerySet:
+        self, request: Request, queryset: QuerySet[T], view: BaseModelAPI
+    ) -> QuerySet[T]:
         """
         Support generic filtering, eg: /products/?_order_by=name
         """
@@ -55,13 +58,13 @@ class DCFFilterBackend(filters.BaseFilterBackend):
             raise e.ParseError(str(execpt))
 
     def __filter_queryset_by_read_perm(
-        self, request: Request, queryset: QuerySet, view: BaseModelAPI
-    ) -> QuerySet:
+        self, request: Request, queryset: QuerySet[T], view: BaseModelAPI
+    ) -> QuerySet[T]:
         return p.filter_queryset_by_perms_shortcut("r", view.user_object, queryset)
 
     def __filter_queryset_by_param(
-        self, request: Request, queryset: QuerySet, view: BaseModelAPI
-    ) -> QuerySet:
+        self, request: Request, queryset: QuerySet[T], view: BaseModelAPI
+    ) -> QuerySet[T]:
         querydict = self.__build_query_dict(request, queryset, view)
         try:
             return queryset.filter(**querydict)
@@ -69,7 +72,7 @@ class DCFFilterBackend(filters.BaseFilterBackend):
             raise e.ParseError(str(exept))
 
     def __build_query_dict(
-        self, request: Request, queryset: QuerySet, view: BaseModelAPI
+        self, request: Request, queryset: QuerySet[T], view: BaseModelAPI
     ) -> Dict[str, Any]:
         querydict = {}
         for key in request.query_params:
@@ -110,8 +113,8 @@ class DCFFilterBackend(filters.BaseFilterBackend):
         return querydict
 
     def __filter_by_visible_relations(
-        self, request: Request, queryset: QuerySet, view: BaseModelAPI
-    ) -> QuerySet:
+        self, request: Request, queryset: QuerySet[T], view: BaseModelAPI
+    ) -> QuerySet[T]:
         """
         When searching a publicly readable resource such as Product, anyone can
         filter the result by using a related query name, such as "seller__user".
@@ -135,14 +138,14 @@ class DCFFilterBackend(filters.BaseFilterBackend):
 
         def build_queries(
             user: DCFAbstractUser,
-            queryset: QuerySet,
+            queryset: QuerySet[DCFModel],
             # query is Query(Product)
             # optimization
             original: List[str],
             # original is ["seller", "user", "token", "startwith"]
         ) -> Q:
             node = Q()
-            cur_model: Type[Model] = queryset.model
+            cur_model = queryset.model
             # cur_model is Product, Seller, User, Token...
             for i in range(len(original)):
                 prefix = "__".join(original[: i + 1])
@@ -160,9 +163,13 @@ class DCFFilterBackend(filters.BaseFilterBackend):
                         field, RelatedField
                     ):
                         assert field.related_model is not None
-                        cur_model = field.related_model  # set cur_model to Seller
+                        cur_model = DCFModel.from_model_type(
+                            field.related_model
+                        )  # set cur_model to Seller
                         visible: QuerySet = p.filter_queryset_by_perms_shortcut(
-                            "r", user, QuerySet(model=cur_model).all()
+                            "r",
+                            user,
+                            QuerySet(model=cur_model).all(),
                         )
                         node &= Q(**{prefix + "__in": visible})
                         # adds Q(seller__in=visible_sellers)

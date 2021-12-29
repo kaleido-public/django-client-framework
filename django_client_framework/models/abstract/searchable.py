@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -12,7 +12,8 @@ from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
 from ..search_feature import SearchFeature
-from .model import AbstractDCFModel, DCFModel
+from .model import DCFModel, IDCFModel
+from django.db.models import Model as DjangoModel
 
 if TYPE_CHECKING:
     from django.db.models import Model
@@ -21,10 +22,14 @@ if TYPE_CHECKING:
 LOG = getLogger(__name__)
 
 
-T = TypeVar("T", bound="DCFModel")
+T = TypeVar("T", bound="DCFModel", covariant=True)
 
 
-class Searchable(AbstractDCFModel[T], Generic[T]):
+class ISearchable(IDCFModel[DCFModel]):
+    pass
+
+
+class Searchable(DjangoModel, ISearchable):
     class Meta:
         abstract = True
 
@@ -78,7 +83,7 @@ class Searchable(AbstractDCFModel[T], Generic[T]):
 
     def update_or_create_searchfeature(self):
         return SearchFeature.objects.update_or_create(
-            content_type=ContentType.objects.get_for_model(self),
+            content_type=ContentType.objects.get_for_model(self.as_model()),
             object_id=self.id,
             defaults={"text_feature": self._get_text_feature()},
         )
