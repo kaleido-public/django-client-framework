@@ -1,17 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generic,
-    List,
-    Optional,
-    Type,
-    TypeVar,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Type, cast
 
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models.fields import UUIDField as DjangoUUIDField
@@ -27,12 +17,13 @@ from rest_framework.utils.model_meta import RelationInfo
 from rest_framework.validators import UniqueValidator
 
 from django_client_framework.exceptions import ValidationError
-from django_client_framework.models.abstract.serializable import Serializable
+from django_client_framework.models.abstract.model import __implements__
+from django_client_framework.models.abstract.serializable import D, Serializable
 
-from .serializer import DCFSerializer
+from .serializer import DCFSerializer, IDCFSerializer, T
 
 if TYPE_CHECKING:
-    from ..models import DCFModel
+    pass
 
 LOG = getLogger(__name__)
 
@@ -42,10 +33,6 @@ def get_model_field(model, key, default=None):
         return model._meta.get_field(key)
     except FieldDoesNotExist:
         return default
-
-
-T = TypeVar("T", bound="DCFModel")
-D = TypeVar("D")
 
 
 class UniqueID(UniqueValidator):
@@ -72,7 +59,14 @@ class DCFUUIDField(DRFUUIDField):
         return data
 
 
-class DCFModelSerializer(DCFSerializer[T, D], DRFModelSerializer[T], Generic[T, D]):
+class IDCFModelSerializer(IDCFSerializer[T, D]):
+    def to_modelserializer(self) -> DCFModelSerializer[T, D]:
+        return cast(DCFModelSerializer[T, D], self)
+
+
+class DCFModelSerializer(
+    DRFModelSerializer, DCFSerializer, __implements__, IDCFModelSerializer[T, D]
+):
 
     instance: Optional[T]
     data: D  # type: ignore
@@ -241,27 +235,12 @@ generate_jsonschema = GenerateJsonSchemaDecorator()
 
 
 def check_integrity():
-    from django_client_framework.api import BaseModelAPI
+    pass
 
     generate_jsonschema_for_models = {
         **generate_jsonschema.for_model_read,
         **generate_jsonschema.for_model_write,
     }
-    for model in BaseModelAPI.models:
-        if (
-            model not in generate_jsonschema_for_models
-            or not generate_jsonschema_for_models[model]
-        ):
-            LOG.warn(
-                f"{model} is a registered api model but does not have a generated json schema"
-            )
-
-    for model in generate_jsonschema_for_models:
-        if model not in BaseModelAPI.models:
-            raise NotImplementedError(
-                f"{model} has a generated json schema but is not a registered api model"
-            )
-
     for serializer_cls in DCFModelSerializer.__subclasses__():
         model = serializer_cls.Meta.model
         for field_name in getattr(serializer_cls.Meta, "fields", []):

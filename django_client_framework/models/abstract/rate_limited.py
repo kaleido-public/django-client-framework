@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type
 
-from django.db.models.base import Model
 from rest_framework.request import Request
 from rest_framework.throttling import SimpleRateThrottle
 from rest_framework.views import APIView
 
-from django_client_framework.models.abstract.model import AbstractDCFModel, DCFModel
+from django_client_framework.models.abstract.model import IDCFModel
 
 LOG = getLogger(__name__)
 
@@ -18,16 +17,11 @@ if TYPE_CHECKING:
     from ...api import BaseModelAPI
     from .user import DCFAbstractUser
 
-T = TypeVar("T", bound="DCFModel")
 
-
-class RateLimited(AbstractDCFModel[T], Generic[T]):
-    class Meta:
-        abstract = True
-
+class RateLimited:
     class RateManager(SimpleRateThrottle):
         def __init__(
-            self, model: Type[Model], request: Request, view: BaseModelAPI
+            self, model: Type[IDCFModel], request: Request, view: BaseModelAPI
         ) -> None:
             self.model = model
             self.request = request

@@ -3,6 +3,7 @@ from __future__ import annotations
 from logging import getLogger
 from typing import (
     Any,
+    Callable,
     Iterable,
     Iterator,
     List,
@@ -19,24 +20,27 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import models as m
 from django.db import transaction
-from django.db.models.base import Model, ModelBase
+from django.db.models.base import ModelBase
+from django.db.models.query import QuerySet
 from guardian import models as gm
 from guardian import shortcuts as gs
 
 from django_client_framework.models import get_user_model
+from django_client_framework.models.abstract.model import DCFModel, IDCFModel
 
-from ..models.abstract.access_controlled import AccessControlled
+from ..models.abstract.access_controlled import IAccessControlled
 from .default_groups import default_groups
 
 LOG = getLogger(__name__)
 
-T = TypeVar("T", bound=Model)
+T = TypeVar("T", bound=IDCFModel)
+M = TypeVar("M", bound=DCFModel)
 
 
 @overload
 def get_permission_for_model(
     shortcut: str,
-    model: Type[Model],
+    model: Type[IDCFModel],
     *,
     string: Literal[True],
     field_name: str | None,
@@ -47,7 +51,7 @@ def get_permission_for_model(
 @overload
 def get_permission_for_model(
     shortcut: str,
-    model: Type[Model],
+    model: Type[IDCFModel],
     *,
     string: Literal[False],
     field_name: str | None,
@@ -57,7 +61,7 @@ def get_permission_for_model(
 
 def get_permission_for_model(
     shortcut: str,
-    model: Type[Model],
+    model: Type[IDCFModel],
     *,
     string: bool,
     field_name: Optional[str],
@@ -73,7 +77,9 @@ def get_permission_for_model(
         "d": "delete",
     }
     action = action_shortcuts[shortcut]
-    c = ContentType.objects.get_for_model(model, for_concrete_model=False)
+    c = ContentType.objects.get_for_model(
+        model.as_model_type(), for_concrete_model=False
+    )
     if field_name:
         if not model._meta.get_field(field_name):
             raise AttributeError(
@@ -95,9 +101,9 @@ def get_permission_for_model(
 def filter_queryset_by_perms_shortcut(
     perms: str,
     user_or_group: AbstractUser | Group,
-    queryset: m.QuerySet[T],
+    queryset: QuerySet[M],
     field_name: str | None = None,
-) -> m.QuerySet[T]:
+) -> QuerySet[M]:
     r"""
     Filters queryset by keeping objects that user_or_group has all permissions
     specified by perms. If field_name is specified, additionally include objects
@@ -120,10 +126,13 @@ def filter_queryset_by_perms_shortcut(
                 get_permission_for_model(s, queryset.model, string=True, field_name=f)
                 for s in perms.lower()
             ]
-            fn: Any = (
-                gs.get_objects_for_group
-                if isinstance(u, Group)
-                else gs.get_objects_for_user
+            fn = cast(
+                Callable[..., QuerySet],
+                (
+                    gs.get_objects_for_group  # type: ignore
+                    if isinstance(u, Group)
+                    else gs.get_objects_for_user
+                ),
             )
             union |= fn(
                 u,
@@ -137,7 +146,7 @@ def filter_queryset_by_perms_shortcut(
 
 def add_perms_shortcut(
     user_or_group: AbstractUser | Group,
-    model_or_instance_or_queryset: Type[Model] | Model | m.QuerySet,
+    model_or_instance_or_queryset: Type[IDCFModel] | IDCFModel | QuerySet,
     perms: str,
     field_name: Optional[str] = None,
 ) -> None:
@@ -146,7 +155,8 @@ def add_perms_shortcut(
     is a model.
     """
     LOG.debug(f"{user_or_group=} {model_or_instance_or_queryset=} {perms=}")
-    instance: Any
+    instance: IDCFModel | QuerySet | None
+    model: Type[IDCFModel]
     if isinstance(model_or_instance_or_queryset, m.Model):
         instance = model_or_instance_or_queryset
         model = instance.__class__
@@ -155,20 +165,22 @@ def add_perms_shortcut(
         model = model_or_instance_or_queryset.model
     elif model_or_instance_or_queryset.__class__ is ModelBase:
         instance = None
-        model = model_or_instance_or_queryset
+        model = cast(Type[IDCFModel], model_or_instance_or_queryset)
     else:
         raise TypeError(
             f"model_or_instance_or_queryset has wrong type: {type(model_or_instance_or_queryset)}"
         )
     for s in perms.lower():
-        permstr = get_permission_for_model(s, model, string=True, field_name=field_name)
+        permstr: str = get_permission_for_model(
+            s, model, string=True, field_name=field_name
+        )
         gs.assign_perm(permstr, user_or_group, obj=instance)
 
 
 @deprecated(details="use add_perms_shortcut(...) instead")
 def set_perms_shortcut(
     user_or_group: AbstractUser | Group,
-    model_or_instance_or_queryset: Type[Model] | Model | m.QuerySet,
+    model_or_instance_or_queryset: Type[IDCFModel] | IDCFModel | QuerySet,
     perms: str,
     field_name: Optional[str] = None,
 ) -> None:
@@ -179,7 +191,7 @@ def set_perms_shortcut(
 
 def has_perms_shortcut(
     user_or_group: AbstractUser | Group,
-    model_or_instance: Type[Model] | Model,
+    model_or_instance: Type[IDCFModel] | IDCFModel,
     perms: str,
     field_name: Optional[str] = None,
 ) -> bool:
@@ -190,13 +202,14 @@ def has_perms_shortcut(
     """
     User = cast(Type[AbstractUser], get_user_model())
 
-    instance: Any
+    instance: IDCFModel | None
+    model: Type[IDCFModel]
     if isinstance(model_or_instance, m.Model):
         instance = model_or_instance
         model = instance._meta.model
     elif model_or_instance.__class__ is ModelBase:
         instance = None
-        model = model_or_instance
+        model = cast(Type[IDCFModel], model_or_instance)
     else:
         raise TypeError(f"model_or_instance has wrong type: {type(model_or_instance)}")
 
@@ -255,8 +268,8 @@ def clear_permissions():
 
 def reset_permissions(
     for_classes: List[
-        Type["AccessControlled[Any]"]
-    ] = AccessControlled.__subclasses__(),
+        Type["IAccessControlled[Any]"]
+    ] = IAccessControlled.__subclasses__(),
 ) -> None:
     # set user self permission
     # must be done after all default users are added
@@ -268,7 +281,7 @@ def reset_permissions(
         total = model.objects.count()
         current = 0
         for instance in cast(
-            Iterable[AccessControlled[Any]],
+            Iterable[IAccessControlled[Any]],
             model.objects.all(),
         ):
             current += 1

@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from logging import getLogger
 from typing import Any, Generic, Type, TypeVar, cast
 
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models.manager import BaseManager
 from django.db.models.signals import post_save
 from guardian.models import UserObjectPermission
-
-from django_client_framework.models.abstract.model import AbstractDCFModel, DCFModel
+from django.db.models import Model as DjangoModel
+from django_client_framework.models.abstract.model import DCFModel, IDCFModel
 
 LOG = getLogger(__name__)
 
@@ -16,9 +18,17 @@ T = TypeVar("T", bound="DCFModel")
 _T = TypeVar("_T", bound="DCFModel")
 
 
-class AccessControlled(AbstractDCFModel["AccessControlled[T]"], Generic[T]):
+class IAccessControlled(IDCFModel[DCFModel], Generic[T]):
+    @abstractmethod
+    def update_perms(self) -> None:
+        ...
+
+
+class AccessControlled(DjangoModel, IAccessControlled[T]):
     class Meta:
         abstract = True
+
+    objects: BaseManager[T]
 
     userobjectpermissions = GenericRelation(
         UserObjectPermission, object_id_field="object_pk"  # type: ignore

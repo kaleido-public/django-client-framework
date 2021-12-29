@@ -2,7 +2,6 @@ from logging import getLogger
 from typing import Iterable, List, Optional, Type
 from uuid import UUID
 
-from django.db.models import Model
 from django.db.models.fields import related_descriptors
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.db.models.fields.reverse_related import (
@@ -19,7 +18,11 @@ from rest_framework.views import APIView
 
 from django_client_framework import exceptions as e
 from django_client_framework import permissions as p
-from django_client_framework.models.abstract.serializable import Serializable
+from django_client_framework.models.abstract.model import IDCFModel
+from django_client_framework.models.abstract.serializable import (
+    ISerializable,
+    Serializable,
+)
 
 from .base_model_api import APIPermissionDenied, BaseModelAPI
 
@@ -116,7 +119,7 @@ class RelatedModelAPI(BaseModelAPI):
             )
 
     def __assert_object_field_perm(
-        self, instance: Model, perm: str, field_name: str
+        self, instance: IDCFModel, perm: str, field_name: str
     ) -> None:
         if not p.has_perms_shortcut(
             self.user_object, instance, perm, field_name=field_name
@@ -258,8 +261,8 @@ class RelatedModelAPI(BaseModelAPI):
         return getattr(self.model_object, self.field_name)
 
     @cached_property
-    def field_model(self) -> Type[Serializable]:
-        return self.field.related_model  # type: ignore
+    def field_model(self) -> Type[ISerializable]:
+        return self.field.related_model
 
     @cached_property
     def reverse_field_name(self):
@@ -275,7 +278,7 @@ class RelatedModelAPI(BaseModelAPI):
         if self.is_related_collection_api:
             return self.field_val.all()
         else:
-            return QuerySet(model=self.field_model).all()
+            return QuerySet(model=self.field_model.as_model_type()).all()
 
     @overrides(APIView)
     def check_permissions(self, request):

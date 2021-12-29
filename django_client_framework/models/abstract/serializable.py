@@ -1,13 +1,26 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, Generic, List, Optional, Type, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    TypedDict,
+    cast,
+    Union,
+)
 
 from django.conf import settings
 from django.core.cache import cache
 from django.db import models as m
 
-from .model import AbstractDCFModel, T
+from .model import DCFModel, IDCFModel, __implements__
 
 LOG = getLogger(__name__)
 
@@ -16,12 +29,49 @@ if TYPE_CHECKING:
 
 
 D = TypeVar("D")
+T = TypeVar("T", bound="ISerializable")
 
 
-class Serializable(AbstractDCFModel, Generic[T, D]):
-    class Meta:
-        abstract = True
+class ISerializable(IDCFModel[DCFModel], Generic[T, D]):
+    def to_serializable(self) -> Serializable[T, D]:
+        return cast(Serializable[T, D], self)
 
+    @classmethod
+    @abstractmethod
+    def get_serializer_class(
+        cls, *, version: str, context: Dict[str, Any]
+    ) -> Type[DCFSerializer[T, D]]:
+        ...
+
+    @abstractmethod
+    def get_serializer(
+        self, *, version: str, context: Dict[str, Any], **kwargs: Any
+    ) -> DCFSerializer[T, D]:
+        ...
+
+    @abstractmethod
+    def json(
+        self,
+        *,
+        version: str,
+        context: Dict[str, Any] = {},
+        serializer: Optional[DCFSerializer[T, D]] = None,
+        ignore_cache: bool = False,
+    ) -> D:
+        ...
+
+    @abstractmethod
+    def get_json(
+        self,
+        *,
+        version: str,
+        context: Dict[str, Any] = {},
+        serializer: Optional[DCFSerializer[T, D]] = None,
+    ) -> D:
+        ...
+
+
+class Serializable(__implements__, ISerializable[T, D]):
     @classmethod
     def get_serializer_class(
         cls, *, version: str, context: Dict[str, Any]
@@ -44,7 +94,7 @@ class Serializable(AbstractDCFModel, Generic[T, D]):
         context: Dict[str, Any] = {},
         serializer: Optional[DCFSerializer[T, D]] = None,
         ignore_cache: bool = False,
-    ) -> Any:
+    ) -> D:
         if ignore_cache or self.get_cache_timeout() == 0:
             return self.get_json(
                 version=version,
@@ -58,16 +108,15 @@ class Serializable(AbstractDCFModel, Generic[T, D]):
         )
 
     def get_json(
-        self,
+        self: T,
         *,
         version: str,
         context: Dict[str, Any] = {},
         serializer: Optional[DCFSerializer[T, D]] = None,
     ) -> D:
-        if serializer:
-            return serializer.to_representation(self)
-        else:
-            return self.get_serializer(version=version, context=context).data
+        if serializer is None:
+            serializer = self.get_serializer(version=version, context=context)
+        return serializer.to_representation(instance=self)
 
     def get_extra_content_to_hash(self) -> List[Any]:
         return []

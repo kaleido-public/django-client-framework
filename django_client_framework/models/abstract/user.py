@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser as DjangoAbstractUser
 from django.contrib.auth.models import UserManager
 from django.db.models.options import Options
 
-from .model import AbstractDCFModel
+from .model import IDCFModel, __implements__
 
 T = TypeVar("T", bound=DjangoAbstractUser)
 
@@ -41,7 +41,7 @@ class DCFUserManager(UserManager, Generic[T]):
         )
 
 
-class DCFAbstractUser(AbstractDCFModel[T], DjangoAbstractUser, Generic[T]):
+class DCFAbstractUser(DjangoAbstractUser, __implements__, IDCFModel[T]):
     class Meta:
         abstract = True
 
