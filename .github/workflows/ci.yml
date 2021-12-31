@@ -49,7 +49,13 @@ jobs:
         if: env.IS_DEV_BRANCH == 'True' || env.BRANCH_NAME == 'staging'
         run: |
           gh auth login --with-token <<< "${{ github.token }}"
-          gh pr create --title "${TARGET_BRANCH} <- ${BRANCH_NAME}: ${COMMIT_TITLE}" --base ${TARGET_BRANCH} --body "${PR_BODY}" || true # ignore PR already exists error
+          git config --global user.name "${COMMIT_AUTHOR}"
+          git config --global user.email "${COMMIT_AUTHOR_EMAIL}"
+          .github/workflows/create_pr.py \
+              --title "${TARGET_BRANCH} <- ${BRANCH_NAME}: ${COMMIT_TITLE}" \
+              --base "${TARGET_BRANCH}" \
+              --head "${BRANCH_NAME}" \
+              --body "${PR_BODY}"
 
       - name: Run style check
         run: |
