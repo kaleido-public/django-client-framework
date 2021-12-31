@@ -28,7 +28,7 @@ from guardian import shortcuts as gs
 from django_client_framework.models import get_user_model
 from django_client_framework.models.abstract.model import DCFModel, IDCFModel
 
-from ..models.abstract.access_controlled import IAccessControlled
+from ..models.abstract.access_controlled import IAccessControlled, AccessControlled
 from .default_groups import default_groups
 
 LOG = getLogger(__name__)
@@ -255,7 +255,7 @@ def has_perms_shortcut(
     return all(conjunction())
 
 
-def clear_permissions():
+def clear_permissions() -> None:
     LOG.info("clearing permissions...")
     with transaction.atomic():
         Permission.objects.all().delete()
@@ -267,9 +267,7 @@ def clear_permissions():
 
 
 def reset_permissions(
-    for_classes: List[
-        Type["IAccessControlled[Any]"]
-    ] = IAccessControlled.__subclasses__(),
+    for_classes: List[Type["AccessControlled"]] = AccessControlled.__subclasses__(),
 ) -> None:
     # set user self permission
     # must be done after all default users are added
