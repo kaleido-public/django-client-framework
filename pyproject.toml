@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-client-framework"
-version = "1.1.0"
+version = "1.1.1"
 description = ""
 authors = ["Yu Li <ylilarry@gmail.com>"]
 license = "MIT"
