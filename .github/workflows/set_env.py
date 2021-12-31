@@ -40,11 +40,29 @@ def git_commit_title() -> str:
     ).stdout.splitlines()[0]
 
 
+def git_commit_author() -> str:
+    return run(
+        ["git", "log", "-1", r"--pretty=format:%an"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.splitlines()[0]
+
+
+def git_commit_author_email() -> str:
+    return run(
+        ["git", "log", "-1", r"--pretty=format:%ae"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.splitlines()[0]
+
+
 def git_short_sha() -> str:
     return os.environ["GITHUB_SHA"][:7]
 
 
-def is_dev_branch() -> str:
+def is_dev_branch() -> bool:
     return git_branch_name() not in ["release", "staging"]
 
 
@@ -91,12 +109,14 @@ def get_env() -> Dict[str, str]:
     return {
         "PROJECT_NAME": github_repo_name(),
         "DOCKER_TAG": docker_tag(),
-        "CI_YAML_CHANGED": ci_yaml_changed(),
-        "IS_DEV_BRANCH": is_dev_branch(),
+        "CI_YAML_CHANGED": str(ci_yaml_changed()),
+        "IS_DEV_BRANCH": str(is_dev_branch()),
         "BRANCH_NAME": git_branch_name(),
         "TARGET_BRANCH": target_branch(),
         "COMMIT_TITLE": git_commit_title(),
-        "SHOULD_UPLOAD_PACKAGE": should_upload_package(),
+        "COMMIT_AUTHOR": git_commit_author(),
+        "COMMIT_AUTHOR_EMAIL": git_commit_author_email(),
+        "SHOULD_UPLOAD_PACKAGE": str(should_upload_package()),
         "FLUTTER_PATH": flutter_path(),
         "PATH": overwrite_path(),
         "PR_BODY": pr_body(),
