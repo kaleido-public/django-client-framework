@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import *
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.fields.related import OneToOneField, ReverseOneToOneDescriptor
 from django.db.models import Model
+from django.db.models.fields.related import OneToOneField, ReverseOneToOneDescriptor
 
 # __set__ value type
-_ST = TypeVar("_ST", bound="Model")
+_ST = TypeVar("_ST", bound=Model)
 # __get__ return type
-_GT = TypeVar("_GT", bound="Model")
+_GT = TypeVar("_GT", bound=Model)
 
 
 class UniqueForeignKey(OneToOneField[_ST, _GT]):

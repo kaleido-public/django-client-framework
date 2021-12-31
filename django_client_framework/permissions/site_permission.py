@@ -28,7 +28,7 @@ from guardian import shortcuts as gs
 from django_client_framework.models import get_user_model
 from django_client_framework.models.abstract.model import DCFModel, IDCFModel
 
-from ..models.abstract.access_controlled import IAccessControlled, AccessControlled
+from ..models.abstract.access_controlled import AccessControlled, IAccessControlled
 from .default_groups import default_groups
 
 LOG = getLogger(__name__)

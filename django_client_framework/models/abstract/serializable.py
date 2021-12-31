@@ -11,9 +11,7 @@ from typing import (
     Optional,
     Type,
     TypeVar,
-    TypedDict,
     cast,
-    Union,
 )
 
 from django.conf import settings

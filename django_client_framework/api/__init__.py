@@ -1,4 +1,5 @@
 from typing import Type, TypeVar
+
 from django_client_framework.models.abstract.serializable import (
     ISerializable,
     Serializable,

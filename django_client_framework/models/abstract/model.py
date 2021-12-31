@@ -2,28 +2,13 @@ from __future__ import annotations
 
 import base64
 from abc import abstractmethod
-from typing import (  # type:ignore
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generic,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    _ProtocolMeta,
-    cast,
-)
+from typing import *
 from uuid import UUID, uuid4
 
 from django.db.models import Model as DjangoModel
-from django.db.models.base import ModelBase
 from django.db.models.fields import DateTimeField, UUIDField
 from django.db.models.manager import BaseManager
 from django.db.models.options import Options
-
 
 T = TypeVar("T", bound="DjangoModel")
 
