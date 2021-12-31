@@ -13,7 +13,6 @@ from django.dispatch import receiver
 
 from ..search_feature import SearchFeature
 from .model import DCFModel, IDCFModel
-from django.db.models import Model as DjangoModel
 
 if TYPE_CHECKING:
     from django.db.models import Model

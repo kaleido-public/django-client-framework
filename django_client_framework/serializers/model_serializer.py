@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, cast
 
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models.fields import UUIDField as DjangoUUIDField
@@ -235,12 +235,6 @@ generate_jsonschema = GenerateJsonSchemaDecorator()
 
 
 def check_integrity():
-    pass
-
-    generate_jsonschema_for_models = {
-        **generate_jsonschema.for_model_read,
-        **generate_jsonschema.for_model_write,
-    }
     for serializer_cls in DCFModelSerializer.__subclasses__():
         model = serializer_cls.Meta.model
         for field_name in getattr(serializer_cls.Meta, "fields", []):

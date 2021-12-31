@@ -1,24 +1,19 @@
 from __future__ import annotations
 
 from typing import *
-from typing import _ProtocolMeta  # type: ignore
 
 from rest_framework.serializers import Serializer as DRFSerializer
-from rest_framework.serializers import SerializerMetaclass
 
-from ..models.abstract.serializable import D
 from ..models.abstract.model import IDCFModel
+from ..models.abstract.serializable import D, T
 
-T1 = TypeVar("T1", bound="IDCFModel", covariant=True)
+T1 = TypeVar("T1", bound=IDCFModel, covariant=True)
 D1 = TypeVar("D1", covariant=True)
 
 
 class IDCFSerializer(Generic[T1, D1]):
     def to_serializer(self) -> DCFSerializer:
         return cast(DCFSerializer, self)
-
-
-from ..models.abstract.serializable import T
 
 
 class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
