@@ -18,7 +18,7 @@ def register_api_model(model_class: T) -> T:
     return model_class
 
 
-def check_integrity():
+def check_integrity() -> None:
     for model in BaseModelAPI.models:
         if not issubclass(model, Serializable):
             raise TypeError(f"model {model} must inherit Serializable")

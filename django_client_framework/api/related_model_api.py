@@ -1,8 +1,8 @@
 from logging import getLogger
-from typing import Iterable, List, Optional, Type
+from typing import Any, Iterable, List, Optional, Type, cast
 from uuid import UUID
 
-from django.db.models.fields import related_descriptors
+from django.db.models.fields import Field, related_descriptors
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.db.models.fields.reverse_related import (
     ManyToManyRel,
@@ -10,7 +10,8 @@ from django.db.models.fields.reverse_related import (
     OneToOneRel,
 )
 from django.db.models.query import QuerySet
-from django.http.response import JsonResponse
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse, JsonResponse
 from django.utils.functional import cached_property
 from ipromise import overrides
 from rest_framework.response import Response
@@ -23,6 +24,7 @@ from django_client_framework.models.abstract.serializable import (
     ISerializable,
     Serializable,
 )
+from django_client_framework.serializers.serializer import DCFSerializer
 
 from .base_model_api import APIPermissionDenied, BaseModelAPI
 
@@ -33,7 +35,7 @@ class RelatedModelAPI(BaseModelAPI):
     """handle requests such as GET/POST/PATCH /products/1/images"""
 
     @property
-    def allowed_methods(self):
+    def allowed_methods(self) -> List[str]:
         if self.is_related_object_api:
             return ["GET", "PATCH"]
         else:
@@ -77,7 +79,7 @@ class RelatedModelAPI(BaseModelAPI):
             )
 
     @cached_property
-    def __body_pk_queryset(self):
+    def __body_pk_queryset(self) -> QuerySet:
         """Returns the QuerySet from pks in the request body."""
         if self.is_related_object_api:
             if self.__body_pk is None:
@@ -89,7 +91,7 @@ class RelatedModelAPI(BaseModelAPI):
         return queryset
 
     @cached_property
-    def __field_val_queryset(self):
+    def __field_val_queryset(self) -> QuerySet:
         if self.is_related_object_api:
             if self.field_val is None:
                 return self.field_model.objects.none()
@@ -98,7 +100,7 @@ class RelatedModelAPI(BaseModelAPI):
         else:
             return self.field_val.all()
 
-    def __assert_field_write_perm_for_rel_objects(self, queryset=None):
+    def __assert_field_write_perm_for_rel_objects(self, queryset: QuerySet) -> None:
         find_has_write = p.filter_queryset_by_perms_shortcut(
             "w", self.user_object, queryset, self.reverse_field_name
         )
@@ -106,7 +108,9 @@ class RelatedModelAPI(BaseModelAPI):
         if find_no_write:
             raise APIPermissionDenied(find_no_write, "w", self.reverse_field_name)
 
-    def __return_get_result_if_permitted(self, request, *args, **kwargs):
+    def __return_get_result_if_permitted(
+        self, request: HttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponse:
         if p.has_perms_shortcut(
             self.user_object, self.model_object, "r", field_name=self.field_name
         ):
@@ -126,7 +130,7 @@ class RelatedModelAPI(BaseModelAPI):
         ):
             raise APIPermissionDenied(instance, perm, field_name)
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.__assert_object_field_perm(self.model_object, "r", self.field_name)
         if self.is_related_object_api:
             if self.field_val:
@@ -154,14 +158,16 @@ class RelatedModelAPI(BaseModelAPI):
                 ]
             )
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.assert_pks_exist_or_raise_404(self.field_model, self.__body_pk_ls)
         self.__assert_object_field_perm(self.model_object, "w", self.field_name)
         self.__assert_field_write_perm_for_rel_objects(self.__body_pk_queryset)
         self.field_val.add(*self.__body_pk_queryset)
         return self.__return_get_result_if_permitted(request, *args, **kwargs)
 
-    def patch_related_object(self, request, *args, **kwargs):
+    def patch_related_object(
+        self, request: HttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponse:
         if self.__body_pk is not None:
             self.assert_pks_exist_or_raise_404(self.field_model, [self.__body_pk])
         self.__assert_field_write_perm_for_rel_objects(self.__body_pk_queryset)
@@ -171,7 +177,9 @@ class RelatedModelAPI(BaseModelAPI):
         self.model_object.save()
         return self.__return_get_result_if_permitted(request, *args, **kwargs)
 
-    def patch_related_collection(self, request, *args, **kwargs):
+    def patch_related_collection(
+        self, request: HttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponse:
         self.assert_pks_exist_or_raise_404(self.field_model, self.__body_pk_ls)
         diff_remove = self.__field_val_queryset.difference(self.__body_pk_queryset)
         diff_add = self.__body_pk_queryset.difference(self.__field_val_queryset)
@@ -183,14 +191,14 @@ class RelatedModelAPI(BaseModelAPI):
         self.field_val.set(self.__body_pk_queryset)
         return self.__return_get_result_if_permitted(request, *args, **kwargs)
 
-    def patch(self, request, *args, **kwargs):
+    def patch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.__assert_object_field_perm(self.model_object, "w", self.field_name)
         if self.is_related_object_api:
             return self.patch_related_object(request, *args, **kwargs)
         else:
             return self.patch_related_collection(request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.__assert_object_field_perm(self.model_object, "w", self.field_name)
         self.__assert_field_write_perm_for_rel_objects(self.__body_pk_queryset)
         if not hasattr(self.field_val, "remove"):
@@ -205,12 +213,12 @@ class RelatedModelAPI(BaseModelAPI):
         return self.__return_get_result_if_permitted(request, *args, **kwargs)
 
     @cached_property
-    def field_name(self):
+    def field_name(self) -> str:
         field_name = self.kwargs["target_field"]
         self.check_field_name(field_name)
         return field_name
 
-    def check_field_name(self, field_name):
+    def check_field_name(self, field_name: str) -> str:
         # only when related_name is set on field, the field becomes a key on
         # model, otherwise it becomes fieldname_set
         if not hasattr(self.model, field_name):
@@ -253,19 +261,20 @@ class RelatedModelAPI(BaseModelAPI):
             )
 
     @cached_property
-    def field(self):
+    def field(self) -> Field:
         return self.model._meta.get_field(self.field_name)
 
     @property
-    def field_val(self):
+    def field_val(self) -> Any:
         return getattr(self.model_object, self.field_name)
 
     @cached_property
     def field_model(self) -> Type[ISerializable]:
-        return self.field.related_model
+        assert self.field.related_model is not None
+        return cast(Type[ISerializable], self.field.related_model)
 
     @cached_property
-    def reverse_field_name(self):
+    def reverse_field_name(self) -> str:
         if isinstance(self.field, ManyToOneRel):
             temp = getattr(self.model, self.field_name)
             return temp.rel.remote_field.name
@@ -274,32 +283,32 @@ class RelatedModelAPI(BaseModelAPI):
             return temp.field.related_query_name()
 
     @property
-    def queryset(self):
+    def queryset(self) -> QuerySet:  # type:ignore[override]
         if self.is_related_collection_api:
             return self.field_val.all()
         else:
             return QuerySet(model=self.field_model.as_model_type()).all()
 
     @overrides(APIView)
-    def check_permissions(self, request):
-        return True
+    def check_permissions(self, request: HttpRequest) -> None:
+        pass
 
     @overrides(APIView)
-    def check_object_permissions(self, request, obj):
+    def check_object_permissions(self, request: HttpRequest, obj: Any) -> None:
         raise NotImplementedError()
 
     @cached_property
-    def is_related_object_api(self):
+    def is_related_object_api(self) -> bool:
         return isinstance(self.field, ForeignKey) or isinstance(
             self.field, OneToOneRel  # OneToOneRel is used by UniqueForeignKey
         )
 
     @cached_property
-    def is_related_collection_api(self):
+    def is_related_collection_api(self) -> bool:
         return not self.is_related_object_api
 
     @overrides(BaseModelAPI)
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> Type[DCFSerializer]:
         return self.field_model.get_serializer_class(
             version=self.version,
             context=self.get_serializer_context(),

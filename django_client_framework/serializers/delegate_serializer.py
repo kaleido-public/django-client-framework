@@ -63,7 +63,7 @@ class DelegateSerializer(DCFSerializer[T, D]):
     def update_obj(self) -> T:
         return self.delegate.update_obj()
 
-    def delete_obj(self):
+    def delete_obj(self) -> None:
         return self.delegate.delete_obj()
 
     def get_delegate(self, raise_exception: bool = False) -> DCFSerializer[T, D]:
@@ -136,7 +136,7 @@ class DelegateSerializer(DCFSerializer[T, D]):
         else:
             raise NotImplementedError("Unable to decide delegate")
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         # be careful, when you want to access fields in self.read_delegate you might
         # accidentally land here
         if name in self.__dict__:
@@ -168,15 +168,17 @@ class DelegateSerializer(DCFSerializer[T, D]):
             f"{self.__class__} must implement .get_read_delegate_class()"
         )
 
-    def get_create_prevalidation_class(self):
+    def get_create_prevalidation_class(self) -> Type[DCFSerializer[T, D]] | None:
         return None
 
-    def get_update_prevalidation_class(self):
+    def get_update_prevalidation_class(
+        self,
+    ) -> Type[DCFSerializer[T, D]] | None:
         return None
 
     @cached_property
-    def data(self):
-        return self.read_delegate.data
+    def data(self) -> D:  # type: ignore
+        return dict(self.read_delegate.data)  # type: ignore
 
     def to_representation(self, instance: T) -> D:
         return self.read_delegate.to_representation(instance)

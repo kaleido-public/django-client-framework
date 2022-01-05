@@ -53,6 +53,6 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
         assert self.validated_data is not None
         return self.update(self.instance, self.validated_data)
 
-    def delete_obj(self):
+    def delete_obj(self) -> None:
         assert self.instance is not None
         self.delete(self.instance)

@@ -5,6 +5,6 @@ from django.db.models import *
 
 from django_client_framework.models import *
 
-from .brand import *
-from .product import *
-from .throttled import *
+from .brand import Brand, BrandSerializer
+from .product import Product, ProductSerializer
+from .throttled import ThrottledModel, ThrottledModelSerializer

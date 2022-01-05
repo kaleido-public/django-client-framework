@@ -15,7 +15,7 @@ from .abstract import (
     Searchable,
     Serializable,
 )
-from .fields import PriceField, UniqueForeignKey
+from .fields import UniqueForeignKey
 from .lookup import *
 from .search_feature import SearchFeature
 
@@ -29,7 +29,7 @@ def get_dcf_user_model() -> Type[DCFAbstractUser]:
     return cast(Any, django_get_user_model())
 
 
-def check_integrity():
+def check_integrity() -> None:
     from . import abstract
 
     abstract.check_integrity()

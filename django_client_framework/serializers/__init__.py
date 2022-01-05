@@ -7,7 +7,7 @@ from .model_serializer import DCFModelSerializer, generate_jsonschema
 from .serializer import DCFSerializer
 
 
-def check_integrity():
+def check_integrity() -> None:
     from . import model_serializer
 
     model_serializer.check_integrity()

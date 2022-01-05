@@ -2,13 +2,17 @@ from __future__ import annotations
 
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, cast
+from uuid import UUID
 
 from django.core.exceptions import FieldDoesNotExist
+from django.db.models.base import Model
+from django.db.models.fields import Field
 from django.db.models.fields import UUIDField as DjangoUUIDField
 from django.db.models.fields.related import ForeignKey
 from django.db.models.query import QuerySet
 from django.utils.functional import cached_property
 from ipromise.overrides import overrides
+from rest_framework.fields import SerializerMethodField
 from rest_framework.fields import UUIDField as DRFUUIDField
 from rest_framework.serializers import BaseSerializer
 from rest_framework.serializers import ModelSerializer as DRFModelSerializer
@@ -17,8 +21,8 @@ from rest_framework.utils.model_meta import RelationInfo
 from rest_framework.validators import UniqueValidator
 
 from django_client_framework.exceptions import ValidationError
-from django_client_framework.models.abstract.model import __implements__
-from django_client_framework.models.abstract.serializable import D, Serializable
+from django_client_framework.models.abstract.model import DCFModel, __implements__
+from django_client_framework.models.abstract.serializable import D
 
 from .serializer import DCFSerializer, IDCFSerializer, T
 
@@ -28,15 +32,15 @@ if TYPE_CHECKING:
 LOG = getLogger(__name__)
 
 
-def get_model_field(model, key, default=None):
+def get_model_field(model: Type[Model], key: str) -> Optional[Field]:
     try:
         return model._meta.get_field(key)
     except FieldDoesNotExist:
-        return default
+        return None
 
 
 class UniqueID(UniqueValidator):
-    def __call__(self, value, serializer_field):
+    def __call__(self, value: UUID, serializer_field: Any) -> Any:
         try:
             return super().__call__(value, serializer_field)
         except ValidationError:
@@ -52,10 +56,10 @@ class DCFUUIDField(DRFUUIDField):
     we replace the DRFUUID field with our version that skips the type
     conversion. Now we get a UUID value from the .id field too."""
 
-    def to_representation(self, value):
+    def to_representation(self, value: UUID) -> UUID:  # type:ignore[override]
         return value
 
-    def to_internal_value(self, data):
+    def to_internal_value(self, data: UUID) -> UUID:  # type:ignore[override]
         return data
 
 
@@ -71,8 +75,14 @@ class DCFModelSerializer(
     instance: Optional[T]
     data: D  # type: ignore
 
+    type = SerializerMethodField()
+
+    def get_type(self, instance: DCFModel) -> str:
+        assert instance._meta.model_name is not None
+        return instance._meta.model_name
+
     @cached_property
-    def serializer_field_mapping(self):
+    def serializer_field_mapping(self) -> Any:  # type:ignore[override]
         mapping = cast(Any, super().serializer_field_mapping)
         mapping.update(
             {
@@ -82,7 +92,9 @@ class DCFModelSerializer(
         return mapping
 
     @overrides(DRFModelSerializer)
-    def get_default_field_names(self, declared_fields, model_info):
+    def get_default_field_names(
+        self, declared_fields: Any, model_info: Any
+    ) -> List[str]:
         """
         Return the default list of field names that will be used if the
         `Meta.fields` option is not specified.
@@ -138,7 +150,9 @@ class DCFModelSerializer(
         return extra_kwargs
 
     @overrides(DRFModelSerializer)
-    def build_field(self, field_name, info, model_class, nested_depth):
+    def build_field(
+        self, field_name: str, info: Any, model_class: Type[Model], nested_depth: int
+    ) -> Any:
         suffix = "_id"
         if field_name.endswith(suffix):
             # now we checked {field_name} is {old_field_name}_id
@@ -154,7 +168,7 @@ class DCFModelSerializer(
         return super().build_field(field_name, info, model_class, nested_depth)
 
     @overrides(BaseSerializer)
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, raise_exception: bool = False) -> bool:
         return all(
             [
                 super().is_valid(raise_exception),
@@ -163,7 +177,7 @@ class DCFModelSerializer(
             ]
         )
 
-    def __check_undefined_fields(self, raise_exception):
+    def __check_undefined_fields(self, raise_exception: bool) -> bool:
         """Enforces that each field passing through the Serializer must be
         declared in the Meta.fields, for added Security."""
         valid_fields = list(self.fields.keys())
@@ -184,7 +198,7 @@ class DCFModelSerializer(
                 return False
         return True
 
-    def __check_readonly_fields(self, raise_exception):
+    def __check_readonly_fields(self, raise_exception: bool) -> bool:
         """By default, any 'read_only' fields that are incorrectly included in
         the serializer input will be ignored. This method enforces that the
         error is more explicit by raising a ValidationError."""
@@ -208,33 +222,33 @@ class DCFModelSerializer(
 
 
 class GenerateJsonSchemaDecorator:
-    for_model_read: Dict[Type[Serializable], List[Type[DCFSerializer]]] = {}
-    for_model_write: Dict[Type[Serializable], List[Type[DCFSerializer]]] = {}
+    for_model_read: Dict[Type[Model], List[Type[DCFSerializer]]] = {}
+    for_model_write: Dict[Type[Model], List[Type[DCFSerializer]]] = {}
 
-    def __call__(self, for_model):
-        def decorator(serializer_class):
+    def __call__(self, for_model: Type[Model]) -> Any:
+        def decorator(serializer_class: Type[DCFSerializer]) -> Type[DCFSerializer]:
             self.for_model_read.setdefault(for_model, [])
             self.for_model_read[for_model].append(serializer_class)
             return serializer_class
 
         return decorator
 
-    def write(self, for_model):
-        def decorator(serializer_class):
+    def write(self, for_model: Type[Model]) -> Any:
+        def decorator(serializer_class: Type[DCFSerializer]) -> Type[DCFSerializer]:
             self.for_model_write.setdefault(for_model, [])
             self.for_model_write[for_model].append(serializer_class)
             return serializer_class
 
         return decorator
 
-    def get_models(self):
+    def get_models(self) -> List[Type[Model]]:
         return [*self.for_model_read.keys(), *self.for_model_write.keys()]
 
 
 generate_jsonschema = GenerateJsonSchemaDecorator()
 
 
-def check_integrity():
+def check_integrity() -> None:
     for serializer_cls in DCFModelSerializer.__subclasses__():
         model = serializer_cls.Meta.model
         for field_name in getattr(serializer_cls.Meta, "fields", []):

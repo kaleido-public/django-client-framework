@@ -6,7 +6,7 @@ from .serializable import Serializable
 from .user import DCFAbstractUser
 
 
-def check_integrity():
+def check_integrity() -> None:
     from . import access_controlled, serializable
 
     access_controlled.check_integrity()

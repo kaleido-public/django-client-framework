@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, Dict, List, TypeVar
 
@@ -34,7 +35,9 @@ class DCFFilterBackend(filters.BaseFilterBackend):
     See DRF's documentation: https://www.django-rest-framework.org/api-guide/filtering/#custom-generic-filtering
     """
 
-    def filter_queryset(self, request, queryset, view):
+    def filter_queryset(  # type:ignore[override]
+        self, request: Request, queryset: QuerySet[T], view: BaseModelAPI
+    ) -> QuerySet[T]:
         """
         Support generic filtering, eg: /products?name__in[]=abc&name__in[]=def
         """
@@ -76,7 +79,10 @@ class DCFFilterBackend(filters.BaseFilterBackend):
     ) -> Dict[str, Any]:
         querydict = {}
         for key in request.query_params:
-            if "[]" in key:
+            # test if the pattern is xxxx_[??]=
+            if re.match(r"\w+\[\w*\]", key):
+                ###
+                # Here are some cases
                 # Could be products?id__in[]=1,2,3 or
                 # products?id__in[]=1&id__in[]=2. These are just different ways
                 # to encode a list in the query param. They mean the same thing.
