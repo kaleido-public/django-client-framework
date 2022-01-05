@@ -1,13 +1,15 @@
-from typing import Callable, Dict
+from typing import Any, Callable, Dict, TypeVar
 
 from ..models import get_user_model
 from ..models.abstract.user import DCFAbstractUser
 
+T = TypeVar("T", bound="DCFAbstractUser")
+
 
 def register_default_user(
     username: str,
-) -> Callable[[Callable[[DCFAbstractUser], None]], None]:
-    def make_decorator(config_user: Callable[[DCFAbstractUser], None]) -> None:
+) -> Callable[[Callable[[T], None]], None]:
+    def make_decorator(config_user: Callable[[T], None]) -> None:
         DefaultUsers.usernames[username] = config_user
 
     return make_decorator
@@ -19,7 +21,7 @@ def do_nothing(user: DCFAbstractUser) -> None:
 
 class DefaultUsers:
 
-    usernames: Dict[str, Callable[[DCFAbstractUser], None]] = {}
+    usernames: Dict[str, Callable[[Any], None]] = {}
 
     def __getattr__(self, name: str) -> DCFAbstractUser:
         if name in self.usernames:

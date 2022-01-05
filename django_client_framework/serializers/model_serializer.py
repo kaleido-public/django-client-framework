@@ -21,7 +21,7 @@ from rest_framework.utils.model_meta import RelationInfo
 from rest_framework.validators import UniqueValidator
 
 from django_client_framework.exceptions import ValidationError
-from django_client_framework.models.abstract.model import DCFModel, __implements__
+from django_client_framework.models.abstract.model import __implements__
 from django_client_framework.models.abstract.serializable import D
 
 from .serializer import DCFSerializer, IDCFSerializer, T
@@ -77,7 +77,7 @@ class DCFModelSerializer(
 
     type = SerializerMethodField()
 
-    def get_type(self, instance: DCFModel) -> str:
+    def get_type(self, instance: T) -> str:
         assert instance._meta.model_name is not None
         return instance._meta.model_name
 
