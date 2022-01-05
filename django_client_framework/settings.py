@@ -1,4 +1,9 @@
-def monkeypatch_djangotypes():
+from typing import Any, List
+
+from django.db.models.fields.related import OneToOneField
+
+
+def monkeypatch_djangotypes() -> None:
     # Monkey patch for django-types
     # https://github.com/sbdchd/django-types
     # in settings.py
@@ -8,7 +13,7 @@ def monkeypatch_djangotypes():
 
     # NOTE: there are probably other items you'll need to monkey patch depending on
     # your version.
-    for cls in [QuerySet, BaseManager, ForeignKey]:
+    for cls in [QuerySet, BaseManager, ForeignKey, OneToOneField]:
         cls.__class_getitem__ = classmethod(lambda cls, *args, **kwargs: cls)  # type: ignore [attr-defined]
 
 
@@ -21,22 +26,19 @@ def monkeypatch_abstract_generic() -> None:
 
     _original = ModelState.render
 
-    def _new(self, apps):
-        self.bases = tuple(base for base in self.bases if base is not Generic)  # type: ignore
-        return _original(self, apps)
+    def _new(model: Any, apps: Any) -> Any:
+        model.bases = tuple(base for base in model.bases if base is not Generic)  # type: ignore
+        return _original(model, apps)
 
     ModelState.render = _new  # type: ignore
 
 
-monkeypatch_abstract_generic()
-
-
 def install(
-    INSTALLED_APPS,
-    REST_FRAMEWORK,
-    MIDDLEWARE,
-    AUTHENTICATION_BACKENDS,
-):
+    INSTALLED_APPS: List[str],
+    REST_FRAMEWORK: Any,
+    MIDDLEWARE: List[str],
+    AUTHENTICATION_BACKENDS: List[str],
+) -> None:
     INSTALLED_APPS += [
         "rest_framework",
         "guardian",
@@ -56,5 +58,5 @@ def install(
         "django.contrib.auth.backends.ModelBackend",
     ]
 
-    monkeypatch_djangotypes()
     monkeypatch_abstract_generic()
+    monkeypatch_djangotypes()

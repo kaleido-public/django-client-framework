@@ -23,7 +23,7 @@
   "coverage-gutters.showRulerCoverage": true,
   "coverage-gutters.showGutterCoverage": false,
   "python.sortImports.path": "isort",
-  "mypy.configFile": "./mypy.ini",
+  "mypy.configFile": "mypy.ini",
   "mypy.targets": ["./django_client_framework"],
   "python.linting.ignorePatterns": [
     "**/site-packages/**/*.py",

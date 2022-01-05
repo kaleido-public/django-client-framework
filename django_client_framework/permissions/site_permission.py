@@ -241,7 +241,7 @@ def has_perms_shortcut(
                     if u.has_perm(name):
                         yield True
                     # check user object permission
-                    if u.has_perm(name, instance):
+                    if u.has_perm(name, obj=instance):  # type:ignore
                         yield True
         yield False
 

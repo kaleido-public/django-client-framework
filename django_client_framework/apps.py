@@ -4,7 +4,7 @@ from django.apps import AppConfig
 class DefaultApp(AppConfig):
     name = "django_client_framework"
 
-    def ready(self):
+    def ready(self) -> None:
         """
         Although you can access model classes as described above, avoid interacting with
         the database in your ready() implementation. This includes model methods that

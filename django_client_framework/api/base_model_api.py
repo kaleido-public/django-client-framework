@@ -9,8 +9,10 @@ import orjson
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models.base import Model
+from django.db.models.fields import Field
 from django.db.models.query import QuerySet
 from django.http.request import QueryDict
+from django.http.response import HttpResponse
 from django.utils.functional import cached_property
 from ipromise import overrides
 from rest_framework.exceptions import MethodNotAllowed, NotFound
@@ -58,7 +60,7 @@ class ApiPagination(PageNumberPagination):
     max_page_size = 200
 
     @overrides(PageNumberPagination)
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, data: Any) -> Response:
         assert self.page is not None
         assert self.request is not None
         limit = self.get_page_size(self.request)
@@ -78,7 +80,12 @@ class ApiPagination(PageNumberPagination):
 class DCFJSONRenderer(JSONRenderer):
     """Adds support for serializing UUID as a dictionary key."""
 
-    def render(self, data, accepted_media_type=None, renderer_context=None):
+    def render(
+        self,
+        data: Any,
+        accepted_media_type: Optional[str] = None,
+        renderer_context: Any = None,
+    ) -> bytes:
         """
         Render `data` into JSON, returning a bytestring.
         """
@@ -118,15 +125,16 @@ class BaseModelAPI(GenericAPIView):
         return {self.__model_name(model): model for model in self.models}
 
     @overrides(APIView)
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request: Any, *args: Any, **kwargs: Any) -> HttpResponse:
         try:
             if request.method not in self.allowed_methods:
-                raise MethodNotAllowed(request.method)
+                raise MethodNotAllowed(request.method or "")
             return super().dispatch(request, *args, **kwargs)
         except APIPermissionDenied as error:
             self.__handle_permission_denied(error)
+            raise NotImplementedError("Not reachable")
 
-    def get_request_data(self, request: Request) -> Dict:
+    def get_request_data(self, request: Request) -> dict:
         """
         Excludes special keys and returns only the instance related data.
         """
@@ -146,7 +154,7 @@ class BaseModelAPI(GenericAPIView):
             return request.data
 
     @cached_property
-    def request_data(self):
+    def request_data(self) -> dict:
         """Returns cached self.get_request_data(self.request)"""
         return self.get_request_data(self.request)
 
@@ -163,7 +171,7 @@ class BaseModelAPI(GenericAPIView):
     def __model_name(self, model: Type[ISerializable]) -> str:
         return model._meta.model_name or model._meta.label_lower.split(".")[-1]
 
-    def get_model_field(self, key, default=None):
+    def get_model_field(self, key: str, default: Any = None) -> Optional[Field]:
         try:
             return self.model._meta.get_field(key)
         except FieldDoesNotExist:
@@ -178,7 +186,7 @@ class BaseModelAPI(GenericAPIView):
         raise NotImplementedError("Must override")
 
     @property
-    def queryset(self):
+    def queryset(self) -> QuerySet:  # type:ignore[override]
         return QuerySet(model=self.model.as_model_type()).all()
 
     def __handle_permission_denied(self, error: APIPermissionDenied) -> None:

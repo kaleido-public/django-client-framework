@@ -24,6 +24,10 @@ class IAccessControlled(IDCFModel[DCFModel], Generic[T]):
     def update_perms(self) -> None:
         ...
 
+    @classmethod
+    def get_permissionmanager_class(cls) -> Type[Any]:
+        ...
+
 
 class AccessControlled(DjangoModel, IAccessControlled[T]):
     class Meta:
@@ -78,7 +82,7 @@ class AccessControlled(DjangoModel, IAccessControlled[T]):
         return super().__init_subclass__()
 
     @classmethod
-    def register_signals(cls):
+    def register_signals(cls) -> None:
         for child in cls.__subclasses__():
             post_save.connect(
                 update_permission_on_change,
@@ -87,10 +91,12 @@ class AccessControlled(DjangoModel, IAccessControlled[T]):
             )
 
 
-def update_permission_on_change(sender, instance, **kwargs):
+def update_permission_on_change(
+    sender: Any, instance: IAccessControlled, **kwargs: Any
+) -> None:
     instance.get_permissionmanager_class()().reset_perms(instance=instance)
 
 
-def check_integrity():
+def check_integrity() -> None:
     for model in AccessControlled.__subclasses__():
         model.get_permissionmanager_class()

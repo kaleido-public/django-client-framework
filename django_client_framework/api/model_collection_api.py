@@ -1,7 +1,9 @@
 from logging import getLogger
-from typing import Iterable, List
+from typing import Any, Iterable, List, Type
 
 from django.db.models.fields.related import ForeignKey
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse
 from ipromise import overrides
 from rest_framework.exceptions import APIException
 from rest_framework.generics import GenericAPIView
@@ -12,6 +14,7 @@ from rest_framework.views import APIView
 from django_client_framework import exceptions as e
 from django_client_framework import permissions as p
 from django_client_framework.models.abstract.serializable import Serializable
+from django_client_framework.serializers.serializer import DCFSerializer
 
 from .base_model_api import APIPermissionDenied, BaseModelAPI
 
@@ -38,12 +41,12 @@ class ModelCollectionAPI(BaseModelAPI):
     allowed_methods: List[str] = ["GET", "POST"]
 
     @overrides(APIView)
-    def check_permissions(self, request):
+    def check_permissions(self, request: HttpRequest) -> None:
         if request.method == "POST":
             if not p.has_perms_shortcut(self.user_object, self.model, "c"):
                 raise e.PermissionDenied("You have no permission to perform POST.")
 
-    def get(self, *args, **kwargs):
+    def get(self, *args: Any, **kwargs: Any) -> HttpResponse:
         queryset = self.filter_queryset(self.get_queryset())
         assert self.paginator
         page: Iterable[Serializable] = self.paginator.paginate_queryset(
@@ -61,7 +64,7 @@ class ModelCollectionAPI(BaseModelAPI):
             ]
         )
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         serializer = self.get_serializer(data=self.request_data)
         serializer.is_valid(raise_exception=True)
         # make sure user write permission to related fields
@@ -84,7 +87,7 @@ class ModelCollectionAPI(BaseModelAPI):
             raise CreatedHiddenObject()
 
     @overrides(GenericAPIView)
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> Type[DCFSerializer]:
         return self.model.get_serializer_class(
             version=self.version,
             context=self.get_serializer_context(),

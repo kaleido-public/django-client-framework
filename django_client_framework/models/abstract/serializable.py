@@ -119,17 +119,17 @@ class Serializable(__implements__, ISerializable[T, D]):
     def get_extra_content_to_hash(self) -> List[Any]:
         return []
 
-    def values(self):
+    def values(self) -> Optional[T]:
         self._meta: Any
         return self._meta.model.objects.filter(pk=self.id).values().first()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if settings.DEBUG:
             return f"<<{self.__class__.__name__}:{self.values()}>>"
         else:
             return f"<{self.__class__.__name__}:{self.id}>"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"<{self.__class__.__name__}:{self.id}>"
 
     def get_cache_timeout(self) -> int:
@@ -181,7 +181,7 @@ class Serializable(__implements__, ISerializable[T, D]):
         )
 
 
-def check_integrity():
+def check_integrity() -> None:
     from ...serializers import DelegateSerializer, Serializer
 
     for model in Serializable.__subclasses__():
