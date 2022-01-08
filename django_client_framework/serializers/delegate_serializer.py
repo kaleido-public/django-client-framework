@@ -34,9 +34,9 @@ class DelegateSerializer(DCFSerializer[T, D]):
 
         if data is not None and instance is not None:
             self.is_update = True
-        if data is not None and instance is None:
+        elif data is not None and instance is None:
             self.is_create = True
-        if data is None and instance is not None:
+        elif data is None:
             self.is_read = True
 
         self.read_delegate = self.get_read_delegate_class()(
