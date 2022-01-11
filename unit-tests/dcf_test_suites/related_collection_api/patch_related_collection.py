@@ -8,7 +8,7 @@ from django_client_framework.models import get_user_model
 
 
 class TestPatch(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.superuser = User.objects.create(username="testuser", is_superuser=True)
         self.superuser_client = APIClient()
@@ -19,7 +19,7 @@ class TestPatch(TestCase):
             for i in range(5)
         ]
 
-    def test_patch_objects_all(self):
+    def test_patch_objects_all(self) -> None:
         assert self.brand.products.count() == 5
         self.superuser_client.patch(
             f"/brand/{self.brand.id}/products",
@@ -28,7 +28,7 @@ class TestPatch(TestCase):
         )
         self.assertEqual(self.brand.products.count(), 2)
 
-    def test_patch_objects_unlink_all(self):
+    def test_patch_objects_unlink_all(self) -> None:
         assert self.brand.products.count() == 5
         resp = self.superuser_client.patch(
             f"/brand/{self.brand.id}/products", data=[], format="json"
@@ -36,7 +36,7 @@ class TestPatch(TestCase):
         self.assertEquals(0, len(resp.json()["objects"]))
         self.assertEqual(self.brand.products.count(), 0)
 
-    def test_patch_objects_invalid_key(self):
+    def test_patch_objects_invalid_key(self) -> None:
         assert self.brand.products.count() == 5
         resp = self.superuser_client.patch(
             f"/brand/{self.brand.id}/products", data=[UUID(int=200)], format="json"

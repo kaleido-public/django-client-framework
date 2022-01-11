@@ -8,7 +8,7 @@ from django_client_framework.models import get_user_model
 
 
 class TestDeleteRelatedCollection(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.superuser = User.objects.create(username="testuser", is_superuser=True)
         self.superuser_client = APIClient()
@@ -16,7 +16,7 @@ class TestDeleteRelatedCollection(TestCase):
         self.brand = Brand.objects.create(name="brand")
         self.products = [Product.objects.create(brand=self.brand) for i in range(3)]
 
-    def test_delete_objects_success(self):
+    def test_delete_objects_success(self) -> None:
         assert Product.objects.count() == 3
         resp = self.superuser_client.delete(
             f"/brand/{self.brand.id}/products",
@@ -35,7 +35,7 @@ class TestDeleteRelatedCollection(TestCase):
             "Make sure this doesn't actually delete the objects! Just remove the relations.",
         )
 
-    def test_delete_objects_none(self):
+    def test_delete_objects_none(self) -> None:
         """Deleting relations that doesn't actually exist."""
         resp = self.superuser_client.delete(
             f"/brand/{self.brand.id}/products",

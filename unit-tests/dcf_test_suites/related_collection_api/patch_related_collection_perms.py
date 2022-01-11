@@ -7,7 +7,7 @@ from django_client_framework import permissions as p
 
 
 class TestPaginationPerms(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.user = User.objects.create_user(username="testuser")
         self.user_client = APIClient()
@@ -27,7 +27,7 @@ class TestPaginationPerms(TestCase):
         #     for i in range(50)
         # ]
 
-    def test_min_patch_perms(self):
+    def test_min_patch_perms(self) -> None:
         """Test minimum patch permission. Replaces the old product with new."""
         p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
         p.add_perms_shortcut(self.user, self.old_product, "w", field_name="brand")
@@ -43,7 +43,7 @@ class TestPaginationPerms(TestCase):
         self.assertEqual(self.product.brand, self.brand)
         self.assertIsNone(self.old_product.brand)
 
-    def test_patch_parent_no_write(self):
+    def test_patch_parent_no_write(self) -> None:
         """If brand has no write perm, raise 403."""
         p.add_perms_shortcut(self.user, self.brand, "r", field_name="products")
         p.add_perms_shortcut(self.user, self.old_product, "w", field_name="brand")
@@ -64,7 +64,7 @@ class TestPaginationPerms(TestCase):
         self.assertEqual(self.old_product.brand, self.brand)
         self.assertIsNone(self.product.brand)
 
-    def test_patch_parent_no_perm(self):
+    def test_patch_parent_no_perm(self) -> None:
         """If brand has no write or read perm, raise 404."""
         p.add_perms_shortcut(self.user, self.old_product, "w", field_name="brand")
         p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
@@ -84,7 +84,7 @@ class TestPaginationPerms(TestCase):
         self.assertEqual(self.old_product.brand, self.brand)
         self.assertIsNone(self.product.brand)
 
-    def test_old_child_no_write(self):
+    def test_old_child_no_write(self) -> None:
         """What if User cannot write to the old child"""
         p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
         p.add_perms_shortcut(self.user, self.old_product, "r", field_name="brand")
@@ -105,7 +105,7 @@ class TestPaginationPerms(TestCase):
         self.assertEqual(self.old_product.brand, self.brand)
         self.assertIsNone(self.product.brand)
 
-    def test_new_child_no_write(self):
+    def test_new_child_no_write(self) -> None:
         """What if User cannot write to the new child"""
         p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
         p.add_perms_shortcut(self.user, self.old_product, "w", field_name="brand")
@@ -126,7 +126,7 @@ class TestPaginationPerms(TestCase):
         self.assertEqual(self.old_product.brand, self.brand)
         self.assertIsNone(self.product.brand)
 
-    def test_new_child_no_perm(self):
+    def test_new_child_no_perm(self) -> None:
         """What if User cannot write to the new child"""
         p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
         p.add_perms_shortcut(self.user, self.old_product, "w", field_name="brand")

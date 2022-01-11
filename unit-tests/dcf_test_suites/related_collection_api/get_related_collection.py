@@ -6,7 +6,7 @@ from django_client_framework.models import get_user_model
 
 
 class TestPagination(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.superuser = User.objects.create(username="testuser", is_superuser=True)
         self.superuser_client = APIClient()
@@ -24,7 +24,7 @@ class TestPagination(TestCase):
             for i in range(50)
         ]
 
-    def test_list(self):
+    def test_list(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?_order_by=priority"
         )
@@ -52,7 +52,7 @@ class TestPagination(TestCase):
             objects[1],
         )
 
-    def test_list_next_page(self):
+    def test_list_next_page(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?_page=2&_order_by=priority"
         )
@@ -80,7 +80,7 @@ class TestPagination(TestCase):
             objects[1],
         )
 
-    def test_page_with_limit(self):
+    def test_page_with_limit(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?_page=3&_limit=30&_order_by=priority"
         )
@@ -100,7 +100,7 @@ class TestPagination(TestCase):
             objects[0],
         )
 
-    def test_limit_without_page(self):
+    def test_limit_without_page(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.br2.id}/products?_limit=5&_order_by=priority"
         )
@@ -118,7 +118,7 @@ class TestPagination(TestCase):
             objects[0],
         )
 
-    def test_extend_past_page(self):
+    def test_extend_past_page(self) -> None:
         resp = self.superuser_client.get(f"/brand/{self.br2.id}/products?_page=2")
         data = resp.json()
         self.assertDictContainsSubset(
@@ -127,7 +127,7 @@ class TestPagination(TestCase):
             resp.content,
         )
 
-    def test_extend_past_page_with_limit(self):
+    def test_extend_past_page_with_limit(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?_limit=20&_page=40"
         )
@@ -138,7 +138,7 @@ class TestPagination(TestCase):
             resp.content,
         )
 
-    def test_key_single_empty(self):
+    def test_key_single_empty(self) -> None:
         resp = self.superuser_client.get(f"/brand/{self.br2.id}/products?barcode=xxx")
         data = resp.json()
         self.assertDictContainsSubset(
@@ -147,7 +147,7 @@ class TestPagination(TestCase):
         objects = data["objects"]
         self.assertEqual(len(objects), 0)
 
-    def test_key_single_filled(self):
+    def test_key_single_filled(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?barcode=product_60"
         )
@@ -166,7 +166,7 @@ class TestPagination(TestCase):
             objects[0],
         )
 
-    def test_key_multiple_filled(self):
+    def test_key_multiple_filled(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.br2.id}/products?barcode=product_101&brand_id={self.br2.id}"
         )
@@ -185,7 +185,7 @@ class TestPagination(TestCase):
             objects[0],
         )
 
-    def test_key_multiple_empty(self):
+    def test_key_multiple_empty(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?barcode=product_102&brand_id={self.brand.id}"
         )
@@ -196,7 +196,7 @@ class TestPagination(TestCase):
         objects = data["objects"]
         self.assertEqual(len(objects), 0)
 
-    def test_key_array_filled(self):
+    def test_key_array_filled(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?barcode__in[]=product_10,product_11&_order_by=priority"
         )
@@ -215,7 +215,7 @@ class TestPagination(TestCase):
             objects[0],
         )
 
-    def test_key_array_empty(self):
+    def test_key_array_empty(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?barcode__in[]=product_101,product_111"
         )
@@ -226,7 +226,7 @@ class TestPagination(TestCase):
         objects = data["objects"]
         self.assertEqual(len(objects), 0)
 
-    def test_order_positive(self):
+    def test_order_positive(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?_order_by=priority"
         )
@@ -252,7 +252,7 @@ class TestPagination(TestCase):
             objects[1],
         )
 
-    def test_order_negative(self):
+    def test_order_negative(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?_order_by=-priority"
         )
@@ -278,7 +278,7 @@ class TestPagination(TestCase):
             objects[1],
         )
 
-    def test_order_page(self):
+    def test_order_page(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?_order_by=barcode&_page=2"
         )
@@ -313,7 +313,7 @@ class TestPagination(TestCase):
         )
 
     # error: multiple keys not working
-    def test_order_multiple_keys(self):
+    def test_order_multiple_keys(self) -> None:
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?_order_by=barcode,brand,priority"
         )

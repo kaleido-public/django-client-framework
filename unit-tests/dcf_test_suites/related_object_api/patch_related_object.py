@@ -8,7 +8,7 @@ from django_client_framework.models import get_user_model
 
 
 class TestRetrieve(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.superuser = User.objects.create(username="testuser", is_superuser=True)
         self.superuser_client = APIClient()
@@ -16,7 +16,7 @@ class TestRetrieve(TestCase):
         self.brands = [Brand.objects.create(name=f"brand_{i+1}") for i in range(5)]
         self.product = Product.objects.create()
 
-    def test_patch_success(self):
+    def test_patch_success(self) -> None:
         resp = self.superuser_client.patch(
             f"/product/{self.product.id}/brand",
             data=str(self.brands[0].id),
@@ -26,7 +26,7 @@ class TestRetrieve(TestCase):
         self.product.refresh_from_db()
         self.assertEqual(self.brands[0], self.product.brand, resp.json())
 
-    def test_patch_failed_invalid_fk(self):
+    def test_patch_failed_invalid_fk(self) -> None:
         resp = self.superuser_client.patch(
             f"/product/{self.product.id}/brand",
             data=UUID(int=23),
@@ -40,7 +40,7 @@ class TestRetrieve(TestCase):
             data,
         )
 
-    def test_patch_array(self):
+    def test_patch_array(self) -> None:
         resp = self.superuser_client.patch(
             f"/product/{self.product.id}/brand",
             data=[UUID(int=23), UUID(int=24)],

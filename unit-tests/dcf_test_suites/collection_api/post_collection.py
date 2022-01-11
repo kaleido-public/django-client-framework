@@ -8,21 +8,21 @@ from django_client_framework.models import get_user_model
 
 
 class TestPostCollection(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.superuser = User.objects.create_superuser(username="testuser")
         self.superuser_client = APIClient()
         self.superuser_client.force_authenticate(self.superuser)
         self.brands = [Brand.objects.create(name=f"name_{i+1}") for i in range(5)]
 
-    def test_post_without_id(self):
+    def test_post_without_id(self) -> None:
         """POST without specifying an ID. A new UUID should be automatically assigned."""
         assert Product.objects.count() == 0
         resp = self.superuser_client.post("/product", {})
         self.assertEqual(201, resp.status_code, resp.content)
         self.assertEquals(1, Product.objects.count())
 
-    def test_post_blank_id(self):
+    def test_post_blank_id(self) -> None:
         """Blank ID is treated as without specifying an ID."""
         assert Product.objects.count() == 0
         for count in range(1, 3):
@@ -30,7 +30,7 @@ class TestPostCollection(TestCase):
             self.assertEqual(201, resp.status_code, resp.content)
             self.assertEquals(count, Product.objects.count())
 
-    def test_post_with_invalid_id(self):
+    def test_post_with_invalid_id(self) -> None:
         assert Product.objects.count() == 0
 
         resp = self.superuser_client.post("/product", {"id": "1"})
@@ -43,7 +43,7 @@ class TestPostCollection(TestCase):
 
         self.assertEquals(0, Product.objects.count())
 
-    def test_post_with_duplicate_id(self):
+    def test_post_with_duplicate_id(self) -> None:
         self.assertEquals(0, Product.objects.count())
         resp = self.superuser_client.post("/product", {"id": str(UUID(int=1))})
         self.assertEqual(201, resp.status_code, resp.content)
@@ -53,14 +53,14 @@ class TestPostCollection(TestCase):
         # self.assertLi(400, resp.json(), resp.content)
         self.assertEquals(1, Product.objects.count())
 
-    def test_post_invalid_field(self):
+    def test_post_invalid_field(self) -> None:
         resp = self.superuser_client.post("/product", {"xxxxxx": "test_brand"})
         self.assertEquals(0, Product.objects.count())
         self.assertEqual(400, resp.status_code)
         data = resp.json()
         self.assertEqual("invalid", data["xxxxxx"][0]["code"])
 
-    def test_post_invalid_fk(self):
+    def test_post_invalid_fk(self) -> None:
         self.assertEquals(0, Product.objects.count())
         resp = self.superuser_client.post(
             "/product",

@@ -9,7 +9,7 @@ from django_client_framework.models import get_user_model
 class TestPostPerms(TestCase):
     """POSTing to the related collection api creates new relations."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.user = User.objects.create(username="testuser")
         self.user_client = APIClient()
@@ -17,7 +17,7 @@ class TestPostPerms(TestCase):
         self.brand = Brand.objects.create(name="brand")
         self.product = Product.objects.create(barcode="product")
 
-    def test_full_permission_post(self):
+    def test_full_permission_post(self) -> None:
         """
         Post with read and field write permissions.
         """
@@ -36,7 +36,7 @@ class TestPostPerms(TestCase):
         self.assertEquals(1, data["objects_count"])
         self.assertDictContainsSubset({"id": str(self.product.id)}, data["objects"][0])
 
-    def test_no_child_read(self):
+    def test_no_child_read(self) -> None:
         """
         If product has no read permission, post should be successful but hidden.
         """
@@ -54,7 +54,7 @@ class TestPostPerms(TestCase):
         self.assertEquals(200, resp.status_code)
         self.assertEquals(0, data["objects_count"])
 
-    def test_no_child_write(self):
+    def test_no_child_write(self) -> None:
         """
         Has no product write permission, post should be 403.
         """
@@ -74,7 +74,7 @@ class TestPostPerms(TestCase):
             f"You have no write permission on product({self.product.id})'s brand field.",
         )
 
-    def test_no_child_perm(self):
+    def test_no_child_perm(self) -> None:
         """
         Has no product read / write permission, post should be 404.
         """
@@ -90,7 +90,7 @@ class TestPostPerms(TestCase):
         self.assertEqual(0, self.brand.products.count())  # product is not updated
         self.assertEquals(data, f"Not Found: product({self.product.id})")
 
-    def test_no_parent_write(self):
+    def test_no_parent_write(self) -> None:
         """
         Has no brand write perm, should 403.
         """
@@ -111,7 +111,7 @@ class TestPostPerms(TestCase):
         self.assertIsNone(self.product.brand_id)  # product is not updated
         self.assertEqual(0, self.brand.products.count())  # product is not updated
 
-    def test_no_parent_read(self):
+    def test_no_parent_read(self) -> None:
         """
         Has no brand read perm, but since can write to brand, the response is
         200.
@@ -134,7 +134,7 @@ class TestPostPerms(TestCase):
         self.assertEquals(self.brand, self.product.brand, "product should be updated")
         self.assertEqual(1, self.brand.products.count(), "product should be updated")
 
-    def test_no_parent_perm(self):
+    def test_no_parent_perm(self) -> None:
         """
         Has no brand perm, should 404.
         """
@@ -150,7 +150,7 @@ class TestPostPerms(TestCase):
         self.assertIsNone(self.product.brand_id)  # product is not updated
         self.assertEqual(0, self.brand.products.count())  # product is not updated
 
-    def test_post_no_permissions(self):
+    def test_post_no_permissions(self) -> None:
         resp = self.user_client.post(
             f"/brand/{self.brand.id}/products",
             data=[self.product.id],
@@ -158,7 +158,7 @@ class TestPostPerms(TestCase):
         )
         self.assertEquals(404, resp.status_code)
 
-    def test_post_correct_parent_perms(self):
+    def test_post_correct_parent_perms(self) -> None:
         p.add_perms_shortcut(self.user, Brand, "w", field_name="products")
         resp = self.user_client.post(
             f"/brand/{self.brand.id}/products",

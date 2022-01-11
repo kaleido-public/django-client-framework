@@ -8,7 +8,7 @@ from django_client_framework.models import get_user_model
 
 
 class TestPost(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.superuser = User.objects.create(username="testuser", is_superuser=True)
         self.superuser_client = APIClient()
@@ -19,7 +19,7 @@ class TestPost(TestCase):
             for i in range(5)
         ]
 
-    def test_post_related_success(self):
+    def test_post_related_success(self) -> None:
         """POST-ing adds a relation."""
         self.brand.products.set(self.products[:3])
         assert self.brand.products.count() == 3
@@ -31,7 +31,7 @@ class TestPost(TestCase):
         self.assertEqual(200, resp.status_code, resp.content)
         self.assertEquals(5, len(resp.json()["objects"]))
 
-    def test_post_related_failure(self):
+    def test_post_related_failure(self) -> None:
         assert self.brand.products.count() == 5
         resp = self.superuser_client.post(
             f"/brand/{self.brand.id}/products",
@@ -45,7 +45,7 @@ class TestPost(TestCase):
             "The brand's product count shouldn't have changed.",
         )
 
-    def test_post_related_partial_failure(self):
+    def test_post_related_partial_failure(self) -> None:
         """What if half the IDs are correct but the other half is invalid?"""
         self.brand.products.set(self.products[:3])
         assert self.brand.products.count() == 3
