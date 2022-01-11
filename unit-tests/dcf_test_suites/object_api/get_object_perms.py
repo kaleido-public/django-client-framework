@@ -7,7 +7,7 @@ from django_client_framework import permissions as p
 
 
 class TestGetPerms(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.user = User.objects.create_user(username="testuser")
         self.user_client = APIClient()
         self.user_client.force_authenticate(self.user)
@@ -16,21 +16,21 @@ class TestGetPerms(TestCase):
         self.pr1 = Product.objects.create(barcode="pr1", brand=self.br1)
         self.pr2 = Product.objects.create(barcode="pr2", brand=self.br2)
 
-    def test_get_without_permissions(self):
+    def test_get_without_permissions(self) -> None:
         resp = self.user_client.get(f"/product/{self.pr1.id}")
         self.assertEquals(404, resp.status_code)
 
-    def test_get_incorrect_permissions(self):
+    def test_get_incorrect_permissions(self) -> None:
         p.add_perms_shortcut(self.user, Product, "wcd")
         resp = self.user_client.get(f"/product/{self.pr1.id}")
         self.assertEquals(404, resp.status_code)
 
-    def test_get_incorrect_permissions_ver_2(self):
+    def test_get_incorrect_permissions_ver_2(self) -> None:
         p.add_perms_shortcut(self.user, Product, "r", field_name="barcode")
         resp = self.user_client.get(f"/product/{self.pr1.id}")
         self.assertEquals(404, resp.status_code)
 
-    def test_get_correct_permissions(self):
+    def test_get_correct_permissions(self) -> None:
         p.add_perms_shortcut(self.user, Product, "r")
         resp = self.user_client.get(f"/product/{self.pr1.id}")
         self.assertDictContainsSubset(

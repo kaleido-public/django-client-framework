@@ -7,7 +7,7 @@ rate_limit.default = "120/min"
 
 
 class TestRateLimited(TestCase):
-    def test_spam_get(self):
+    def test_spam_get(self) -> None:
         client = APIClient()
         for iter in range(20):
             response = client.get(

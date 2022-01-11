@@ -6,7 +6,7 @@ from django_client_framework.models import get_user_model
 
 
 class TestObject(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.superuser = User.objects.create(username="testuser", is_superuser=True)
         self.superuser_client = APIClient()
@@ -15,7 +15,7 @@ class TestObject(TestCase):
         self.pr1 = Product.objects.create(barcode="product_1", brand=self.br)
         self.pr2 = Product.objects.create(barcode="product_2")
 
-    def test_get_1(self):
+    def test_get_1(self) -> None:
         resp = self.superuser_client.get(f"/product/{self.pr1.id}")
         data = resp.json()
         self.assertDictContainsSubset(
@@ -27,7 +27,7 @@ class TestObject(TestCase):
             data,
         )
 
-    def test_get_2(self):
+    def test_get_2(self) -> None:
         resp = self.superuser_client.get(f"/product/{self.pr2.id}")
         data = resp.json()
         self.assertDictContainsSubset(

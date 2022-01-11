@@ -8,7 +8,7 @@ from django_client_framework.models import get_user_model
 
 
 class TestPagination(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.superuser = User.objects.create(username="testuser", is_superuser=True)
         self.superuser_client = APIClient()
@@ -28,7 +28,7 @@ class TestPagination(TestCase):
         ]
         Product.objects.create(barcode="product_100", brand=None, priority=100)
 
-    def test_list(self):
+    def test_list(self) -> None:
         resp = self.superuser_client.get("/product?_order_by=priority")
         data = resp.json()
         self.assertDictContainsSubset(
@@ -50,7 +50,7 @@ class TestPagination(TestCase):
             objects[1],
         )
 
-    def test_distict_result(self):
+    def test_distict_result(self) -> None:
         """
         When filtering with a query that results in a left-join operation, make
         sure the results are distict.
@@ -65,7 +65,7 @@ class TestPagination(TestCase):
         data = resp.json()
         self.assertEqual(1, data["objects_count"], data)
 
-    def test_list_next_page(self):
+    def test_list_next_page(self) -> None:
         resp = self.superuser_client.get("/product?_page=2&_order_by=priority")
         data = resp.json()
         self.assertDictContainsSubset(
@@ -91,7 +91,7 @@ class TestPagination(TestCase):
             objects[1],
         )
 
-    def test_page_with_limit(self):
+    def test_page_with_limit(self) -> None:
         resp = self.superuser_client.get(
             "/product?_page=3&_limit=10&_order_by=priority"
         )
@@ -111,7 +111,7 @@ class TestPagination(TestCase):
             data,
         )
 
-    def test_key_name_single(self):
+    def test_key_name_single(self) -> None:
         resp = self.superuser_client.get("/product?barcode__exact=product_21")
         data = resp.json()
         objects = data["objects"]
@@ -124,7 +124,7 @@ class TestPagination(TestCase):
             objects[0],
         )
 
-    def test_key_name_multiple(self):
+    def test_key_name_multiple(self) -> None:
         resp = self.superuser_client.get(
             f"/product?barcode__exact=product_99&id__exact={self.products[99].id}"
         )
@@ -142,17 +142,17 @@ class TestPagination(TestCase):
             objects[0],
         )
 
-    def test_extend_past_page(self):
+    def test_extend_past_page(self) -> None:
         resp = self.superuser_client.get("/product?_page=4")
         data = resp.json()
         self.assertDictContainsSubset({"general_errors": ["Invalid page."]}, data)
 
-    def test_extend_past_page_with_limit(self):
+    def test_extend_past_page_with_limit(self) -> None:
         resp = self.superuser_client.get("/product?_limit=40&_page=4")
         data = resp.json()
         self.assertDictContainsSubset({"general_errors": ["Invalid page."]}, data)
 
-    def test_key_name_array_filled_empty(self):
+    def test_key_name_array_filled_empty(self) -> None:
         resp = self.superuser_client.get(
             "/product?barcode__in[]=product_121&barcode__in[]=product_122"
         )
@@ -162,7 +162,7 @@ class TestPagination(TestCase):
         )
         self.assertEqual(len(data["objects"]), 0)
 
-    def test_key_name_array_but_empty(self):
+    def test_key_name_array_but_empty(self) -> None:
         resp = self.superuser_client.get("/product?id__in[]=")
         data = resp.json()
         self.assertDictContainsSubset(
@@ -170,7 +170,7 @@ class TestPagination(TestCase):
         )
         self.assertEqual(len(data["objects"]), 0)
 
-    def test_key_name_array(self):
+    def test_key_name_array(self) -> None:
         resp = self.superuser_client.get(
             "/product?barcode__in[]=product_21&barcode__in[]=product_22&_order_by=priority"
         )
@@ -183,12 +183,12 @@ class TestPagination(TestCase):
         self.assertDictContainsSubset({"barcode": "product_21"}, objects[0])
         self.assertDictContainsSubset({"barcode": "product_22"}, objects[1])
 
-    def test_invalid_key(self):
+    def test_invalid_key(self) -> None:
         resp = self.superuser_client.get("/product?xxxxxx=product_21")
 
         self.assertEqual(400, resp.status_code)
 
-    def test_positive_order(self):
+    def test_positive_order(self) -> None:
         resp = self.superuser_client.get("/product?_order_by=priority")
         data = resp.json()
         objects = data["objects"]
@@ -214,7 +214,7 @@ class TestPagination(TestCase):
             objects[2],
         )
 
-    def test_negative_order(self):
+    def test_negative_order(self) -> None:
         resp = self.superuser_client.get("/product?_order_by=-priority")
         data = resp.json()
         objects = data["objects"]
@@ -224,7 +224,7 @@ class TestPagination(TestCase):
         self.assertDictContainsSubset({"priority": 100}, objects[0])
         self.assertDictContainsSubset({"priority": 99}, objects[1])
 
-    def test_order_multiple_keys_positive(self):
+    def test_order_multiple_keys_positive(self) -> None:
         resp = self.superuser_client.get(
             "/product", {"_order_by": "-barcode,priority", "_limit": 3}
         )
@@ -235,7 +235,7 @@ class TestPagination(TestCase):
         self.assertDictContainsSubset({"barcode": "product_98"}, objects[1])
         self.assertDictContainsSubset({"barcode": "product_97"}, objects[2])
 
-    def test_order_multiple_keys_negative(self):
+    def test_order_multiple_keys_negative(self) -> None:
         resp = self.superuser_client.get(
             "/product", {"_order_by": "-barcode,-priority", "_limit": 3}
         )
@@ -255,6 +255,6 @@ class TestPagination(TestCase):
             objects[2],
         )
 
-    def test_order_malformed(self):
+    def test_order_malformed(self) -> None:
         resp = self.superuser_client.get("/product?_order_by=xxxxx")
         self.assertEquals(400, resp.status_code)

@@ -7,7 +7,7 @@ from django_client_framework import permissions as p
 
 
 class GetPerms(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.user = User.objects.create_user(username="testuser")
         self.user_client = APIClient()
         self.user_client.force_authenticate(self.user)
@@ -18,20 +18,20 @@ class GetPerms(TestCase):
 
         p.clear_permissions()
 
-    def test_get_without_permissions(self):
+    def test_get_without_permissions(self) -> None:
         resp = self.user_client.get("/product")
         data = resp.json()
         self.assertDictContainsSubset({"objects_count": 0, "objects": []}, data)
         self.assertEqual(resp.status_code, 200)
 
-    def test_incorrect_permissions(self):
+    def test_incorrect_permissions(self) -> None:
         p.add_perms_shortcut(self.user, Product, "wcd")
         resp = self.user_client.get("/product")
         data = resp.json()
         self.assertDictContainsSubset({"objects_count": 0, "objects": []}, data)
         self.assertEqual(resp.status_code, 200)
 
-    def test_get_all_with_model_permissions(self):
+    def test_get_all_with_model_permissions(self) -> None:
         p.add_perms_shortcut(self.user, Product, "r")
         resp = self.user_client.get("/product")
         data = resp.json()
@@ -42,7 +42,7 @@ class GetPerms(TestCase):
         objects = data["objects"]
         self.assertEqual(len(objects), 2)
 
-    def test_get_r_on_object(self):
+    def test_get_r_on_object(self) -> None:
         p.add_perms_shortcut(self.user, self.pr2, "r")
         resp = self.user_client.get("/product")
         data = resp.json()

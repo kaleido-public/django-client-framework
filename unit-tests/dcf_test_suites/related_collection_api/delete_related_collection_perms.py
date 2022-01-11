@@ -7,7 +7,7 @@ from django_client_framework.models import get_user_model
 
 
 class TestPaginationPerms(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         User = get_user_model()
         self.user = User.objects.create(username="testuser")
         self.user_client = APIClient()
@@ -16,7 +16,7 @@ class TestPaginationPerms(TestCase):
         self.product = Product.objects.create(barcode="prodcut", brand=self.brand)
         self.assertEqual(1, self.brand.products.count())
 
-    def test_delete_min_perms(self):
+    def test_delete_min_perms(self) -> None:
         """Minimum permission required for a successful deletion"""
         p.add_perms_shortcut(self.user, self.brand, "rw", field_name="products")
         p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
@@ -33,7 +33,7 @@ class TestPaginationPerms(TestCase):
         self.assertIsNone(self.product.brand_id)
         self.assertEqual(0, self.brand.products.count())
 
-    def test_delete_child_no_write(self):
+    def test_delete_child_no_write(self) -> None:
         """When child has no write perm, delete should fail."""
         p.add_perms_shortcut(self.user, self.brand, "rw", field_name="products")
         p.add_perms_shortcut(self.user, self.product, "r", field_name="brand")
@@ -53,7 +53,7 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(self.product.brand_id, self.brand.id)
         self.assertEquals(1, self.brand.products.count())
 
-    def test_delete_child_no_perm(self):
+    def test_delete_child_no_perm(self) -> None:
         """When child has no write perm, delete should fail. And if child has no
         read perm, should 404."""
         p.add_perms_shortcut(self.user, self.brand, "rw", field_name="products")
@@ -73,7 +73,7 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(self.product.brand_id, self.brand.id)
         self.assertEquals(1, self.brand.products.count())
 
-    def test_delete_parent_no_read(self):
+    def test_delete_parent_no_read(self) -> None:
         """Parent has no read perm, should succeed, but returns no data."""
         p.add_perms_shortcut(self.user, self.brand, "w", field_name="products")
         p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
@@ -95,7 +95,7 @@ class TestPaginationPerms(TestCase):
         self.assertIsNone(self.product.brand_id)
         self.assertEqual(0, self.brand.products.count())
 
-    def test_delete_parent_no_write(self):
+    def test_delete_parent_no_write(self) -> None:
         """Parent has no write perm, should fail."""
         p.add_perms_shortcut(self.user, self.brand, "r", field_name="products")
         p.add_perms_shortcut(self.user, self.product, "w", field_name="brand")
@@ -115,7 +115,7 @@ class TestPaginationPerms(TestCase):
         self.assertEquals(self.product.brand_id, self.brand.id)
         self.assertEquals(1, self.brand.products.count())
 
-    def test_delete_parent_no_perms(self):
+    def test_delete_parent_no_perms(self) -> None:
         """
         Parent has no permissions, should fail, and since no read perm, returns
         404.
