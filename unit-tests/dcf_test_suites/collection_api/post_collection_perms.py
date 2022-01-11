@@ -34,7 +34,9 @@ class PostPerms(TestCase):
         data = resp.json()
         self.assertDictContainsSubset(
             {
-                "message": "The object has been created but you have no permission to view it.",
+                "general_errors": [
+                    "The object has been created but you have no permission to view it."
+                ],
             },
             data,
         )
