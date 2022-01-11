@@ -1,39 +1,53 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, List
 
 from django.http import JsonResponse
 from django.http.response import HttpResponse
 from rest_framework.exceptions import APIException
 
 
-def transform_drf_exception(exc: Any, current_field: Optional[str] = None) -> dict:
-    if isinstance(exc, APIException):
-        return transform_drf_exception(exc.detail, current_field)
-    elif isinstance(exc, str):
-        return {current_field or "non_field_error": exc}
-    elif isinstance(exc, dict):
-        collect = {}
-        for field, val in exc.items():
-            collect.update(transform_drf_exception(val, field))
-        return collect
-    elif isinstance(exc, list):
-        collect = {}
-        for val in exc:
-            collect.update(transform_drf_exception(val, current_field))
-        return collect
-    else:
-        raise NotImplementedError(f"Unable to handle {exc.__repr__()}")
-
-
-def dcf_exception_handler(exc: Any, context: Any) -> HttpResponse | None:
-    if isinstance(exc, APIException):
-        return JsonResponse(exc.get_full_details(), status=exc.status_code)
+def dcf_exception_handler(error: Any, context: Any) -> HttpResponse | None:
+    """
+    The client expects a error message matching the schema
+    {
+       "<field_name>": [
+           {
+               "code": "<code>",
+               "message": "<message>"
+           }
+       ],
+       // errors that are not specific to a field
+       "general_errors": ["<message>"]
+    }
+    """
+    if isinstance(error, APIException):
+        if isinstance(error.detail, str):
+            return JsonResponse(
+                {"general_errors": [str(error.detail)]},
+                status=error.status_code,
+            )
+        if isinstance(error.detail, (list, tuple)):
+            general_errors: List[str] = []
+            todo = list(error.detail)
+            while todo != []:
+                item = todo.pop(0)
+                if isinstance(item, str):
+                    general_errors.append(str(item))
+                elif isinstance(item, (list, tuple)):
+                    todo.extend(list(item))
+                elif isinstance(item, dict):
+                    todo.extend(list(item.values()))
+            return JsonResponse(
+                {"general_errors": general_errors},
+                status=error.status_code,
+            )
+        return JsonResponse(error.get_full_details(), status=error.status_code)
     else:
         # get default behavior
         from rest_framework.views import exception_handler
 
-        return exception_handler(exc, context)
+        return exception_handler(error, context)
 
 
 class ConvertAPIExceptionToJsonResponse:
