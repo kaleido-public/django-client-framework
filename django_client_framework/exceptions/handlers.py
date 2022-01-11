@@ -7,6 +7,20 @@ from django.http.response import HttpResponse
 from rest_framework.exceptions import APIException
 
 
+def flatten_to_list(data: Any) -> List[str]:
+    general_errors: List[str] = []
+    todo = [data]
+    while todo != []:
+        item = todo.pop(0)
+        if isinstance(item, str):
+            general_errors.append(str(item))
+        elif isinstance(item, (list, tuple)):
+            todo.extend(list(item))
+        elif isinstance(item, dict):
+            todo.extend(list(item.values()))
+    return general_errors
+
+
 def dcf_exception_handler(error: Any, context: Any) -> HttpResponse | None:
     """
     The client expects a error message matching the schema
@@ -28,20 +42,15 @@ def dcf_exception_handler(error: Any, context: Any) -> HttpResponse | None:
                 status=error.status_code,
             )
         if isinstance(error.detail, (list, tuple)):
-            general_errors: List[str] = []
-            todo = list(error.detail)
-            while todo != []:
-                item = todo.pop(0)
-                if isinstance(item, str):
-                    general_errors.append(str(item))
-                elif isinstance(item, (list, tuple)):
-                    todo.extend(list(item))
-                elif isinstance(item, dict):
-                    todo.extend(list(item.values()))
             return JsonResponse(
-                {"general_errors": general_errors},
+                {"general_errors": flatten_to_list(error.detail)},
                 status=error.status_code,
             )
+        if isinstance(error.detail, dict):
+            data = error.get_full_details()
+            if "general_errors" in error.detail:
+                data["general_errors"] = flatten_to_list(error.detail["general_errors"])
+            return JsonResponse(data, status=error.status_code)
         return JsonResponse(error.get_full_details(), status=error.status_code)
     else:
         # get default behavior

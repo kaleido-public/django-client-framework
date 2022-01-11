@@ -71,4 +71,5 @@ class TestPostCollection(TestCase):
         self.assertDictContainsSubset(
             {"code": "does_not_exist"},
             resp.json()["brand_id"][0],
+            resp.json(),
         )
