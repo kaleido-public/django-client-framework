@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Optional, Tuple, TypeVar, cast
+from typing import Any, Optional, Tuple, TypeVar, cast
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.search import SearchQuery
 from django.db import models as m
+from django.db.models import Model
 from django.db.models import Model as DjangoModel
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_delete, post_save
@@ -14,8 +15,6 @@ from django.dispatch import receiver
 
 from ..search_feature import SearchFeature
 from .model import DCFModel, IDCFModel
-from django.db.models import Model
-
 
 LOG = getLogger(__name__)
 
