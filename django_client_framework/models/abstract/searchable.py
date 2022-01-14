@@ -14,9 +14,7 @@ from django.dispatch import receiver
 
 from ..search_feature import SearchFeature
 from .model import DCFModel, IDCFModel
-
-if TYPE_CHECKING:
-    from django.db.models import Model
+from django.db.models import Model
 
 
 LOG = getLogger(__name__)
