@@ -125,10 +125,10 @@ class DCFFilterBackend(filters.BaseFilterBackend):
         When searching a publicly readable resource such as Product, anyone can
         filter the result by using a related query name, such as "seller__user".
         This immediately poses a security threat, because anyone can filter by a
-        query name such as "seller__user__token__key__startwith=abc", and
-        simply observe the length of the result, to poke the user's auth token.
-        (If the product result is non-empty, then you know the user's token
-        starts with abc.)
+        query name such as "seller__user__token__key__startwith=abc", and simply
+        observe the length of the result, to poke the user's auth token. (If the
+        product result is non-empty, then you know the user's token starts with
+        abc.)
 
         This is a safety feature that ensures the users can only filter a public
         resource via visible relations.
@@ -136,10 +136,13 @@ class DCFFilterBackend(filters.BaseFilterBackend):
             Product.objects.filter(seller__user__token__key__startwith="abc")
             becomes Product.objects.filter(
                 Q(seller__user__token__key__startwith="abc") &
-                Q(seller__in=visible_sellers) &
-                Q(seller__user__in=visible_users) &
-                Q(seller__user__token__in=visible_tokens)
+                Q(seller__in=visible_sellers_or_null) &
+                Q(seller__user__in=visible_users_or_null) &
+                Q(seller__user__token__in=visible_tokens_or_null)
             )
+
+        The null objects are included so that the following works:
+            Product.objects.filter(seller__user__token__isnull=True)
         """
 
         def build_queries(
@@ -177,7 +180,9 @@ class DCFFilterBackend(filters.BaseFilterBackend):
                             user,
                             QuerySet(model=cur_model).all(),
                         )
-                        node &= Q(**{prefix + "__in": visible})
+                        node &= Q(**{prefix + "__in": visible}) | Q(
+                            **{prefix + "__isnull": True}
+                        )
                         # adds Q(seller__in=visible_sellers)
             return node
 
