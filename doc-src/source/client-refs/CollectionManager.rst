@@ -156,9 +156,9 @@ erased during the runtime.
 
 
 
-.. _CollectionManager.get_or_create(...):
+.. _CollectionManager.getOrCreate(...):
 
-`method` .get_or_create `(query, defaults)`
+`method` .getOrCreate `(query, defaults)`
 ---------------------------------------------------
 
     First tries to :ref:`CollectionManager.get(...)` the object with the query
@@ -174,7 +174,7 @@ erased during the runtime.
 
         .. code-tab:: ts
 
-            let product: ObjectManager<Product> = await Product.objects.get_or_create({
+            let product: ObjectManager<Product> = await Product.objects.getOrCreate({
                 query: {
                     name: "xxyy",
                 },
@@ -188,14 +188,14 @@ erased during the runtime.
 
 
 
-.. _CollectionManager.update_or_create(...):
+.. _CollectionManager.updateOrCreate(...):
 
-`method` .update_or_create `(query, defaults)`
+`method` .updateOrCreate `(query, defaults)`
 ------------------------------------------------------
 
     First tries to :ref:`CollectionManager.get(...)` the object with the
     ``query`` dictionary. If the object does not exist, then it follows the
-    :ref:`CollectionManager.get_or_create(...)` logic. If the object already
+    :ref:`CollectionManager.getOrCreate(...)` logic. If the object already
     exists, then it updates the object with values in the ``defaults``
     dictionary. When updating, sends a ``PATCH`` request.
 
@@ -206,7 +206,7 @@ erased during the runtime.
 
         .. code-tab:: ts
 
-            let product: ObjectManager<Product> = await Product.objects.update_or_create({
+            let product: ObjectManager<Product> = await Product.objects.updateOrCreate({
                 query: {
                     name: "xxyy",
                 },

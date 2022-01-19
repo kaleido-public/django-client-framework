@@ -17,5 +17,13 @@ With docker, you can launch a local server by running:
     docker-compose build
     docker-compose up
 
+If you have ``make`` on your system, simply run
+
+.. code-block:: bash
+
+    make
+
+is also enough.
+
 Then visit ``http://localhost:12800`` for the documentation. The documentation
 automatically recompiles when the ``.rst`` files are modified.
