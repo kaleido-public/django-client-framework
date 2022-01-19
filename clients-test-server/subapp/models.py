@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import *
 from django.db.models import CASCADE, CharField, ForeignKey
 
 from django_client_framework.api import register_api_model
@@ -14,18 +16,18 @@ class Brand(DCFModel, Serializable, AccessControlled):
     name = CharField(max_length=16, blank=True)
 
     @classmethod
-    def get_serializer_class(cls, version, context):
+    def get_serializer_class(cls, version: str, context: Any) -> Type[BrandSerializer]:
         return BrandSerializer
 
     class PermissionManager(AccessControlled.PermissionManager):
-        def add_perms(self, brand):
+        def add_perms(self, brand: Brand) -> None:
             add_perms_shortcut(default_groups.anyone, brand, "rwcd")
 
 
 class BrandSerializer(DCFModelSerializer):
     class Meta:
         model = Brand
-        fields = ["id", "name"]
+        fields = ["id", "type", "created_at", "name"]
 
 
 @register_api_model
@@ -37,15 +39,17 @@ class Product(DCFModel, Serializable, AccessControlled):
     brand = ForeignKey("Brand", related_name="products", on_delete=CASCADE, null=True)
 
     @classmethod
-    def get_serializer_class(cls, version, context):
+    def get_serializer_class(
+        cls, version: str, context: Any
+    ) -> Type[ProductSerializer]:
         return ProductSerializer
 
     class PermissionManager(AccessControlled.PermissionManager):
-        def add_perms(self, product):
+        def add_perms(self, product: Product) -> None:
             add_perms_shortcut(default_groups.anyone, product, "rwcd")
 
 
 class ProductSerializer(DCFModelSerializer):
     class Meta:
         model = Product
-        fields = ["id", "barcode", "brand_id"]
+        fields = ["id", "type", "created_at", "barcode", "brand_id"]

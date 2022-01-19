@@ -7,7 +7,7 @@ from typing import Dict, List
 import click
 
 
-def github_repo_name():
+def github_repo_name() -> str:
     return os.environ["GITHUB_REPOSITORY"].split("/")[1]
 
 
@@ -125,7 +125,7 @@ def get_env() -> Dict[str, str]:
 
 @click.command()
 @click.option("-w", "--write", is_flag=True)
-def main(write):
+def main(write: bool) -> None:
     content = ""
     for key, val in get_env().items():
         content += f"{key}={val}\n"

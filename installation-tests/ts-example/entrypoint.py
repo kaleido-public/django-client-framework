@@ -1,21 +1,22 @@
 import shutil
+from typing import Any
 import unittest
 from pathlib import Path
-from subprocess import Popen, run
+from subprocess import CompletedProcess, Popen, run
 
 PROJ = Path("/_out")
 
 
-def debug():
+def debug() -> None:
     shell("sleep inf")
 
 
-def shell(cmd, **kwargs):
+def shell(cmd: str, **kwargs: Any) -> CompletedProcess:
     print(f"+ {cmd}", flush=True)
     return run(cmd, shell=True, text=True, check=True, **kwargs)
 
 
-def clear():
+def clear() -> None:
     for content in PROJ.iterdir():
         if content.is_dir():
             shutil.rmtree(content.absolute())
@@ -36,7 +37,7 @@ def django_runserver() -> Popen:
     return proc
 
 
-def installation():
+def installation() -> None:
     for cmd in [
         "cp /proj/* /_out",
         "yarn add https://github.com/kaleido-public/django-client-framework-typescript.git#staging",
@@ -45,16 +46,16 @@ def installation():
         shell(cmd, cwd=PROJ)
 
 
-def yarn_build():
+def yarn_build() -> None:
     shell("yarn build", cwd=PROJ)
 
 
-def run_app():
+def run_app() -> None:
     shell("node build/main.js", cwd=PROJ)
 
 
 class Test(unittest.TestCase):
-    def test_main(self):
+    def test_main(self) -> None:
         server = None
         try:
             clear()
