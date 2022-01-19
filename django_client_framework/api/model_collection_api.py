@@ -47,7 +47,7 @@ class ModelCollectionAPI(BaseModelAPI):
                 raise e.PermissionDenied("You have no permission to perform POST.")
 
     def get(self, *args: Any, **kwargs: Any) -> HttpResponse:
-        queryset = self.filter_queryset(self.get_queryset())
+        queryset = self.filter_queryset(self.queryset)
         assert self.paginator
         page: Iterable[Serializable] = self.paginator.paginate_queryset(
             queryset, self.request, view=self
