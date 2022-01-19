@@ -1,3 +1,5 @@
+# type: ignore
+
 from django.db.models import CASCADE, CharField, ForeignKey
 
 from django_client_framework.api import register_api_model
@@ -22,7 +24,7 @@ class Brand(DCFModel, Serializable, AccessControlled):
 class BrandSerializer(DCFModelSerializer):
     class Meta:
         model = Brand
-        fields = ["id", "name"]
+        fields = ["id", "type", "created_at", "name"]
 
 
 @register_api_model
@@ -42,4 +44,4 @@ class Product(DCFModel, Serializable, AccessControlled):
 class ProductSerializer(DCFModelSerializer):
     class Meta:
         model = Product
-        fields = ["id", "barcode", "brand_id"]
+        fields = ["id", "type", "created_at", "barcode", "brand_id"]
