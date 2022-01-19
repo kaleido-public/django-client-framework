@@ -251,7 +251,13 @@ generate_jsonschema = GenerateJsonSchemaDecorator()
 def check_integrity() -> None:
     for serializer_cls in DCFModelSerializer.__subclasses__():
         model = serializer_cls.Meta.model
-        for field_name in getattr(serializer_cls.Meta, "fields", []):
+        declared_fields = getattr(serializer_cls.Meta, "fields", [])
+        for must_present in ["id", "type", "created_at"]:
+            if must_present not in declared_fields:
+                raise NotImplementedError(
+                    f"You must add '{must_present}' to {serializer_cls.__name__}.Meta.fields"
+                )
+        for field_name in declared_fields:
             if field_name not in serializer_cls().fields:
                 raise NotImplementedError(
                     f"{field_name} in {serializer_cls.__name__}.Meta.fields is not a field"
@@ -265,9 +271,7 @@ def check_integrity() -> None:
                 raise NotImplementedError(
                     f"You must append '_id' to '{field_name}' in {serializer_cls.__name__}.Meta.fields."
                 )
-
-        for field_name in getattr(serializer_cls.Meta, "exclude", []):
-            if not get_model_field(model, field_name):
-                raise NotImplementedError(
-                    f"'{field_name}' in {serializer_cls.__name__}.Meta.exclude is not a field."
-                )
+        if hasattr(serializer_cls.Meta, "exclude"):
+            raise NotImplementedError(
+                f"Using exclude in {serializer_cls.__name__}.Meta is discouraged. Use fields instead."
+            )

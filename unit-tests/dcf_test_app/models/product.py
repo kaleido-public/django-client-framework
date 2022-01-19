@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import logging
-from typing import Any
+from typing import *
 
 from django.db.models.manager import Manager
 
@@ -23,11 +25,20 @@ class Product(DCFModel["Product"], Serializable["Product", Any]):
     brand_id: int
 
     @classmethod
-    def get_serializer_class(cls, version, context):
+    def get_serializer_class(
+        cls, version: str, context: Any
+    ) -> Type[ProductSerializer]:
         return ProductSerializer
 
 
 class ProductSerializer(DCFModelSerializer["Product", Any]):
     class Meta:
         model = Product
-        fields = ["id", "priority", "brand_id", "barcode"]
+        fields = [
+            "id",
+            "type",
+            "created_at",
+            "priority",
+            "brand_id",
+            "barcode",
+        ]
