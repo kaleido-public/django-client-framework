@@ -1,10 +1,10 @@
 import json
 import os
 import shutil
-from typing import Any
 import unittest
 from pathlib import Path
 from subprocess import CompletedProcess, Popen, SubprocessError, run
+from typing import Any
 
 from schema import Schema
 
@@ -259,7 +259,7 @@ class Test(unittest.TestCase):
             self.query_brand_product_list()
             zip_package()
 
-        except SubprocessError as err:
+        except SubprocessError:
             exit(1)
 
         finally:
