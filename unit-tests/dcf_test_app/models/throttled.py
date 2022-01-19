@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import *
 
 from django.db.models.query import QuerySet
 
@@ -16,7 +16,9 @@ class ThrottledModel(DCFModel, Serializable, RateLimited):
         pass
 
     @classmethod
-    def get_serializer_class(cls, version, context):
+    def get_serializer_class(
+        cls, version: str, context: Any
+    ) -> Type[ThrottledModelSerializer]:
         return ThrottledModelSerializer
 
     class RateManager(RateLimited.RateManager):
@@ -34,3 +36,8 @@ class ThrottledModel(DCFModel, Serializable, RateLimited):
 class ThrottledModelSerializer(DCFModelSerializer):
     class Meta:
         model = ThrottledModel
+        fields = [
+            "id",
+            "type",
+            "created_at",
+        ]
