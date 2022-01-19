@@ -1,3 +1,5 @@
+import os
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -20,7 +22,7 @@
 project = "Django Client Framework"
 copyright = "2021, Yu"
 author = "Yu"
-
+release = version = os.environ["DOC_VERSION"]
 
 # -- General configuration ---------------------------------------------------
 
@@ -63,6 +65,6 @@ html_css_files = ["custom.css"]
 
 extlinks = {
     "ts-class": ("/ts/classes/%s", ""),
-    "django": ("https://docs.djangoproject.com/en/3.1/ref/%s", ""),
+    "django": ("https://docs.djangoproject.com/en/4.0/ref/%s", ""),
     "drf": ("https://www.django-rest-framework.org/api-guide/%s", ""),
 }

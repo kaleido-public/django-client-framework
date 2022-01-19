@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>class Model &mdash; Django Client Framework 1.1.x documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/tabs.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Django Client Framework
+          </a>
+              <div class="version">
+                1.1.x
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/index.html">Introduction to the Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend-refs/index.html">Backend API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Client Libraries Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modify-this-document.html">Modify this documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Django Client Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><cite>class</cite> Model</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/client-refs/Model.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="class-model">
+<span id="model"></span><h1><cite>class</cite> Model<a class="headerlink" href="#class-model" title="Permalink to this headline"></a></h1>
+<p>Similar to the <a class="reference external" href="https://docs.djangoproject.com/en/4.0/ref/models/instances">Model class in Django</a>, <cite>Model</cite> is
+the base class of all user defined models in the frontend. The implementation
+varies between the frontend languages, but generally, the <cite>Model</cite> base class
+enforces the existance of an read-only <cite>id</cite> field. In addition, a <cite>Model</cite>
+subclass can be serialized/deserialized from/to an JSON representation.</p>
+<p><strong>Inheritance</strong></p>
+<dl class="simple">
+<dt>id <cite>(required)</cite></dt><dd><p>An <cite>id</cite> field must be defined. If the language allows, <cite>id</cite> should be read-only.</p>
+</dd>
+<dt><cite>static</cite> objects <cite>(optional)</cite></dt><dd><p>A static member of the <a href="#id1"><span class="problematic" id="id2">`CollectionManager`_</span></a> type for the model class, used
+to quickly access the <a href="#id3"><span class="problematic" id="id4">`CollectionManager`_</span></a> instead of having to create a
+new one.</p>
+</dd>
+<dt>Others</dt><dd><p>Any optional fields of native types, <a href="#id5"><span class="problematic" id="id6">`RelatedObjectManager`_</span></a>, or
+<a href="#id7"><span class="problematic" id="id8">`RelatedCollectionManager`_</span></a> types.</p>
+</dd>
+</dl>
+<p><strong>Example</strong></p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-0-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
+    <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="nx">brand_id</span>: <span class="kt">number?</span>
+    <span class="nx">get</span> <span class="nx">brand</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="ow">new</span> <span class="nx">RelatedObjectManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s2">&quot;brand&quot;</span><span class="p">)</span> <span class="p">}</span>
+    <span class="nx">get</span> <span class="nx">purchasers</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="ow">new</span> <span class="nx">RelatedCollectionManager</span><span class="p">(</span><span class="nx">Person</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s2">&quot;purchasers&quot;</span><span class="p">)</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Yu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

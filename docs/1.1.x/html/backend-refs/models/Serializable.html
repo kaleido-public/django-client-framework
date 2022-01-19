@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>class Serializable extends AbstractDCFModel &mdash; Django Client Framework 1.1.x documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Django Client Framework
+          </a>
+              <div class="version">
+                1.1.x
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction to the Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Backend API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client-refs/index.html">Client Libraries Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modify-this-document.html">Modify this documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Django Client Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><cite>class</cite> Serializable <cite>extends AbstractDCFModel</cite></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/backend-refs/models/Serializable.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="class-serializable-extends-abstractdcfmodel">
+<span id="serializable"></span><h1><cite>class</cite> Serializable <cite>extends AbstractDCFModel</cite><a class="headerlink" href="#class-serializable-extends-abstractdcfmodel" title="Permalink to this headline"></a></h1>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span>
+</pre></div>
+</div>
+<p>This abstract model class provides caches for serialization.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Any <a class="reference internal" href="../../client-refs/index.html#model"><span class="std std-ref">DCFModel</span></a> to be registered as an API must inherit this class.</p>
+</div>
+<p><strong>Inheritance</strong></p>
+<p>Subclasses of <a class="reference internal" href="#serializable">Serializable</a> must override <a class="reference internal" href="#serializable-get-serializer-class">Serializable.get_serializer_class(…)</a> which
+returns a <a href="#id1"><span class="problematic" id="id2">`DCFSerializer`_</span></a> class.</p>
+<div class="section" id="classmethod-get-serializer-class-cls-version-context">
+<span id="serializable-get-serializer-class"></span><h2><cite>classmethod</cite> .get_serializer_class <cite>(cls, version, context)</cite><a class="headerlink" href="#classmethod-get-serializer-class-cls-version-context" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p><cite>required</cite></p>
+<p>Override this method to return the <a href="#id3"><span class="problematic" id="id4">`DCFSerializer`_</span></a> class for the model.</p>
+<dl>
+<dt>Parameters:</dt><dd><dl>
+<dt><code class="docutils literal notranslate"><span class="pre">version</span></code></dt><dd><p>By default, this is a string <code class="docutils literal notranslate"><span class="pre">&quot;default&quot;</span></code>. If there’s a path
+parameter named <code class="docutils literal notranslate"><span class="pre">version</span></code> in the <cite>urls.py</cite> of the API route, this
+received the value of that argument. You can use this to return
+different serializers for different versions of the api.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># urls.py</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;/api/&lt;str:version&gt;/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">django_client_framework</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># models/product.py</span>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">):</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="s2">&quot;v2&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ProductSerializerV2</span>
+        <span class="k">return</span> <span class="n">ProductSerializer</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">context</span></code></dt><dd><p>See <a href="#id5"><span class="problematic" id="id6">`Context`_</span></a>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="method-get-serializer-self-version-context">
+<span id="serializable-serializer"></span><h2><cite>method</cite> .get_serializer <cite>(self, version, context)</cite><a class="headerlink" href="#method-get-serializer-self-version-context" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>An instance of the <a href="#id7"><span class="problematic" id="id8">`DCFSerializer`_</span></a> class returned by
+<a class="reference internal" href="#serializable-get-serializer-class">Serializable.get_serializer_class(…)</a>.</p>
+</div></blockquote>
+</div>
+<div class="section" id="classmethod-get-serialization-cache-timeout-cls">
+<span id="serializable-get-serialization-cache-timeout"></span><h2><cite>classmethod</cite> .get_serialization_cache_timeout <cite>(cls)</cite><a class="headerlink" href="#classmethod-get-serialization-cache-timeout-cls" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>Override this method to change how long to cache the serialized data in
+seconds. Setting to <code class="docutils literal notranslate"><span class="pre">0</span></code> disables the cache.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Yu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
