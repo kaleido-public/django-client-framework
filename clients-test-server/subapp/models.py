@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from typing import *
+
 from django.db.models import CASCADE, CharField, ForeignKey
 
 from django_client_framework.api import register_api_model

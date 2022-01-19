@@ -1,8 +1,8 @@
 import shutil
-from typing import Any
 import unittest
 from pathlib import Path
 from subprocess import CompletedProcess, Popen, run
+from typing import Any
 
 PROJ = Path("/_out")
 
