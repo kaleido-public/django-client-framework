@@ -213,8 +213,8 @@ a <code class="docutils literal notranslate"><span class="pre">POST</span></code
 </dl>
 </div></blockquote>
 </div>
-<div class="section" id="method-get-or-create-query-defaults">
-<span id="collectionmanager-get-or-create"></span><h2><cite>method</cite> .get_or_create <cite>(query, defaults)</cite><a class="headerlink" href="#method-get-or-create-query-defaults" title="Permalink to this headline"></a></h2>
+<div class="section" id="method-getorcreate-query-defaults">
+<span id="collectionmanager-getorcreate"></span><h2><cite>method</cite> .getOrCreate <cite>(query, defaults)</cite><a class="headerlink" href="#method-getorcreate-query-defaults" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><p>First tries to <a class="reference internal" href="index.html#collectionmanager-get"><span class="std std-ref">method .get (query)</span></a> the object with the query
 dictionary. If the object does not exist, then
@@ -226,7 +226,7 @@ not exist, then sends a <code class="docutils literal notranslate"><span class="
 </dd>
 </dl>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-3-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-3-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-3-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">product</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">get_or_create</span><span class="p">({</span>
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-3-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-3-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-3-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">product</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">getOrCreate</span><span class="p">({</span>
     <span class="nx">query</span><span class="o">:</span> <span class="p">{</span>
         <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;xxyy&quot;</span><span class="p">,</span>
     <span class="p">},</span>
@@ -241,12 +241,12 @@ not exist, then sends a <code class="docutils literal notranslate"><span class="
 </div></div>
 </div></blockquote>
 </div>
-<div class="section" id="method-update-or-create-query-defaults">
-<span id="collectionmanager-update-or-create"></span><h2><cite>method</cite> .update_or_create <cite>(query, defaults)</cite><a class="headerlink" href="#method-update-or-create-query-defaults" title="Permalink to this headline"></a></h2>
+<div class="section" id="method-updateorcreate-query-defaults">
+<span id="collectionmanager-updateorcreate"></span><h2><cite>method</cite> .updateOrCreate <cite>(query, defaults)</cite><a class="headerlink" href="#method-updateorcreate-query-defaults" title="Permalink to this headline"></a></h2>
 <blockquote>
 <div><p>First tries to <a class="reference internal" href="index.html#collectionmanager-get"><span class="std std-ref">method .get (query)</span></a> the object with the
 <code class="docutils literal notranslate"><span class="pre">query</span></code> dictionary. If the object does not exist, then it follows the
-<a class="reference internal" href="index.html#collectionmanager-get-or-create"><span class="std std-ref">method .get_or_create (query, defaults)</span></a> logic. If the object already
+<a class="reference internal" href="index.html#collectionmanager-getorcreate"><span class="std std-ref">method .getOrCreate (query, defaults)</span></a> logic. If the object already
 exists, then it updates the object with values in the <code class="docutils literal notranslate"><span class="pre">defaults</span></code>
 dictionary. When updating, sends a <code class="docutils literal notranslate"><span class="pre">PATCH</span></code> request.</p>
 <dl class="simple">
@@ -254,7 +254,7 @@ dictionary. When updating, sends a <code class="docutils literal notranslate"><s
 </dd>
 </dl>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-4-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-4-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-4-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-4-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">product</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">update_or_create</span><span class="p">({</span>
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-4-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-4-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-4-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-4-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">product</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">updateOrCreate</span><span class="p">({</span>
     <span class="nx">query</span><span class="o">:</span> <span class="p">{</span>
         <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;xxyy&quot;</span><span class="p">,</span>
     <span class="p">},</span>

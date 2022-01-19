@@ -71,9 +71,9 @@ this case:
 
 
 
-.. _RelatedCollectionManager.add_ids(...):
+.. _RelatedCollectionManager.addIDs(...):
 
-`method` .add_ids `(ids)`
+`method` .addIDs `(ids)`
 ----------------------------
 
     Creates object relations using object ids. It sends a ``POST`` request to
@@ -88,13 +88,13 @@ this case:
 
             let brand: ObjectManager<Brand> = ... // assumes id is 1
             let product: ObjectManager<Product> = ... // assumes id is 1
-            await brand.products.add_ids([product.id])
+            await brand.products.addIDs([product.id])
             // POST /brand/<id>/products [1]
 
 
-.. _RelatedCollectionManager.set_ids(...):
+.. _RelatedCollectionManager.setIDs(...):
 
-`method` .set_ids `(ids)`
+`method` .setIDs `(ids)`
 -------------------------------
 
     Clear the object relations first, before adding new ones using the object
@@ -110,13 +110,13 @@ this case:
 
             let brand: ObjectManager<Brand> = ... // assumes id is 1
             let product: ObjectManager<Product> = ... // assumes id is 1
-            await brand.products.set_ids([product.id])
+            await brand.products.setIDs([product.id])
             // PUT /brand/<id>/product [1]
 
 
-.. _RelatedCollectionManager.remove_ids(...):
+.. _RelatedCollectionManager.removeIDs(...):
 
-`method` .remove_ids `(ids)`
+`method` .removeIDs `(ids)`
 -------------------------------
 
     Removes object relations using object ids. The method only removes the
@@ -133,14 +133,14 @@ this case:
 
             let brand: ObjectManager<Brand> = ... // assumes id is 1
             let product: ObjectManager<Product> = ... // assumes id is 1
-            await brand.products.remove_ids([product.id])
+            await brand.products.removeIDs([product.id])
             // DELETE /brand/<id>/product [1]
 
 
 `method` .add `(objs)`
 --------------------------
 
-    Same as `RelatedCollectionManager.add_ids(...)`_ but takes a set of
+    Same as `RelatedCollectionManager.addIDs(...)`_ but takes a set of
     `ObjectManager`_ objects instead.
 
     objs
@@ -150,7 +150,7 @@ this case:
 `method` .set `(objs)`
 --------------------------
 
-    Same as `RelatedCollectionManager.set_ids(...)`_ but takes a set of
+    Same as `RelatedCollectionManager.setIDs(...)`_ but takes a set of
     `ObjectManager`_ objects instead.
 
     objs
@@ -160,7 +160,7 @@ this case:
 `method` .remove `(objs)`
 ---------------------------------
 
-    Same as `RelatedCollectionManager.remove_ids(...)`_ but takes a set of
+    Same as `RelatedCollectionManager.removeIDs(...)`_ but takes a set of
     `ObjectManager`_ objects instead.
 
     objs
