@@ -1,4 +1,4 @@
-default: clean
+default: reset
 	PYTHONPATH="./:../" poetry run coverage run --branch --source=../django_client_framework ./manage.py test --no-input -v2 -p "*.py"
 	poetry run coverage xml
 
@@ -14,8 +14,8 @@ alpine-base:
 sh: alpine-base
 	docker-compose run --rm unit-tests-ci sh
 
-.PHONY: clean
-clean:
+.PHONY: reset
+reset:
 	-cd dcf_test_app/migrations && rm -f 0001_initial.py
 	PYTHONPATH="./:../" poetry run ./manage.py makemigrations
 
@@ -27,6 +27,6 @@ Makefile:
 target %: argv = $(subst ., ,$@)
 target %: module = $(word 1, $(argv))
 target %: method = $(word 2, $(argv))
-%: clean
+%: reset
 	PYTHONPATH="./:../" poetry run coverage run --branch --source=../django_client_framework ./manage.py test --no-input -v2 -p "$(module).py" -k "$(method)"
 	poetry run coverage xml

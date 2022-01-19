@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List
+from typing import *
 
 from django.db import models as m
 from django.db.models.manager import Manager
@@ -23,11 +23,17 @@ class Brand(DCFModel["Brand"], Serializable):
     products: RelatedManager[Product]
 
     @classmethod
-    def get_serializer_class(cls, version, context):
+    def get_serializer_class(cls, version: str, context: Any) -> Type[BrandSerializer]:
         return BrandSerializer
 
 
 class BrandSerializer(DCFModelSerializer):
     class Meta:
         model = Brand
-        exclude: List[str] = []
+        fields = [
+            "id",
+            "type",
+            "created_at",
+            "name",
+            "priority",
+        ]
