@@ -108,7 +108,7 @@ class DCFJSONRenderer(JSONRenderer):
 
 
 class BaseModelAPI(GenericAPIView):
-    """base class for requests to /products or /products/1"""
+    """base class for requests to /products or /products/<id>"""
 
     renderer_classes = [DCFJSONRenderer]
     pagination_class = ApiPagination

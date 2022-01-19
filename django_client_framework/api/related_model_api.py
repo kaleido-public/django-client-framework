@@ -32,7 +32,7 @@ LOG = getLogger(__name__)
 
 
 class RelatedModelAPI(BaseModelAPI):
-    """handle requests such as GET/POST/PATCH /products/1/images"""
+    """handle requests such as GET/POST/PATCH /products/<id>/images"""
 
     @property
     def allowed_methods(self) -> List[str]:
