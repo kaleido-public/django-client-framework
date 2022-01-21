@@ -16,7 +16,7 @@ from rest_framework.fields import SerializerMethodField
 from rest_framework.fields import UUIDField as DRFUUIDField
 from rest_framework.serializers import BaseSerializer
 from rest_framework.serializers import ModelSerializer as DRFModelSerializer
-from rest_framework.serializers import PrimaryKeyRelatedField
+from rest_framework.serializers import PrimaryKeyRelatedField, empty
 from rest_framework.utils.model_meta import RelationInfo
 from rest_framework.validators import UniqueValidator
 
@@ -71,6 +71,29 @@ class IDCFModelSerializer(IDCFSerializer[T, D]):
 class DCFModelSerializer(
     DRFModelSerializer, DCFSerializer, __implements__, IDCFModelSerializer[T, D]
 ):
+    def __init__(
+        self,
+        instance: Optional[T] = None,
+        data: Any = empty,
+        many: bool = False,
+        read_only: bool = False,
+        partial: bool = False,
+        source: Optional[str] = None,
+        context: Any = {},
+        use_cache: bool = False,
+        locale: Optional[str] = None,
+    ) -> None:
+        super().__init__(
+            instance=instance,
+            data=data,
+            many=many,
+            read_only=read_only,
+            source=source,  # type: ignore
+            partial=partial,
+            context=context,
+            use_cache=use_cache,
+            locale=locale,
+        )
 
     instance: Optional[T]
     data: D  # type: ignore

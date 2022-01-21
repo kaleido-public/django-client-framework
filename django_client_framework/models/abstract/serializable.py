@@ -37,13 +37,13 @@ class ISerializable(IDCFModel[DCFModel], Generic[T, D]):
     @classmethod
     @abstractmethod
     def get_serializer_class(
-        cls, *, version: str, context: Dict[str, Any]
+        cls, *, version: str | None, context: Dict[str, Any]
     ) -> Type[DCFSerializer[T, D]]:
         ...
 
     @abstractmethod
     def get_serializer(
-        self, *, version: str, context: Dict[str, Any], **kwargs: Any
+        self, *, version: str | None, context: Dict[str, Any], **kwargs: Any
     ) -> DCFSerializer[T, D]:
         ...
 
@@ -51,7 +51,7 @@ class ISerializable(IDCFModel[DCFModel], Generic[T, D]):
     def json(
         self,
         *,
-        version: str,
+        version: str | None,
         context: Dict[str, Any] = {},
         serializer: Optional[DCFSerializer[T, D]] = None,
         ignore_cache: bool = False,
@@ -62,7 +62,7 @@ class ISerializable(IDCFModel[DCFModel], Generic[T, D]):
     def get_json(
         self,
         *,
-        version: str,
+        version: str | None,
         context: Dict[str, Any] = {},
         serializer: Optional[DCFSerializer[T, D]] = None,
     ) -> D:
@@ -72,23 +72,26 @@ class ISerializable(IDCFModel[DCFModel], Generic[T, D]):
 class Serializable(__implements__, ISerializable[T, D]):
     @classmethod
     def get_serializer_class(
-        cls, *, version: str, context: Dict[str, Any]
+        cls, *, version: str | None, context: Dict[str, Any]
     ) -> Type[DCFSerializer[T, D]]:
         raise NotImplementedError(
             f"{cls} must implement .get_serializer_class(version, context)"
         )
 
     def get_serializer(
-        self, *, version: str, context: Dict[str, Any], **kwargs: Any
+        self, *, version: str | None, context: Dict[str, Any], **kwargs: Any
     ) -> DCFSerializer[T, D]:
-        return self.get_serializer_class(version=version, context=context)(
-            instance=self, **kwargs
+        cls = self.get_serializer_class(version=version, context=context)
+        return cls(
+            instance=cast(T, self),
+            context=context,
+            **kwargs,
         )
 
     def json(
         self,
         *,
-        version: str,
+        version: str | None,
         context: Dict[str, Any] = {},
         serializer: Optional[DCFSerializer[T, D]] = None,
         ignore_cache: bool = False,
@@ -108,7 +111,7 @@ class Serializable(__implements__, ISerializable[T, D]):
     def get_json(
         self: T,
         *,
-        version: str,
+        version: str | None,
         context: Dict[str, Any] = {},
         serializer: Optional[DCFSerializer[T, D]] = None,
     ) -> D:
@@ -139,7 +142,7 @@ class Serializable(__implements__, ISerializable[T, D]):
     def cached_json(
         self,
         *,
-        version: str,
+        version: str | None,
         context: Dict[str, Any] = {},
         serializer: Optional[DCFSerializer[T, D]] = None,
     ) -> Any:
@@ -151,9 +154,7 @@ class Serializable(__implements__, ISerializable[T, D]):
                 serializer=serializer,
             )
 
-        if result := cache.get(
-            self.get_cache_key_for_serialization(version, context), None
-        ):
+        if result := cache.get(self.get_cache_key_for_serialization(context), None):
             return result
         else:
             data = self.get_json(
@@ -162,15 +163,13 @@ class Serializable(__implements__, ISerializable[T, D]):
                 serializer=serializer,
             )
             cache.add(
-                self.get_cache_key_for_serialization(version, context),
+                self.get_cache_key_for_serialization(context),
                 data,
                 timeout=timeout,
             )
             return data
 
-    def get_cache_key_for_serialization(
-        self, version: str, context: Dict[str, Any]
-    ) -> str:
+    def get_cache_key_for_serialization(self, context: Dict[str, Any]) -> str:
         # whenver one of the hashed content is changed, the cache misses, and a
         # re-serialization is forced.
         request = context["request"]
@@ -204,9 +203,7 @@ def check_integrity() -> None:
             )
 
     for model in Serializable.__subclasses__():
-        sercls: Type[Serializer] = model.get_serializer_class(
-            version="default", context={}
-        )
+        sercls: Type[Serializer] = model.get_serializer_class(version=None, context={})
         if not (
             issubclass(sercls, Serializer) or issubclass(sercls, DelegateSerializer)
         ):

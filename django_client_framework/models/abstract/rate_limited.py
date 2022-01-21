@@ -33,7 +33,7 @@ class RateLimited:
             queryset: QuerySet,
             user: DCFAbstractUser,
             action: str,
-            version: str,
+            version: str | None,
             context: Dict[str, Any],
         ) -> str:
             raise NotImplementedError(
@@ -55,7 +55,7 @@ class RateLimited:
             user: DCFAbstractUser,
             ipid: str,
             action: str,
-            version: str,
+            version: str | None,
             context: Dict[str, Any],
         ) -> str:
             return str(hash((queryset.model, user, ipid, action)))

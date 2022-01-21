@@ -10,6 +10,8 @@ from django_client_framework.api import register_api_model
 from django_client_framework.models import DCFModel, Serializable
 from django_client_framework.serializers.model_serializer import DCFModelSerializer
 
+from .brand import BrandSerializer
+
 LOG = logging.getLogger(__name__)
 
 
@@ -26,7 +28,7 @@ class Product(DCFModel["Product"], Serializable["Product", Any]):
 
     @classmethod
     def get_serializer_class(
-        cls, version: str, context: Any
+        cls, version: str | None, context: Any
     ) -> Type[ProductSerializer]:
         return ProductSerializer
 
@@ -41,8 +43,14 @@ class ProductSerializer(DCFModelSerializer["Product", Any]):
             "priority",
             "brand_id",
             "barcode",
+            "brand__data",
         ]
 
         deprecated = {
             "some-deprecated-field": "deprecated test",
         }
+
+    brand__data = BrandSerializer(
+        read_only=True,
+        use_cache=True,
+    )
