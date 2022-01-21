@@ -22,7 +22,6 @@ class DelegateSerializer(DCFSerializer[T, D]):
         self,
         instance: Optional[T] = None,
         data: Optional[D] = None,
-        *,
         context: Dict[str, Any] = {},
         **kwargs: Any,
     ) -> None:

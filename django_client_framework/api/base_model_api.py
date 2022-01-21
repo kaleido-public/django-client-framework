@@ -117,8 +117,8 @@ class BaseModelAPI(GenericAPIView):
     filter_backends = [DCFFilterBackend]
 
     @property
-    def version(self) -> str:
-        return getattr(self, "kwargs", {}).get("version", "default")
+    def version(self) -> str | None:
+        return getattr(self, "kwargs", {}).get("version")
 
     @cached_property
     def __name_to_model(self) -> Dict[str, Type[ISerializable]]:
@@ -251,9 +251,9 @@ class BaseModelAPI(GenericAPIView):
     def get_serializer_context(self) -> Dict[str, Any]:
         context = super().get_serializer_context()
         view = context.get("view")
-        locale = "default"
+        locale = None
         if kwargs := getattr(view, "kwargs"):
-            locale = kwargs.get("locale", "default")
+            locale = kwargs.get("locale")
         context.update(
             {
                 "version": self.version,

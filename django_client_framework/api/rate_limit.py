@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict
 
 from django.db.models import QuerySet
@@ -14,7 +16,7 @@ class DefaultRateManager(RateLimited.RateManager):
         queryset: QuerySet,
         user: DCFAbstractUser,
         action: str,
-        version: str,
+        version: str | None,
         context: Dict[str, Any],
     ) -> str:
         return default

@@ -23,7 +23,9 @@ class Brand(DCFModel["Brand"], Serializable):
     products: RelatedManager[Product]
 
     @classmethod
-    def get_serializer_class(cls, version: str, context: Any) -> Type[BrandSerializer]:
+    def get_serializer_class(
+        cls, version: str | None, context: Any
+    ) -> Type[BrandSerializer]:
         return BrandSerializer
 
 
