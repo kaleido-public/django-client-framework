@@ -38,6 +38,10 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
         data = super().to_representation(instance)
         if self._get_deprecated() != {}:
             data["@deprecated"] = self._get_deprecated()
+        for dk in self._get_deprecated().keys():
+            if dk in data:
+                val = data.pop(dk)
+                data[dk + "@deprecated"] = val
         if "type" in data:
             data.move_to_end("type", last=False)
         if "id" in data:
