@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>class RelatedCollectionManager &lt;T:Model, P:Model&gt; &mdash; Django Client Framework 1.2.x documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/tabs.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Django Client Framework
+          </a>
+              <div class="version">
+                1.2.x
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/index.html">Introduction to the Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend-refs/index.html">Backend API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Client Libraries Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modify-this-document.html">Modify this documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Django Client Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><cite>class</cite> RelatedCollectionManager <cite>&lt;T:Model, P:Model&gt;</cite></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/client-refs/RelatedCollectionManager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="class-relatedcollectionmanager-t-model-p-model">
+<span id="relatedcollectionmanager"></span><h1><cite>class</cite> RelatedCollectionManager <cite>&lt;T:Model, P:Model&gt;</cite><a class="headerlink" href="#class-relatedcollectionmanager-t-model-p-model" title="Permalink to this headline"></a></h1>
+<p>A generic class where <code class="docutils literal notranslate"><span class="pre">T</span></code> and <code class="docutils literal notranslate"><span class="pre">P</span></code> are constrained by <a href="#id1"><span class="problematic" id="id2">`Model`_</span></a>. This class
+provides the ability access and modify many-to-one or many-to-many object
+relations.</p>
+<p><strong>Constructor</strong></p>
+<p>Implementation varies. Most commonly, three values are passed into the constructor:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>The constructor of <code class="docutils literal notranslate"><span class="pre">T</span></code>, the model to be retrieved via the manager.</p></li>
+<li><p>The manager’s parent object of type <code class="docutils literal notranslate"><span class="pre">P</span></code>. Usually, this is the <code class="docutils literal notranslate"><span class="pre">this</span></code> keyword.</p></li>
+<li><p>The property’s name on the model.</p></li>
+</ol>
+</div></blockquote>
+<p>For instance, for the <cite>Product</cite> and <cite>Brand</cite> relation, a brand has many products. In
+this case:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>The constructor of <code class="docutils literal notranslate"><span class="pre">T</span></code> is <code class="docutils literal notranslate"><span class="pre">Product</span></code>.</p></li>
+<li><p>The <cite>parent</cite> is the brand object.</p></li>
+<li><p>Finally, the property’s name on <code class="docutils literal notranslate"><span class="pre">Brand</span></code> is <code class="docutils literal notranslate"><span class="pre">products</span></code>.</p></li>
+</ol>
+</div></blockquote>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-0-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">Brand</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+    <span class="nx">get</span> <span class="nx">products</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="ow">new</span> <span class="nx">RelatedCollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s2">&quot;products&quot;</span><span class="p">)</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="method-page-query-pagination-disamb-relatedcollectionmanager">
+<span id="relatedcollectionmanager-page1"></span><h2><cite>method</cite> .page <cite>(query, pagination)</cite> <code class="docutils literal notranslate"><span class="pre">disamb-RelatedCollectionManager</span></code><a class="headerlink" href="#method-page-query-pagination-disamb-relatedcollectionmanager" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>This method is agnostic to <a href="#id3"><span class="problematic" id="id4">`CollectionManager.page(...)`_</span></a>, but to retrieve a
+collection of related model objects. It sends a <code class="docutils literal notranslate"><span class="pre">GET</span></code> request to the
+server.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-1-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-1-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-1-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">brand</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Brand</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">...</span> <span class="c1">// assumes id is 1</span>
+<span class="kd">let</span> <span class="nx">products</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">brand</span><span class="p">.</span><span class="nx">products</span><span class="p">.</span><span class="nx">page</span><span class="p">({</span>
+    <span class="nx">query</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">name__contains</span><span class="o">:</span> <span class="s2">&quot;xy&quot;</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+<span class="c1">// GET /brand/&lt;id&gt;/products?name__contains=xy</span>
+</pre></div>
+</div>
+</div></div>
+</div></blockquote>
+</div>
+<div class="section" id="method-get-query-pagination">
+<span id="relatedcollectionmanager-get"></span><h2><cite>method</cite> .get <cite>(query, pagination)</cite><a class="headerlink" href="#method-get-query-pagination" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>This method is agnostic to <a href="#id5"><span class="problematic" id="id6">`CollectionManager.get(...)`_</span></a>, but to retrieve a
+collection of related model objects. It sends a <code class="docutils literal notranslate"><span class="pre">GET</span></code> request to the
+server.</p>
+</div></blockquote>
+</div>
+<div class="section" id="method-addids-ids">
+<span id="relatedcollectionmanager-addids"></span><h2><cite>method</cite> .addIDs <cite>(ids)</cite><a class="headerlink" href="#method-addids-ids" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>Creates object relations using object ids. It sends a <code class="docutils literal notranslate"><span class="pre">POST</span></code> request to
+the server.</p>
+<dl class="simple">
+<dt>ids</dt><dd><p>The ids of the objects to be added to the collection.</p>
+</dd>
+</dl>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-2-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-2-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-2-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">brand</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Brand</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">...</span> <span class="c1">// assumes id is 1</span>
+<span class="kd">let</span> <span class="nx">product</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">...</span> <span class="c1">// assumes id is 1</span>
+<span class="k">await</span> <span class="nx">brand</span><span class="p">.</span><span class="nx">products</span><span class="p">.</span><span class="nx">addIDs</span><span class="p">([</span><span class="nx">product</span><span class="p">.</span><span class="nx">id</span><span class="p">])</span>
+<span class="c1">// POST /brand/&lt;id&gt;/products [1]</span>
+</pre></div>
+</div>
+</div></div>
+</div></blockquote>
+</div>
+<div class="section" id="method-setids-ids">
+<span id="relatedcollectionmanager-setids"></span><h2><cite>method</cite> .setIDs <cite>(ids)</cite><a class="headerlink" href="#method-setids-ids" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>Clear the object relations first, before adding new ones using the object
+ids. It sends a <code class="docutils literal notranslate"><span class="pre">PUT</span></code> request to the server.</p>
+<dl class="simple">
+<dt>ids</dt><dd><p>The ids of the objects to be used as the collection.</p>
+</dd>
+</dl>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-3-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-3-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-3-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">brand</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Brand</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">...</span> <span class="c1">// assumes id is 1</span>
+<span class="kd">let</span> <span class="nx">product</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">...</span> <span class="c1">// assumes id is 1</span>
+<span class="k">await</span> <span class="nx">brand</span><span class="p">.</span><span class="nx">products</span><span class="p">.</span><span class="nx">setIDs</span><span class="p">([</span><span class="nx">product</span><span class="p">.</span><span class="nx">id</span><span class="p">])</span>
+<span class="c1">// PUT /brand/&lt;id&gt;/product [1]</span>
+</pre></div>
+</div>
+</div></div>
+</div></blockquote>
+</div>
+<div class="section" id="method-removeids-ids">
+<span id="relatedcollectionmanager-removeids"></span><h2><cite>method</cite> .removeIDs <cite>(ids)</cite><a class="headerlink" href="#method-removeids-ids" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>Removes object relations using object ids. The method only removes the
+relation. It does not delete the objects. It sends a <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> request to
+the server.</p>
+<dl class="simple">
+<dt>ids</dt><dd><p>The ids of the objects to be removed from the collection.</p>
+</dd>
+</dl>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-4-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-4-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-4-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-4-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">brand</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Brand</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">...</span> <span class="c1">// assumes id is 1</span>
+<span class="kd">let</span> <span class="nx">product</span>: <span class="kt">ObjectManager</span><span class="o">&lt;</span><span class="nx">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">...</span> <span class="c1">// assumes id is 1</span>
+<span class="k">await</span> <span class="nx">brand</span><span class="p">.</span><span class="nx">products</span><span class="p">.</span><span class="nx">removeIDs</span><span class="p">([</span><span class="nx">product</span><span class="p">.</span><span class="nx">id</span><span class="p">])</span>
+<span class="c1">// DELETE /brand/&lt;id&gt;/product [1]</span>
+</pre></div>
+</div>
+</div></div>
+</div></blockquote>
+</div>
+<div class="section" id="method-add-objs">
+<h2><cite>method</cite> .add <cite>(objs)</cite><a class="headerlink" href="#method-add-objs" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>Same as <a class="reference internal" href="#relatedcollectionmanager-addids">RelatedCollectionManager.addIDs(…)</a> but takes a set of
+<a href="#id7"><span class="problematic" id="id8">`ObjectManager`_</span></a> objects instead.</p>
+<dl class="simple">
+<dt>objs</dt><dd><p>A set of <a href="#id9"><span class="problematic" id="id10">`ObjectManager`_</span></a> objects whose ids are added to the collection.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="method-set-objs">
+<h2><cite>method</cite> .set <cite>(objs)</cite><a class="headerlink" href="#method-set-objs" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>Same as <a class="reference internal" href="#relatedcollectionmanager-setids">RelatedCollectionManager.setIDs(…)</a> but takes a set of
+<a href="#id11"><span class="problematic" id="id12">`ObjectManager`_</span></a> objects instead.</p>
+<dl class="simple">
+<dt>objs</dt><dd><p>A set of <a href="#id13"><span class="problematic" id="id14">`ObjectManager`_</span></a> objects whose ids are set as the collection.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="method-remove-objs">
+<h2><cite>method</cite> .remove <cite>(objs)</cite><a class="headerlink" href="#method-remove-objs" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>Same as <a class="reference internal" href="#relatedcollectionmanager-removeids">RelatedCollectionManager.removeIDs(…)</a> but takes a set of
+<a href="#id15"><span class="problematic" id="id16">`ObjectManager`_</span></a> objects instead.</p>
+<dl class="simple">
+<dt>objs</dt><dd><p>A set of <a href="#id17"><span class="problematic" id="id18">`ObjectManager`_</span></a> objects whose ids are removed from the
+collection.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Yu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
