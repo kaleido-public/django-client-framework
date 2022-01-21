@@ -178,7 +178,7 @@ class DelegateSerializer(DCFSerializer[T, D]):
 
     @cached_property
     def data(self) -> D:  # type: ignore
-        return dict(self.read_delegate.data)  # type: ignore
+        return self.read_delegate.data
 
     def to_representation(self, instance: T) -> D:
         return self.read_delegate.to_representation(instance)
