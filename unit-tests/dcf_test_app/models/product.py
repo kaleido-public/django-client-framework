@@ -42,3 +42,7 @@ class ProductSerializer(DCFModelSerializer["Product", Any]):
             "brand_id",
             "barcode",
         ]
+
+        deprecated = {
+            "some-deprecated-field": "deprecated test",
+        }

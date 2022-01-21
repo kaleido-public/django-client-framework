@@ -35,11 +35,16 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
         return super().save(**kwargs)
 
     def to_representation(self, instance: T) -> D:
-        return cast(D, dict(super().to_representation(instance)))
-
-    @property
-    def data(self) -> D:  # type: ignore
-        return cast(D, dict(super().data))
+        data = super().to_representation(instance)
+        if self._get_deprecated() != {}:
+            data["@deprecated"] = self._get_deprecated()
+        if "type" in data:
+            data.move_to_end("type", last=False)
+        if "id" in data:
+            data.move_to_end("id", last=False)
+        if "@deprecated" in data:
+            data.move_to_end("@deprecated", last=True)
+        return data
 
     def delete(self, instance: T) -> None:
         instance.delete()
@@ -56,3 +61,8 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
     def delete_obj(self) -> None:
         assert self.instance is not None
         self.delete(self.instance)
+
+    def _get_deprecated(self) -> Dict[str, str]:
+        if _meta := getattr(self, "Meta", None):
+            return getattr(_meta, "deprecated", {})
+        return {}

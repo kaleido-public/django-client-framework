@@ -37,3 +37,7 @@ class BrandSerializer(DCFModelSerializer):
             "name",
             "priority",
         ]
+
+        deprecated = {
+            "some-deprecated-field": "deprecated test",
+        }

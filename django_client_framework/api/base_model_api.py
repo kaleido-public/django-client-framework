@@ -96,7 +96,7 @@ class DCFJSONRenderer(JSONRenderer):
 
         ret = orjson.dumps(
             data,
-            option=orjson.OPT_SORT_KEYS | orjson.OPT_NON_STR_KEYS,
+            option=orjson.OPT_NON_STR_KEYS,
             default=JSONEncoder().default,
         )
 
