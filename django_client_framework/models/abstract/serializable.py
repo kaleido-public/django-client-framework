@@ -173,12 +173,17 @@ class Serializable(__implements__, ISerializable[T, D]):
     ) -> str:
         # whenver one of the hashed content is changed, the cache misses, and a
         # re-serialization is forced.
-        return "serialization_cache_" + str(
-            hash(
-                [self._meta.model_name, self.id, version, context]
-                + self.get_extra_content_to_hash()
-            )
+        request = context["request"]
+        key = "_".join(
+            [
+                "serialization",
+                request.method,
+                request.get_full_path(),
+                str(self.id),
+            ]
+            + self.get_extra_content_to_hash()
         )
+        return key
 
 
 def check_integrity() -> None:
