@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from functools import lru_cache
 from logging import getLogger
 from typing import Any, Dict, List, Optional, Type, cast
 from uuid import UUID
@@ -10,6 +11,8 @@ from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models.base import Model
 from django.db.models.fields import Field
+from django.db.models.fields.related import ForeignKey, ManyToManyField
+from django.db.models.fields.reverse_related import ManyToManyRel, ManyToOneRel
 from django.db.models.query import QuerySet
 from django.http.request import QueryDict
 from django.http.response import HttpResponse
@@ -25,6 +28,7 @@ from rest_framework.throttling import BaseThrottle
 from rest_framework.utils.encoders import JSONEncoder
 from rest_framework.views import APIView
 
+from django_client_framework import permissions as p
 from django_client_framework.api.rate_limit import DefaultRateManager
 from django_client_framework.models.abstract.model import IDCFModel
 from django_client_framework.models.abstract.user import DCFAbstractUser
@@ -33,6 +37,7 @@ from .. import exceptions as e
 from ..models import get_user_model
 from ..models.abstract.rate_limited import RateLimited
 from ..models.abstract.serializable import ISerializable
+from ..models.abstract.user import DCFAbstractUser
 from ..permissions.site_permission import has_perms_shortcut
 from ..serializers import DCFSerializer
 from .filter_backend import DCFFilterBackend
@@ -44,10 +49,10 @@ class APIPermissionDenied(Exception):
     def __init__(
         self,
         model_or_instance: Type[IDCFModel] | IDCFModel,
-        perm: str,
+        perms: str,
         field: Optional[str] = None,
     ) -> None:
-        self.perm = perm
+        self.perms = perms
         self.model_or_instance = model_or_instance
         self.field = field
 
@@ -122,7 +127,7 @@ class BaseModelAPI(GenericAPIView):
 
     @cached_property
     def __name_to_model(self) -> Dict[str, Type[ISerializable]]:
-        return {self.__model_name(model): model for model in self.models}
+        return {self.__model_name(model): model for model in self.models}  # type:ignore
 
     @overrides(APIView)
     def dispatch(self, request: Any, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -168,14 +173,13 @@ class BaseModelAPI(GenericAPIView):
             )
         return self.__name_to_model[model_name]
 
+    @lru_cache
     def __model_name(self, model: Type[ISerializable]) -> str:
         return model._meta.model_name or model._meta.label_lower.split(".")[-1]
 
-    def get_model_field(self, key: str, default: Any = None) -> Optional[Field]:
-        try:
-            return self.model._meta.get_field(key)
-        except FieldDoesNotExist:
-            return default
+    @lru_cache
+    def get_model_field(self, key: str) -> Field | None:
+        return self._get_field(self.model.as_model_type(), key)
 
     @cached_property
     def model_object(self) -> ISerializable:
@@ -196,7 +200,7 @@ class BaseModelAPI(GenericAPIView):
             "c": "create",
             "d": "delete",
         }
-        action = shortcuts[error.perm]
+        actions = [shortcuts[x] for x in error.perms]
         if isinstance(error.model_or_instance, Model):
             inst: Model = error.model_or_instance
             target = f"{inst._meta.model_name}({inst.pk})"
@@ -216,11 +220,11 @@ class BaseModelAPI(GenericAPIView):
         msg_only_debug = "(DEBUG=True) " if settings.DEBUG else ""
         if error.field:
             raise e.PermissionDenied(
-                f"{msg_only_debug}You have no {action} permission on {target}'s {error.field} field."
+                f"{msg_only_debug}You have no {actions} permission on {target}'s {error.field} field."
             )
         else:
             raise e.PermissionDenied(
-                f"{msg_only_debug}You have no {action} permission on {target}."
+                f"{msg_only_debug}You have no {actions} permission on {target}."
             )
 
     @property
@@ -274,3 +278,100 @@ class BaseModelAPI(GenericAPIView):
         if issubclass(self.model, RateLimited):
             return [self.model.get_ratemanager(self.request, self)]
         return [DefaultRateManager(self.model, self.request, self)]
+
+    @classmethod
+    def check_3way_permissions(
+        cls,
+        user: DCFAbstractUser,
+        model_object: IDCFModel,
+        field_name: str,
+        new_vals: QuerySet,
+        perms: str,
+    ) -> None:
+        """Check user's permission on three things:
+
+        1. The object's field (field_name)
+        2. Each old related object (field on the reverse side)
+        3. Each new related object (field on the reverse side)
+        """
+
+        field = cls._get_field(model_object._meta.model, field_name)
+        assert isinstance(
+            field,
+            (
+                ManyToManyRel,
+                ManyToManyField,
+                ManyToOneRel,
+                ForeignKey,
+            ),
+        )
+
+        if not p.has_perms_shortcut(
+            user,
+            model_object,
+            perms,
+            field_name=field_name,
+        ):
+            raise APIPermissionDenied(model_object, perms, field=field_name)
+
+        old_vals = cls._get_field_as_queryset(model_object, field_name)
+        diff_remove = old_vals.difference(new_vals)
+        diff_add = new_vals.difference(old_vals)
+        # Django doesn't support calling .filter() after .union() and
+        # .difference()
+        symmetric_diff_pks = diff_add.union(diff_remove).values_list("pk")
+        diff_queryset: QuerySet = QuerySet(model=field.related_model).filter(
+            pk__in=symmetric_diff_pks
+        )
+
+        cls.__check_perms_for_each(
+            user,
+            diff_queryset,
+            field_name=field.remote_field.name,
+            perms=perms,
+        )
+
+    @staticmethod
+    def __check_perms_for_each(
+        user: DCFAbstractUser, queryset: QuerySet, *, field_name: str, perms: str
+    ) -> None:
+        """For each object in the queryset, check whether the user has write
+        permission on the field."""
+        has_perm = p.filter_queryset_by_perms_shortcut(
+            perms, user, queryset, field_name
+        )
+        no_perm = queryset.difference(has_perm).first()
+        if no_perm:
+            raise APIPermissionDenied(no_perm, perms, field_name)
+
+    @classmethod
+    def _get_field_as_queryset(
+        cls, model_object: IDCFModel, field_name: str
+    ) -> QuerySet:
+        """Get the relation field's value of the object as a queryset."""
+        field = cls._get_field(model_object._meta.model, field_name)
+        if field is None:
+            return QuerySet().none()
+        elif isinstance(
+            field, ForeignKey
+        ):  # eg. Product.brand_id, or Product.brand (object)
+            field_val = getattr(model_object, field_name)
+            if isinstance(field_val, Model):
+                field_val = field_val.pk
+            return QuerySet(model=field.related_model).filter(pk=field_val)
+        elif isinstance(
+            field, (ManyToOneRel, ManyToManyField, ManyToManyRel)
+        ):  # eg. Brand.products
+            field_val = getattr(model_object, field_name)
+            return field_val.all()
+        else:
+            raise NotImplementedError(f"Unknown type {field}.")
+
+    @staticmethod
+    @lru_cache
+    def _get_field(model: Type[Model], field_name: str) -> Field | None:
+        """Gets the field from the model."""
+        try:
+            return model._meta.get_field(field_name)
+        except FieldDoesNotExist:
+            return None

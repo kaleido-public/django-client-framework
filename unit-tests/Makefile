@@ -1,5 +1,8 @@
+.EXPORT_ALL_VARIABLES:
+PYTHONPATH="./:../"
+
 default: reset
-	PYTHONPATH="./:../" poetry run coverage run --branch --source=../django_client_framework ./manage.py test --no-input -v2 -p "*.py"
+	poetry run coverage run --branch --source=../django_client_framework ./manage.py test --no-input -v2 -p "*.py"
 	poetry run coverage xml
 
 .PHONY: ci
@@ -17,16 +20,28 @@ sh: alpine-base
 .PHONY: reset
 reset:
 	-cd dcf_test_app/migrations && rm -f 0001_initial.py
-	PYTHONPATH="./:../" poetry run ./manage.py makemigrations
+	poetry run ./manage.py makemigrations
 
 .PHONY: Makefile
 Makefile:
 	@echo
 
+target debug: argv = $(subst ., ,$(MAKECMDGOALS))
+target debug: module = $(word 2, $(argv))
+target debug: method = $(word 3, $(argv))
+debug:
+	poetry run python -m debugpy --listen 5678 --wait-for-client ./manage.py test --no-input -v2 -p "$(module).py" -k "$(method)"
+
+target debugmode: argv = $(subst ., ,$(MAKECMDGOALS))
+target debugmode: module = $(word 2, $(argv))
+target debugmode: method = $(word 3, $(argv))
+debugmode:
+	poetry run coverage run --branch --source=../django_client_framework ./manage.py test --debug-mode --no-input -v2 -p "$(module).py" -k "$(method)"
+	poetry run coverage xml
 
 target %: argv = $(subst ., ,$@)
 target %: module = $(word 1, $(argv))
 target %: method = $(word 2, $(argv))
-%: reset
-	PYTHONPATH="./:../" poetry run coverage run --branch --source=../django_client_framework ./manage.py test --no-input -v2 -p "$(module).py" -k "$(method)"
+%:
+	poetry run coverage run --branch --source=../django_client_framework ./manage.py test --no-input -v2 -p "$(module).py" -k "$(method)"
 	poetry run coverage xml

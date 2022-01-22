@@ -3,6 +3,7 @@ from __future__ import annotations
 from logging import getLogger
 from typing import Any, List, Type
 
+from django.db.models import QuerySet
 from django.db.models.deletion import ProtectedError
 from django.db.models.fields.related import ForeignKey
 from django.http.request import HttpRequest
@@ -63,43 +64,41 @@ class ModelObjectAPI(BaseModelAPI):
             partial=True,
         )
         serializer.is_valid(raise_exception=True)
-        # User can have either write permission to model, object, or to a field
-        # check permission for related objects
+        # User must have write permission on the field being modified.
         for field_name, field_val in serializer.validated_data.items():
-            field = self.get_model_field(field_name, None)
+            # Note that in case field_name is a foreign key, there are two
+            # cases:
+            #   1. brand
+            #   2. brand_id
+            # If the field_name is brand then field_val is usually a brand
+            # object. If the field name is brand_id, then field val is UUID.
+            field = self.get_model_field(field_name)
             if not field:
                 continue
-            if not p.has_perms_shortcut(
+            # For foreign keys, user must have 3-way permissions. See
+            # .check_3way_permissions().
+            if isinstance(field, ForeignKey):
+                field_name = field.name  # this removes "_id"
+                if isinstance(field_val, DCFModel):
+                    field_val_pk = field_val.pk
+                else:
+                    field_val_pk = field_val
+                new_related_obj: QuerySet = QuerySet(model=field.related_model).filter(
+                    pk=field_val_pk
+                )
+                if not new_related_obj.exists():
+                    raise e.NotFound(f"Related object {field_val_pk} does not exist.")
+                self.check_3way_permissions(
+                    self.user_object,
+                    self.model_object,
+                    field_name,
+                    new_related_obj,
+                    "w",
+                )
+            elif not p.has_perms_shortcut(
                 self.user_object, self.model_object, "w", field_name
             ):
                 raise APIPermissionDenied(self.model_object, "w", field=field_name)
-            if isinstance(field, ForeignKey):
-                old_related_obj = getattr(self.model_object, field_name, None)
-                new_related_obj = field_val
-                for related_obj in filter(
-                    bool, [old_related_obj, new_related_obj]
-                ):  # remove None
-                    assert related_obj
-                    if not p.has_perms_shortcut(
-                        self.user_object,
-                        related_obj,
-                        "w",
-                        field_name=field.related_query_name(),
-                    ):
-                        if p.has_perms_shortcut(
-                            self.user_object,
-                            related_obj,
-                            "r",
-                            field_name=field.related_query_name(),
-                        ):
-                            raise e.PermissionDenied(
-                                f"To change related field {field_name},"
-                                f" you need write permission on object {related_obj.pk}.",
-                            )
-                        else:
-                            raise e.NotFound(
-                                f"Related object {related_obj.pk} does not exist."
-                            )
         # when permited
         serializer.save()
 

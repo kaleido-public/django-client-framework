@@ -66,10 +66,8 @@ class TestPostCollection(TestCase):
             "/product",
             {"barcode": "unique", "brand_id": UUID(int=200)},
         )
-        self.assertEqual(400, resp.status_code)
+        self.assertEqual(400, resp.status_code, resp.content)
         self.assertEquals(0, Product.objects.count())
-        self.assertDictContainsSubset(
-            {"code": "does_not_exist"},
-            resp.json()["brand_id"][0],
-            resp.json(),
+        self.assertContains(
+            resp, "does not exist", status_code=400, msg_prefix=str(resp.content)
         )
