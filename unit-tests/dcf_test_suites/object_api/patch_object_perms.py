@@ -93,7 +93,7 @@ class TestPatchPerms(TestCase):
         self.assertEquals(404, resp.status_code)
 
     def test_patch_fk_no_permissions_except_product_w(self) -> None:
-        p.add_perms_shortcut(self.user, Product, "w", field_name="brand_id")
+        p.add_perms_shortcut(self.user, Product, "w", field_name="brand")
         resp = self.user_client.patch(
             f"/product/{self.pr1.id}",
             {
@@ -113,7 +113,7 @@ class TestPatchPerms(TestCase):
             },
             format="json",
         )
-        self.assertEquals(403, resp.status_code)
+        self.assertEquals(403, resp.status_code, resp.content)
 
     def test_patch_fk_correct_perms(self) -> None:
         p.add_perms_shortcut(self.user, Product, "w", field_name="brand")

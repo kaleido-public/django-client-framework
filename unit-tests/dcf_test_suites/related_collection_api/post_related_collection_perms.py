@@ -71,7 +71,7 @@ class TestPostPerms(TestCase):
         self.assertEqual(0, self.brand.products.count())  # product is not updated
         self.assertEquals(
             data,
-            f"You have no write permission on product({self.product.id})'s brand field.",
+            f"You have no ['write'] permission on product({self.product.id})'s brand field.",
         )
 
     def test_no_child_perm(self) -> None:
@@ -106,7 +106,7 @@ class TestPostPerms(TestCase):
         self.assertEquals(403, resp.status_code)
         self.assertEquals(
             data,
-            f"You have no write permission on brand({self.brand.id})'s products field.",
+            f"You have no ['write'] permission on brand({self.brand.id})'s products field.",
         )
         self.assertIsNone(self.product.brand_id)  # product is not updated
         self.assertEqual(0, self.brand.products.count())  # product is not updated
@@ -125,10 +125,8 @@ class TestPostPerms(TestCase):
             format="json",
         )
         self.assertEquals(200, resp.status_code)
-        data = resp.json()
-        self.assertEqual(
-            data["message"],
-            "Action was successful but you have no permission to view the result.",
+        self.assertContains(
+            resp, "Action was successful but you have no permission to view the result."
         )
         self.product.refresh_from_db()
         self.assertEquals(self.brand, self.product.brand, "product should be updated")

@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from logging import getLogger
 from typing import Any, Iterable, List, Type
 
+from django.db.models import QuerySet
 from django.db.models.fields.related import ForeignKey
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
@@ -9,10 +12,10 @@ from rest_framework.exceptions import APIException
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.schemas.openapi import AutoSchema
-from rest_framework.views import APIView
 
 from django_client_framework import exceptions as e
 from django_client_framework import permissions as p
+from django_client_framework.models import DCFModel
 from django_client_framework.models.abstract.serializable import Serializable
 from django_client_framework.serializers.serializer import DCFSerializer
 
@@ -40,12 +43,6 @@ class ModelCollectionAPI(BaseModelAPI):
 
     allowed_methods: List[str] = ["GET", "POST"]
 
-    @overrides(APIView)
-    def check_permissions(self, request: HttpRequest) -> None:
-        if request.method == "POST":
-            if not p.has_perms_shortcut(self.user_object, self.model, "c"):
-                raise e.PermissionDenied("You have no permission to perform POST.")
-
     def get(self, *args: Any, **kwargs: Any) -> HttpResponse:
         queryset = self.filter_queryset(self.queryset)
         assert self.paginator
@@ -65,17 +62,45 @@ class ModelCollectionAPI(BaseModelAPI):
         )
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if not p.has_perms_shortcut(self.user_object, self.model, "c"):
+            raise e.PermissionDenied("You have no permission to perform POST.")
         serializer = self.get_serializer(data=self.request_data)
         serializer.is_valid(raise_exception=True)
-        # make sure user write permission to related fields
-        for field_name, field_instance in serializer.validated_data.items():
-            model_field = self.get_model_field(field_name)
-            if model_field and isinstance(model_field, ForeignKey) and field_instance:
-                related_name = model_field.related_query_name()
-                if not p.has_perms_shortcut(
-                    self.user_object, field_instance, "w", field_name=related_name
-                ):
-                    raise APIPermissionDenied(field_instance, "w", field=related_name)
+        # Make sure user has related field's write permission for each related
+        # object
+        for field_name, field_value in serializer.validated_data.items():
+            field = self.get_model_field(field_name)
+            if field and isinstance(field, ForeignKey) and field_value:
+                # Note that in case field_name is a foreign key, there are two
+                # cases:
+                #   1. brand
+                #   2. brand_id
+                # If the field_name is brand then field_val is usually a brand
+                # object. If the field name is brand_id, then field val is UUID.
+                new_related_obj: None | DCFModel
+                if isinstance(field_value, DCFModel):
+                    new_related_obj = field_value
+                else:
+                    new_related_obj = (
+                        QuerySet(model=field.related_model)
+                        .filter(pk=field_value)
+                        .first()
+                    )
+                if new_related_obj is None:
+                    raise e.NotFound(f"Related object {field_value} does not exist.")
+                else:
+                    # Make sure the related object's related name can be
+                    # written. For example, for product/<id>/brand, this is
+                    # checking if brand.products can be written.
+                    if not p.has_perms_shortcut(
+                        self.user_object,
+                        new_related_obj,
+                        "w",
+                        field_name=field.remote_field.name,
+                    ):
+                        raise APIPermissionDenied(
+                            new_related_obj, "w", field=field.remote_field.name
+                        )
 
         instance = serializer.save()
         if p.has_perms_shortcut(self.user_object, instance, "r"):

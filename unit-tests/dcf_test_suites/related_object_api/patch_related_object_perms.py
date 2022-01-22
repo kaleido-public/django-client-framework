@@ -31,7 +31,7 @@ class TestPatchPerms(TestCase):
             data=self.br2.id,
             format="json",
         )
-        self.assertEqual(403, resp.status_code)
+        self.assertEqual(403, resp.status_code, resp.content)
 
     def test_patch_only_parent_permission(self) -> None:
         p.add_perms_shortcut(self.user, Product, "w")
@@ -63,11 +63,8 @@ class TestPatchPerms(TestCase):
         self.pr1.refresh_from_db()
         self.assertEqual(self.br2, self.pr1.brand)
         self.assertEqual(resp.status_code, 200)
-        self.assertDictContainsSubset(
-            {
-                "message": "Action was successful but you have no permission to view the result."
-            },
-            resp.json(),
+        self.assertContains(
+            resp, "Action was successful but you have no permission to view the result."
         )
 
     def test_correct_patch_perms_no_read_v2(self) -> None:
@@ -81,11 +78,8 @@ class TestPatchPerms(TestCase):
         self.pr1.refresh_from_db()
         self.assertEqual(self.br2, self.pr1.brand)
         self.assertEqual(resp.status_code, 200)
-        self.assertDictContainsSubset(
-            {
-                "message": "Action was successful but you have no permission to view the result."
-            },
-            resp.json(),
+        self.assertContains(
+            resp, "Action was successful but you have no permission to view the result."
         )
 
     def test_correct_patch_perms_can_read(self) -> None:

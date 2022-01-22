@@ -31,8 +31,9 @@ class TestPatchObject(TestCase):
             f"/product/{self.pr.id}", {"barcode": "newbarcode", "brand_id": UUID(int=3)}
         )
         self.assertEqual(400, resp.status_code, resp.content)
-        data = resp.json()
-        self.assertEquals("does_not_exist", data["brand_id"][0]["code"])
+        self.assertContains(
+            resp, "does not exist", status_code=400, msg_prefix=str(resp.content)
+        )
 
     def test_patch_invalid_keys(self) -> None:
         resp = self.superuser_client.patch(

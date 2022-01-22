@@ -55,7 +55,7 @@ class TestPaginationPerms(TestCase):
         )
         self.assertEqual(403, resp.status_code)
         self.assertEqual(
-            f"You have no write permission on brand({self.brand.id})'s products field.",
+            f"You have no ['write'] permission on brand({self.brand.id})'s products field.",
             resp.json(),
         )
         # unchanged
@@ -96,7 +96,7 @@ class TestPaginationPerms(TestCase):
         )
         self.assertEqual(403, resp.status_code, resp.json())
         self.assertEqual(
-            f"You have no write permission on product({self.old_product.id})'s brand field.",
+            f"You have no ['write'] permission on product({self.old_product.id})'s brand field.",
             resp.json(),
         )
         # unchanged
@@ -117,7 +117,7 @@ class TestPaginationPerms(TestCase):
         )
         self.assertEqual(403, resp.status_code, resp.json())
         self.assertEqual(
-            f"You have no write permission on product({self.product.id})'s brand field.",
+            f"You have no ['write'] permission on product({self.product.id})'s brand field.",
             resp.json(),
         )
         # unchanged
