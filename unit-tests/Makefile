@@ -7,7 +7,10 @@ default: reset
 
 .PHONY: ci
 ci: alpine-base
-	docker-compose run --rm unit-tests-ci ./manage.py test --no-input -v2 -p "*.py"
+	docker-compose run --rm unit-tests-ci bash -c " \
+		./manage.py makemigrations &&\
+		./manage.py test --no-input -v2 -p '*.py' \
+	"
 
 .PHONY: alpine-base
 alpine-base:
