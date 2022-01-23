@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, cast
+from typing import *
 from uuid import UUID
 
 from django.core.exceptions import FieldDoesNotExist
+from django.db.models import Field as DjangoField
 from django.db.models.base import Model
-from django.db.models.fields import Field
 from django.db.models.fields import UUIDField as DjangoUUIDField
 from django.db.models.fields.related import ForeignKey
 from django.db.models.query import QuerySet
@@ -31,8 +31,27 @@ if TYPE_CHECKING:
 
 LOG = getLogger(__name__)
 
+"""Summary of how DRF Serializers work internally:
 
-def get_model_field(model: Type[Model], key: str) -> Optional[Field]:
+    Serializers can be assigned with fields, and serializers are fields
+    themselves, so you can use a Serializer as a field like this:
+
+    class ExampleSerializer(Serializer):
+
+        example = ExampleSerializer2(read_only=True)
+
+    When calling .is_valid(), the following happens:
+
+    1. .run_validation() on the current serializer is called
+    2. Inside .run_validation(), .to_internal_value() is called
+    3. For each field, .to_internal_value() recursively calls the field's .run_validation()
+    4. .to_internal_value() returns the validated_data
+    5. The serializer's .validate() is called with validated_data
+    6. Finally, .run_validation() returns the validated_data
+"""
+
+
+def get_model_field(model: Type[Model], key: str) -> Optional[DjangoField]:
     try:
         return model._meta.get_field(key)
     except FieldDoesNotExist:
@@ -141,8 +160,15 @@ class DCFModelSerializer(
 
     @overrides(DRFModelSerializer)
     def get_extra_kwargs(self) -> Dict[str, Any]:
-        """Adds support for Meta.required_fields."""
         extra_kwargs = super().get_extra_kwargs()
+        extra_kwargs = self.__read_meta_required_fields(extra_kwargs)
+        extra_kwargs = self.__make_id_writable_for_create(extra_kwargs)
+        return extra_kwargs
+
+    def __read_meta_required_fields(
+        self, extra_kwargs: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Adds support for Meta.required_fields."""
         extra_required = getattr(self.Meta, "required_fields", None)
         if extra_required is not None:
             if not isinstance(extra_required, (list, tuple)):
@@ -154,6 +180,11 @@ class DCFModelSerializer(
                 kwargs = extra_kwargs.get(field_name, {})
                 kwargs["required"] = True
                 extra_kwargs[field_name] = kwargs
+        return extra_kwargs
+
+    def __make_id_writable_for_create(
+        self, extra_kwargs: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Make the ID field also write-able for creating an UUID."""
         extra_kwargs.setdefault("id", {})
         if self.instance:  # Update

@@ -37,7 +37,6 @@ from .. import exceptions as e
 from ..models import get_user_model
 from ..models.abstract.rate_limited import RateLimited
 from ..models.abstract.serializable import ISerializable
-from ..models.abstract.user import DCFAbstractUser
 from ..permissions.site_permission import has_perms_shortcut
 from ..serializers import DCFSerializer
 from .filter_backend import DCFFilterBackend
