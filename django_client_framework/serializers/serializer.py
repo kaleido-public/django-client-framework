@@ -33,7 +33,7 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
         partial: bool = False,
         source: Optional[str] = None,
         context: Any = {},
-        use_cache: bool = False,
+        prefer_cache: bool = False,
         locale: Optional[str] = None,
     ) -> None:
         super().__init__(
@@ -45,7 +45,7 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
             partial=partial,
             context=context,
         )
-        self.use_cache = use_cache
+        self.prefer_cache = prefer_cache
         self.locale = locale or context.get("locale")
         context["locale"] = self.locale
 
@@ -70,14 +70,18 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
                 # Forces Serializable to use this serialzer. If the cache
                 # doesn't exist, .to_representation() will be called by
                 # Serializable.
-                serializer=self,
+                serializer=self.__class__(
+                    instance=cast(T, instance),
+                    read_only=True,
+                    prefer_cache=False,
+                ),
             )
         raise TypeError(
-            "Must be a Serializable instance when the serializer is initialized with use_cache=True."
+            "Must be a Serializable instance when the serializer is initialized with prefer_cache=True."
         )
 
     def to_representation(self, instance: T) -> D:
-        if self.use_cache:
+        if self.prefer_cache:
             return self.to_representation_cached(instance)
         else:
             data = super().to_representation(instance)

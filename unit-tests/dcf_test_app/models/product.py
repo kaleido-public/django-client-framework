@@ -52,5 +52,5 @@ class ProductSerializer(DCFModelSerializer["Product", Any]):
 
     brand__data = BrandSerializer(
         read_only=True,
-        use_cache=True,
+        prefer_cache=True,
     )

@@ -154,7 +154,10 @@ class Serializable(__implements__, ISerializable[T, D]):
                 serializer=serializer,
             )
 
-        if result := cache.get(self.get_cache_key_for_serialization(context), None):
+        if result := cache.get(
+            self.get_cache_key_for_serialization(version, context),
+            None,
+        ):
             return result
         else:
             data = self.get_json(
@@ -163,21 +166,22 @@ class Serializable(__implements__, ISerializable[T, D]):
                 serializer=serializer,
             )
             cache.add(
-                self.get_cache_key_for_serialization(context),
+                self.get_cache_key_for_serialization(version, context),
                 data,
                 timeout=timeout,
             )
             return data
 
-    def get_cache_key_for_serialization(self, context: Dict[str, Any]) -> str:
+    def get_cache_key_for_serialization(
+        self, version: str | None, context: Dict[str, Any]
+    ) -> str:
         # whenver one of the hashed content is changed, the cache misses, and a
         # re-serialization is forced.
-        request = context["request"]
+        sercls = self.get_serializer_class(version=version, context=context)
         key = "_".join(
             [
                 "serialization",
-                request.method,
-                request.get_full_path(),
+                sercls.__qualname__,
                 str(self.id),
             ]
             + self.get_extra_content_to_hash()
