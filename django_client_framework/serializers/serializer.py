@@ -73,7 +73,7 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
                 serializer=self,
             )
         raise TypeError(
-            f"Must be a Serializable instance when the serializer is initialized with use_cache=True."
+            "Must be a Serializable instance when the serializer is initialized with use_cache=True."
         )
 
     def to_representation(self, instance: T) -> D:
