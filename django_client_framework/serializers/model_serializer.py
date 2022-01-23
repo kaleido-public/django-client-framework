@@ -99,7 +99,7 @@ class DCFModelSerializer(
         partial: bool = False,
         source: Optional[str] = None,
         context: Any = {},
-        use_cache: bool = False,
+        prefer_cache: bool = False,
         locale: Optional[str] = None,
     ) -> None:
         super().__init__(
@@ -110,7 +110,7 @@ class DCFModelSerializer(
             source=source,  # type: ignore
             partial=partial,
             context=context,
-            use_cache=use_cache,
+            prefer_cache=prefer_cache,
             locale=locale,
         )
 
