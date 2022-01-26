@@ -51,3 +51,13 @@ class DCFAbstractUser(DjangoAbstractUser, __implements__, IDCFModel[T]):
     @classmethod
     def get_anonymous(cls) -> T:
         raise NotImplementedError()
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}: {self.pk}>"
+
+    def __str__(self) -> str:
+        return f"<{self.__class__.__name__}: {self.pk}>"
+
+
+DjangoAbstractUser.__str__ = DCFAbstractUser.__str__  # type: ignore
+DjangoAbstractUser.__str__ = DCFAbstractUser.__repr__  # type: ignore

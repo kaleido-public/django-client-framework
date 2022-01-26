@@ -100,12 +100,10 @@ def update_searchfeature_on_change(sender: Any, instance: Any, **kwargs: Any) ->
     SearchFeature in order to update the search index.
     """
     if isinstance(instance, Searchable):
-        LOG.debug(f"{sender=} {instance=}")
         instance.update_or_create_searchfeature()
 
 
 @receiver(post_delete)
 def delete_searchfeature_on_delete(sender: Any, instance: Any, **kwargs: Any) -> None:
     if isinstance(instance, Searchable):
-        LOG.debug(f"{sender=} {instance=}")
         instance.search_feature.all().delete()  # type: ignore

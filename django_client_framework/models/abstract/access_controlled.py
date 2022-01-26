@@ -4,11 +4,9 @@ from abc import abstractmethod
 from logging import getLogger
 from typing import Any, Generic, Type, TypeVar, cast
 
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Model as DjangoModel
 from django.db.models.manager import BaseManager
 from django.db.models.signals import post_save
-from guardian.models import UserObjectPermission
 
 from django_client_framework.models.abstract.model import DCFModel, IDCFModel
 
@@ -35,16 +33,11 @@ class AccessControlled(DjangoModel, IAccessControlled[T]):
 
     objects: BaseManager[T]
 
-    userobjectpermissions = GenericRelation(
-        UserObjectPermission, object_id_field="object_pk"  # type: ignore
-    )
-
     class PermissionManager(Generic[_T]):
         def add_perms(self, instance: _T) -> None:
             raise NotImplementedError()
 
         def reset_perms(self, instance: _T) -> None:
-            LOG.debug(f"resetting permission for {instance}")
             cast(Any, instance).userobjectpermissions.all().delete()
             self.add_perms(instance)
 
@@ -80,15 +73,6 @@ class AccessControlled(DjangoModel, IAccessControlled[T]):
             dispatch_uid=f"{cls.__name__}.update_permission_on_change",
         )
         return super().__init_subclass__()
-
-    @classmethod
-    def register_signals(cls) -> None:
-        for child in cls.__subclasses__():
-            post_save.connect(
-                update_permission_on_change,
-                sender=child,
-                dispatch_uid=f"{cls.__name__}.update_permission_on_change",
-            )
 
 
 def update_permission_on_change(

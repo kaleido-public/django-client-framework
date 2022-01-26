@@ -41,7 +41,6 @@ def install(
 ) -> None:
     INSTALLED_APPS += [
         "rest_framework",
-        "guardian",
         "django_client_framework.apps.DefaultApp",
     ]
     MIDDLEWARE += [
@@ -55,7 +54,6 @@ def install(
         }
     )
     AUTHENTICATION_BACKENDS += [
-        "guardian.backends.ObjectPermissionBackend",
         "django.contrib.auth.backends.ModelBackend",
     ]
 
