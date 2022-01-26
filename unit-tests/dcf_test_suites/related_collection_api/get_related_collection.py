@@ -84,6 +84,7 @@ class TestPagination(TestCase):
         resp = self.superuser_client.get(
             f"/brand/{self.brand.id}/products?_page=3&_limit=30&_order_by=priority"
         )
+        self.assertEqual(200, resp.status_code, resp.content)
         data = resp.json()
         self.assertDictContainsSubset(
             {"page": 3, "limit": 30, "objects_count": 100}, data
