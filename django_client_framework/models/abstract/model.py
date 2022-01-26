@@ -5,6 +5,7 @@ from abc import abstractmethod
 from typing import *
 from uuid import UUID, uuid4
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Model as DjangoModel
 from django.db.models.fields import DateTimeField, UUIDField
 from django.db.models.manager import BaseManager
@@ -43,11 +44,11 @@ class IDCFModel(Generic[T]):
         ...
 
     def as_model(self) -> T:
-        return cast(T, self)
+        return self  # type:ignore
 
     @classmethod
     def as_model_type(cls) -> Type[T]:
-        return cast(Type[T], cls)
+        return cls  # type:ignore
 
 
 class __implements__:
@@ -63,6 +64,18 @@ class DCFModel(DjangoModel, __implements__, IDCFModel[T]):
     objects: BaseManager[T]
     id = UUIDField(unique=True, primary_key=True, default=uuid4, editable=False)
     created_at = DateTimeField(auto_now_add=True)
+    userobjectpermissions = GenericRelation(
+        "django_client_framework.UserObjectPermission", object_id_field="object_pk"  # type: ignore
+    )
+    groupobjectpermissions = GenericRelation(
+        "django_client_framework.GroupObjectPermission", object_id_field="object_pk"  # type: ignore
+    )
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}: {self.pk}>"
+
+    def __str__(self) -> str:
+        return f"<{self.__class__.__name__}: {self.pk}>"
 
     @classmethod
     def from_model(cls, model: T) -> DCFModel[T]:

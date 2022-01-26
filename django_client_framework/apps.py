@@ -1,4 +1,6 @@
+from black import Any
 from django.apps import AppConfig
+from django.db.models import signals
 
 
 class DefaultApp(AppConfig):
@@ -18,9 +20,8 @@ class DefaultApp(AppConfig):
         from django.conf import settings
 
         from . import models  # noqa
-        from .models.abstract import AccessControlled
 
-        AccessControlled.register_signals()
+        signals.post_migrate.connect(post_migrate, sender=self)
 
         if settings.DEBUG:
             from . import api, serializers
@@ -28,3 +29,10 @@ class DefaultApp(AppConfig):
             api.check_integrity()
             models.check_integrity()
             serializers.check_integrity()
+
+
+def post_migrate(*args: Any, **kwargs: Any) -> None:
+    from .permissions import default_groups, default_users
+
+    default_groups.setup()
+    default_users.setup()

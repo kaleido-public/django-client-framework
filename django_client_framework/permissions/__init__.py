@@ -1,3 +1,3 @@
-from .default_groups import DefaultGroups, register_default_group
-from .default_users import DefaultUsers, register_default_user
+from .groups import DefaultGroups, default_groups, register_default_group
 from .site_permission import *
+from .users import DefaultUsers, default_users, register_default_user

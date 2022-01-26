@@ -22,6 +22,7 @@ def do_nothing(user: DCFAbstractUser) -> None:
 class DefaultUsers:
 
     usernames: Dict[str, Callable[[Any], None]] = {}
+    anonymous: DCFAbstractUser
 
     def __getattr__(self, name: str) -> DCFAbstractUser:
         if name in self.usernames:
@@ -30,13 +31,10 @@ class DefaultUsers:
             raise AttributeError(f"{name} is not a default user")
 
     def setup(self) -> None:
+        DefaultUsers.usernames.setdefault("anonymous", do_nothing)
         for name, config_func in self.usernames.items():
             user = get_user_model().objects.get_or_create(username=name)[0]
             config_func(user)
-
-    @property
-    def anonymous(self) -> DCFAbstractUser:
-        return get_user_model().get_anonymous()
 
 
 default_users = DefaultUsers()

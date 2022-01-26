@@ -1,19 +1,9 @@
 from __future__ import annotations
 
+from functools import reduce
 from logging import getLogger
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Iterator,
-    List,
-    Literal,
-    Optional,
-    Type,
-    TypeVar,
-    cast,
-    overload,
-)
+from operator import concat
+from typing import Any, Iterable, List, Optional, Sequence, Type, TypeVar, cast
 
 from deprecation import deprecated
 from django.contrib.auth.models import AbstractUser, Group, Permission
@@ -22,14 +12,11 @@ from django.db import models as m
 from django.db import transaction
 from django.db.models.base import ModelBase
 from django.db.models.query import QuerySet
-from guardian import models as gm
-from guardian import shortcuts as gs
 
-from django_client_framework.models import get_user_model
 from django_client_framework.models.abstract.model import DCFModel, IDCFModel
 
-from ..models.abstract.access_controlled import AccessControlled, IAccessControlled
-from .default_groups import default_groups
+from ..models import AccessControlled, GroupObjectPermission, UserObjectPermission
+from .groups import default_groups
 
 LOG = getLogger(__name__)
 
@@ -37,161 +24,255 @@ T = TypeVar("T", bound=IDCFModel)
 M = TypeVar("M", bound=DCFModel)
 
 
-@overload
 def get_permission_for_model(
     shortcut: str,
-    model: Type[IDCFModel],
+    model: Type[m.Model],
     *,
-    string: Literal[True],
-    field_name: str | None,
-) -> str:
-    ...
-
-
-@overload
-def get_permission_for_model(
-    shortcut: str,
-    model: Type[IDCFModel],
-    *,
-    string: Literal[False],
     field_name: str | None,
 ) -> Permission:
-    ...
-
-
-def get_permission_for_model(
-    shortcut: str,
-    model: Type[IDCFModel],
-    *,
-    string: bool,
-    field_name: Optional[str],
-) -> str | Permission:
     """
     Returns permission object for model and field.
-    If string is True, then returns the Permission object's full codename as string.
     """
     action_shortcuts = {
-        "r": "view",
-        "w": "change",
-        "c": "add",
+        "r": "read",
+        "w": "write",
+        "c": "create",
         "d": "delete",
     }
     action = action_shortcuts[shortcut]
-    c = ContentType.objects.get_for_model(
-        model.as_model_type(), for_concrete_model=False
-    )
+    c = ContentType.objects.get_for_model(model, for_concrete_model=False)
     if field_name:
         if not model._meta.get_field(field_name):
             raise AttributeError(
                 f'field named "{field_name}" not found on model {model}'
             )
         p, _created = Permission.objects.get_or_create(
-            content_type=c, codename=f"{action}_{model._meta.model_name}__{field_name}"
+            content_type=c, codename=f"{action}_{model._meta.model_name}_{field_name}"
         )
     else:
         p, _created = Permission.objects.get_or_create(
             content_type=c, codename=f"{action}_{model._meta.model_name}"
         )
-    if string:
-        return f"{c.app_label}.{p.codename}"
-    else:
-        return p
+    return p
 
 
 def filter_queryset_by_perms_shortcut(
     perms: str,
-    user_or_group: AbstractUser | Group,
+    identity: AbstractUser | Group,
     queryset: QuerySet[M],
     field_name: str | None = None,
 ) -> QuerySet[M]:
-    r"""
-    Filters queryset by keeping objects that user_or_group has all permissions
-    specified by perms. If field_name is specified, additionally include objects
-    that user_or_group has field permission on.
+    """Filters queryset by keeping objects that identity has all
+    permissions specified by perms. If field_name is specified, additionally
+    include objects that identity has field permission on.
 
-    Algorithm:
-        perms: rwcd \in {0,1}^4
-        with/no field: f \in {0,1}
-        normal/anyone user: u \in {0,1}
-        A0 = filter with rwcd mask, f=0
-        A1 = filter with rwcd mask, f=1
-        B0 = A0 union A1, g=0
-        B1 = A0 union A1, g=1
-        B0 union B1
+    How to visuaize this as a gragh problem: for instance, for group (user is
+    analogous)
+
+    There are 4 sets of nodes: groups objects (G), GroupObjectPermission objects
+    (GOP), Permission objects (P), and model objects (O).
+
+    Each node in GOP is connect to exactly one of the nodes in G, one of the
+    nodes in O, and one of the nodes in P.
+
+    To include model level permissions, edges betwwen (G,P), and edgets betwen
+    (O,P) are allowed. Whenever there's an edge between (G,P), the edge's node
+    in P is connected to all O nodes.
+
+    A .filter() method can be viewed as finding the maximal subset of nodes by
+    the connectivity to any other subset of nodes.
+
+    Given an input containing a subset of G, and a subset of P, then a subset of
+    GOP is determined.
+
+    The goal is to find the maximal subset of O such each node is connected to
+    every nodes in the input P nodes via one of the determined GOP nodes, or is
+    directly connected to P.
     """
-    union = queryset.none()
-    for u in set([user_or_group, default_groups.anyone]):  # B
-        for f in set([None, field_name]):  # A
-            perm_full_strs = [
-                get_permission_for_model(s, queryset.model, string=True, field_name=f)
-                for s in perms.lower()
-            ]
-            fn = cast(
-                Callable[..., QuerySet],
-                (
-                    gs.get_objects_for_group  # type: ignore
-                    if isinstance(u, Group)
-                    else gs.get_objects_for_user
-                ),
+    required_permissions: List[List[Permission]] = []
+    for s in perms:
+        any_of = [get_permission_for_model(s, queryset.model, field_name=None)]
+        if field_name is not None:
+            any_of.append(
+                get_permission_for_model(s, queryset.model, field_name=field_name)
             )
-            union |= fn(
-                u,
-                perms=perm_full_strs,
-                accept_global_perms=True,
-                any_perm=False,
-                klass=queryset,  # filter
-            )
-    return union
+        required_permissions.append(any_of)
+
+    if isinstance(identity, Group):
+        return _filter_for_groups(
+            required_permissions,
+            Group.objects.filter(pk__in=[identity.pk, default_groups.anyone.pk]),
+            queryset,
+        )
+    else:
+        if _user_has_superpower(identity):
+            return queryset
+        qs_user = _filter_for_user(required_permissions, identity, queryset)
+        qs_grp = _filter_for_groups(
+            required_permissions,
+            Group.objects.filter(
+                pk__in=[
+                    *identity.groups.values_list("pk", flat=True),
+                    default_groups.anyone.pk,
+                ]
+            ),
+            queryset,
+        )
+        return QuerySet(model=queryset.model).filter(
+            id__in=qs_user.union(qs_grp).values_list("id", flat=True)
+        )
+
+
+def _filter_for_groups(
+    required_perms: Sequence[Sequence[Permission]],
+    groups: QuerySet[Group],
+    queryset: QuerySet[M],
+) -> QuerySet[M]:
+    """Build a query for filtering by permission (in conjunctive normal
+    form: disjunctive for the nested list, conjunctive for outer list) of
+    the groups (disjunctive)."""
+    gops = GroupObjectPermission.objects.filter(
+        group__in=groups,
+        permission__in=reduce(concat, required_perms),
+    )  # shouldn't hit db
+    check_gop = False
+    for pls in required_perms:
+        # if user has model level permission then remove the corresponding GOP.
+        if groups.filter(permissions__in=pls).exists():
+            gops = gops.exclude(permission__in=pls)  # shouldn't hit db
+        else:
+            check_gop = True
+    if check_gop:
+        # should hit db once for fetching gops
+        return queryset.filter(groupobjectpermissions__in=gops)
+    else:
+        return queryset
+
+
+def _filter_for_user(
+    required_perms: Sequence[Sequence[Permission]],
+    user: AbstractUser,
+    queryset: QuerySet[M],
+) -> QuerySet[M]:
+    """Build a query for filtering by permission (in conjunctive normal
+    form: disjunctive for the nested list, conjunctive for outer list) of
+    the user."""
+    uops = UserObjectPermission.objects.filter(
+        user=user,
+        permission__in=reduce(concat, required_perms),
+    )  # shouldn't hit db
+    check_gop = False
+    for pls in required_perms:
+        # if user has model level permission then remove the corresponding UOP.
+        if user.user_permissions.filter(id__in=[p.id for p in pls]).exists():
+            uops = uops.exclude(permission__in=pls)  # shouldn't hit db
+        else:
+            check_gop = True
+    if check_gop:
+        # should hit db once for fetching uops
+        return queryset.filter(userobjectpermissions__in=uops)
+    else:
+        return queryset
 
 
 def add_perms_shortcut(
-    user_or_group: AbstractUser | Group,
-    model_or_instance_or_queryset: Type[IDCFModel] | IDCFModel | QuerySet,
+    identity: AbstractUser | Group,
+    instance: Type[m.Model] | m.Model | QuerySet,
     perms: str,
     field_name: Optional[str] = None,
 ) -> None:
     """
-    Adds model or object permission depending on whether model_or_instance_or_queryset
-    is a model.
+    Adds model or object permission depending on whether instance is a model.
     """
-    LOG.debug(f"{user_or_group=} {model_or_instance_or_queryset=} {perms=}")
-    instance: IDCFModel | QuerySet | None
-    model: Type[IDCFModel]
-    if isinstance(model_or_instance_or_queryset, m.Model):
-        instance = model_or_instance_or_queryset
-        model = instance.__class__
-    elif isinstance(model_or_instance_or_queryset, m.QuerySet):
-        instance = model_or_instance_or_queryset
-        model = model_or_instance_or_queryset.model
-    elif model_or_instance_or_queryset.__class__ is ModelBase:
-        instance = None
-        model = cast(Type[IDCFModel], model_or_instance_or_queryset)
+    model: Type[m.Model]
+    if isinstance(instance, m.Model):
+        model = instance._meta.model
+        permissions = [
+            get_permission_for_model(p, model, field_name=field_name) for p in perms
+        ]
+        _add_for_queryset(
+            identity,
+            queryset=QuerySet(model=model).filter(id=instance.pk),
+            perms=permissions,
+        )
+    elif isinstance(instance, m.QuerySet):
+        permissions = [
+            get_permission_for_model(p, instance.model, field_name=field_name)
+            for p in perms
+        ]
+        _add_for_queryset(
+            identity,
+            queryset=instance,
+            perms=permissions,
+        )
+    elif isinstance(instance, ModelBase):
+        model = instance  # type: ignore
+        permissions = [
+            get_permission_for_model(p, model, field_name=field_name) for p in perms
+        ]
+        _add_for_model(identity, permissions)
     else:
-        raise TypeError(
-            f"model_or_instance_or_queryset has wrong type: {type(model_or_instance_or_queryset)}"
+        raise TypeError(f"Unexpected type: {type(instance)}")
+
+
+def _add_for_queryset(
+    identity: AbstractUser | Group,
+    queryset: QuerySet,
+    perms: Iterable[Permission],
+) -> None:
+    if isinstance(identity, Group):
+        GroupObjectPermission.objects.bulk_create(
+            [
+                GroupObjectPermission(
+                    group=identity,
+                    permission=p,
+                    content_object=o,
+                )
+                for o in queryset
+                for p in perms
+            ],
+            ignore_conflicts=True,
         )
-    for s in perms.lower():
-        permstr: str = get_permission_for_model(
-            s, model, string=True, field_name=field_name
+    else:
+        UserObjectPermission.objects.bulk_create(
+            [
+                UserObjectPermission(
+                    user=identity,  # type:ignore
+                    permission=p,
+                    content_object=o,
+                )
+                for o in queryset
+                for p in perms
+            ],
+            ignore_conflicts=True,
         )
-        gs.assign_perm(permstr, user_or_group, obj=instance)
+
+
+def _add_for_model(
+    identity: AbstractUser | Group,
+    perms: Iterable[Permission],
+) -> None:
+    if isinstance(identity, Group):
+        identity.permissions.add(*perms)
+    else:
+        identity.user_permissions.add(*perms)
 
 
 @deprecated(details="use add_perms_shortcut(...) instead")
 def set_perms_shortcut(
-    user_or_group: AbstractUser | Group,
-    model_or_instance_or_queryset: Type[IDCFModel] | IDCFModel | QuerySet,
+    identity: AbstractUser | Group,
+    model_or_instance_or_queryset: Type[m.Model] | m.Model | QuerySet,
     perms: str,
     field_name: Optional[str] = None,
 ) -> None:
     return add_perms_shortcut(
-        user_or_group, model_or_instance_or_queryset, perms, field_name
+        identity, model_or_instance_or_queryset, perms, field_name
     )
 
 
 def has_perms_shortcut(
-    user_or_group: AbstractUser | Group,
-    model_or_instance: Type[IDCFModel] | IDCFModel,
+    identity: AbstractUser | Group,
+    instance: Type[m.Model] | m.Model | QuerySet,
     perms: str,
     field_name: Optional[str] = None,
 ) -> bool:
@@ -200,67 +281,86 @@ def has_perms_shortcut(
     perms="rw", returns True only if the user has both read and write
     permissions. Model permission > object permission > field permission.
     """
-    User = cast(Type[AbstractUser], get_user_model())
-
-    instance: IDCFModel | None
-    model: Type[IDCFModel]
-    if isinstance(model_or_instance, m.Model):
-        instance = model_or_instance
+    model: Type[m.Model]
+    if isinstance(instance, ModelBase):
+        model = instance  # type: ignore
+    elif isinstance(instance, m.Model):
         model = instance._meta.model
-    elif model_or_instance.__class__ is ModelBase:
-        instance = None
-        model = cast(Type[IDCFModel], model_or_instance)
+    elif isinstance(instance, QuerySet):
+        model = instance.model
     else:
-        raise TypeError(f"model_or_instance has wrong type: {type(model_or_instance)}")
+        raise TypeError(instance)
+    required_permissions: List[List[Permission]] = []
+    for s in perms:
+        any_of = [get_permission_for_model(s, model, field_name=None)]
+        if field_name is not None:
+            any_of.append(get_permission_for_model(s, model, field_name=field_name))
+        required_permissions.append(any_of)
 
-    if isinstance(user_or_group, User) and user_or_group.is_superuser:
-        return True
+    if isinstance(instance, ModelBase):
+        if isinstance(identity, AbstractUser):
+            return (
+                _user_has_superpower(identity)
+                or _check_model_for_user(
+                    identity,
+                    required_permissions,
+                )
+                or _check_model_for_groups(
+                    identity.groups.all(),
+                    required_permissions,
+                )
+            )
+        elif isinstance(identity, Group):
+            return _check_model_for_groups(
+                identity,
+                required_permissions,
+            )
+        else:
+            raise TypeError(identity)
+    else:
+        if isinstance(instance, QuerySet):
+            input_queryset = instance
+        elif isinstance(instance, m.Model):
+            input_queryset = QuerySet(model=model).filter(pk=instance.pk)
+        else:
+            raise TypeError(instance)
+        result_queryset = filter_queryset_by_perms_shortcut(
+            perms,
+            identity,
+            input_queryset,
+            field_name=field_name,
+        )
+        return input_queryset.count() == result_queryset.count()
 
-    def disjunction(s: str) -> Iterator[bool]:
-        for u in set([default_groups.anyone, user_or_group]):
-            for f in set([None, field_name]):
-                perm = get_permission_for_model(s, model, string=False, field_name=f)
-                if isinstance(u, Group):
-                    # check group model permission
-                    if u.permissions.filter(pk=perm.pk).exists():
-                        yield True
-                    # check group object permission
-                    if (
-                        instance
-                        and gm.GroupObjectPermission.objects.filter(
-                            group=u,
-                            permission=perm,
-                            content_type=perm.content_type,
-                            object_pk=instance.pk,
-                        ).exists()
-                    ):
-                        yield True
-                else:
-                    # check user model permission
-                    name = f"{perm.content_type.app_label}.{perm.codename}"
-                    if u.has_perm(name):
-                        yield True
-                    # check user object permission
-                    if u.has_perm(name, obj=instance):  # type:ignore
-                        yield True
-        yield False
 
-    def conjunction() -> Iterator[bool]:
-        for s in perms.lower():
-            if any(disjunction(s)):
-                yield True
-            else:
-                yield False
+def _user_has_superpower(user: AbstractUser) -> bool:
+    return user.is_superuser and user.is_active
 
-    return all(conjunction())
+
+def _check_model_for_groups(
+    group: Group | QuerySet[Group], perms: List[List[Permission]]
+) -> bool:
+    if isinstance(group, Group):
+        return all([group.permissions.filter(pk__in=ps).exists() for ps in perms])
+    else:
+        return all([group.filter(permissions__in=ps).exists() for ps in perms])
+
+
+def _check_model_for_user(user: AbstractUser, perms: List[List[Permission]]) -> bool:
+    return all(
+        [
+            user.user_permissions.filter(id__in=[p.id for p in pls]).exists()
+            for pls in perms
+        ]
+    )
 
 
 def clear_permissions() -> None:
     LOG.info("clearing permissions...")
     with transaction.atomic():
         Permission.objects.all().delete()
-        gm.UserObjectPermission.objects.all().delete()
-        gm.GroupObjectPermission.objects.all().delete()
+        UserObjectPermission.objects.all().delete()
+        GroupObjectPermission.objects.all().delete()
         # We need the logged_in group to survive migration, otherwise users who are using
         # the site when the migration happens would see permission errors after migration.
         Group.objects.exclude(m.Q(name="anyone") | m.Q(name="logged_in")).delete()
@@ -279,7 +379,7 @@ def reset_permissions(
         total = model.objects.count()
         current = 0
         for instance in cast(
-            Iterable[IAccessControlled[Any]],
+            Iterable[AccessControlled[Any]],
             model.objects.all(),
         ):
             current += 1

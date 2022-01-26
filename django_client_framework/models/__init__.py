@@ -17,6 +17,7 @@ from .abstract import (
 )
 from .fields import UniqueForeignKey
 from .lookup import *
+from .object_permissions import GroupObjectPermission, UserObjectPermission
 from .search_feature import SearchFeature
 
 

@@ -30,11 +30,9 @@ from rest_framework.views import APIView
 
 from django_client_framework import permissions as p
 from django_client_framework.api.rate_limit import DefaultRateManager
-from django_client_framework.models.abstract.model import IDCFModel
 from django_client_framework.models.abstract.user import DCFAbstractUser
 
 from .. import exceptions as e
-from ..models import get_user_model
 from ..models.abstract.rate_limited import RateLimited
 from ..models.abstract.serializable import ISerializable
 from ..permissions.site_permission import has_perms_shortcut
@@ -47,7 +45,7 @@ LOG = getLogger(__name__)
 class APIPermissionDenied(Exception):
     def __init__(
         self,
-        model_or_instance: Type[IDCFModel] | IDCFModel,
+        model_or_instance: Type[Model] | Model,
         perms: str,
         field: Optional[str] = None,
     ) -> None:
@@ -181,7 +179,7 @@ class BaseModelAPI(GenericAPIView):
         return self._get_field(self.model.as_model_type(), key)
 
     @cached_property
-    def model_object(self) -> ISerializable:
+    def model_object(self) -> Model:
         pk = self.kwargs["pk"]
         return get_object_or_404(self.model, pk=pk)  # type: ignore
 
@@ -201,10 +199,10 @@ class BaseModelAPI(GenericAPIView):
         }
         actions = [shortcuts[x] for x in error.perms]
         if isinstance(error.model_or_instance, Model):
-            inst: Model = error.model_or_instance
+            inst = error.model_or_instance
             target = f"{inst._meta.model_name}({inst.pk})"
         else:
-            modl = cast(Type[IDCFModel], error.model_or_instance)
+            modl = error.model_or_instance
             target = f"{modl.__name__}"
         if not settings.DEBUG and not has_perms_shortcut(
             self.user_object, error.model_or_instance, "r", field_name=error.field
@@ -240,7 +238,7 @@ class BaseModelAPI(GenericAPIView):
 
     @cached_property
     def __anonymous_user(self) -> DCFAbstractUser:
-        return get_user_model().get_anonymous()
+        return p.default_users.anonymous
 
     def assert_pks_exist_or_raise_404(
         self, model: Type[ISerializable], pks: List[UUID]
@@ -282,7 +280,7 @@ class BaseModelAPI(GenericAPIView):
     def check_3way_permissions(
         cls,
         user: DCFAbstractUser,
-        model_object: IDCFModel,
+        model_object: Model,
         field_name: str,
         new_vals: QuerySet,
         perms: str,
@@ -344,9 +342,7 @@ class BaseModelAPI(GenericAPIView):
             raise APIPermissionDenied(no_perm, perms, field_name)
 
     @classmethod
-    def _get_field_as_queryset(
-        cls, model_object: IDCFModel, field_name: str
-    ) -> QuerySet:
+    def _get_field_as_queryset(cls, model_object: Model, field_name: str) -> QuerySet:
         """Get the relation field's value of the object as a queryset."""
         field = cls._get_field(model_object._meta.model, field_name)
         if field is None:

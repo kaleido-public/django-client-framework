@@ -1,7 +1,7 @@
 .EXPORT_ALL_VARIABLES:
 PYTHONPATH="./:../"
 
-default: reset
+default:
 	poetry run coverage run --branch --source=../django_client_framework ./manage.py test --no-input -v2 -p "*.py"
 	poetry run coverage xml
 
@@ -22,7 +22,7 @@ sh: alpine-base
 
 .PHONY: reset
 reset:
-	-cd dcf_test_app/migrations && rm -f 0001_initial.py
+	-cd dcf_test_app/migrations && git clean -xdi
 	poetry run ./manage.py makemigrations
 
 .PHONY: Makefile

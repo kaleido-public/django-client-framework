@@ -30,7 +30,6 @@ def auto_update_search_vector(
     sender: Any, instance: Any, *args: Any, **kwargs: Any
 ) -> None:
     """Keep the index up-to-date automatically"""
-    LOG.debug(f"{sender=} {instance=}")
     sender.objects.filter(pk=instance.pk).update(
         search_vector=s.SearchVector("text_feature")
     )

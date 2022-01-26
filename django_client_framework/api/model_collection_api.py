@@ -62,7 +62,7 @@ class ModelCollectionAPI(BaseModelAPI):
         )
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        if not p.has_perms_shortcut(self.user_object, self.model, "c"):
+        if not p.has_perms_shortcut(self.user_object, self.model.as_model_type(), "c"):
             raise e.PermissionDenied("You have no permission to perform POST.")
         serializer = self.get_serializer(data=self.request_data)
         serializer.is_valid(raise_exception=True)
