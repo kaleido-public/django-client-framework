@@ -8,11 +8,12 @@ from django.contrib.postgres.indexes import GinIndex
 from django.db import models as m
 from django.db.models.manager import Manager
 from django.dispatch import receiver
+from .abstract.model import DCFModel
 
 LOG = getLogger(__name__)
 
 
-class SearchFeature(m.Model):
+class SearchFeature(DCFModel):
     objects: Manager["SearchFeature"]
     content_type = m.ForeignKey(ContentType, on_delete=m.CASCADE, null=True)
     object_id = m.UUIDField(null=True, db_index=True)
