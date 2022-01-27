@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from functools import reduce
+from functools import lru_cache, reduce
 from logging import getLogger
 from operator import concat
 from typing import Any, Iterable, List, Optional, Sequence, Type, TypeVar, cast
@@ -301,12 +301,16 @@ def has_perms_shortcut(
         if isinstance(identity, AbstractUser):
             return (
                 _user_has_superpower(identity)
-                or _check_model_for_user(
-                    identity,
+                or _check_model_for_groups(
+                    default_groups.anyone,
                     required_permissions,
                 )
                 or _check_model_for_groups(
                     identity.groups.all(),
+                    required_permissions,
+                )
+                or _check_model_for_user(
+                    identity,
                     required_permissions,
                 )
             )
@@ -341,7 +345,12 @@ def _check_model_for_groups(
     group: Group | QuerySet[Group], perms: List[List[Permission]]
 ) -> bool:
     if isinstance(group, Group):
-        return all([group.permissions.filter(pk__in=ps).exists() for ps in perms])
+        return all(
+            [
+                group.permissions.filter(pk__in=[p.pk for p in ps]).exists()
+                for ps in perms
+            ]
+        )
     else:
         return all([group.filter(permissions__in=ps).exists() for ps in perms])
 
@@ -361,9 +370,6 @@ def clear_permissions() -> None:
         Permission.objects.all().delete()
         UserObjectPermission.objects.all().delete()
         GroupObjectPermission.objects.all().delete()
-        # We need the logged_in group to survive migration, otherwise users who are using
-        # the site when the migration happens would see permission errors after migration.
-        Group.objects.exclude(m.Q(name="anyone") | m.Q(name="logged_in")).delete()
 
 
 def reset_permissions(

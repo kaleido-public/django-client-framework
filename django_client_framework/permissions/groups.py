@@ -22,6 +22,7 @@ class DefaultGroups:
     group_names: Dict[str, Callable[[Group], None]] = {
         "anyone": do_nothing,
     }
+    anyone: Group
 
     def __getattr__(self, name: str) -> Group:
         if name in self.group_names:
