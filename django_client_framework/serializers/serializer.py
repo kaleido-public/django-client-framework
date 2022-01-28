@@ -76,6 +76,8 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
                     prefer_cache=False,
                 ),
             )
+        if instance is None:
+            return None
         raise TypeError(
             "Must be a Serializable instance when the serializer is initialized with prefer_cache=True."
         )
