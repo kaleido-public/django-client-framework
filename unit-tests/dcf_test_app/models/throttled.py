@@ -17,7 +17,7 @@ class ThrottledModel(DCFModel, Serializable, RateLimited):
 
     @classmethod
     def get_serializer_class(
-        cls, version: str, context: Any
+        cls, version: str | None, context: Any
     ) -> Type[ThrottledModelSerializer]:
         return ThrottledModelSerializer
 
@@ -27,7 +27,7 @@ class ThrottledModel(DCFModel, Serializable, RateLimited):
             queryset: QuerySet,
             user: DCFAbstractUser,
             action: str,
-            version: str,
+            version: str | None,
             context: Dict[str, Any],
         ) -> str:
             return "10/min"

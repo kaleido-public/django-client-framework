@@ -1,5 +1,5 @@
 default:
-	rm -f ./subapp/migrations/0001_initial.py
+	cd ./testserverproj/migrations/ && git clean -xdi
 	./manage.py makemigrations
 	./manage.py migrate
 	./manage.py test

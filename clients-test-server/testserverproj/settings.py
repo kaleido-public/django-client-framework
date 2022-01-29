@@ -129,3 +129,10 @@ AUTHENTICATION_BACKENDS = []
 django_client_framework.settings.install(
     INSTALLED_APPS, REST_FRAMEWORK, MIDDLEWARE, AUTHENTICATION_BACKENDS
 )
+
+AUTH_USER_MODEL = "subapp.User"
+
+MIGRATION_MODULES = {
+    "django_client_framework": "testserverproj.migrations.django_client_framework",
+    "supapp": "testserverproj.migrations.supapp",
+}

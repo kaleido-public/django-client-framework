@@ -52,7 +52,7 @@ def check_integrity() -> None:
     User = get_dcf_user_model()
     if not issubclass(User, DCFAbstractUser):
         raise NotImplementedError(
-            "settings.AUTH_USER_MODEL is set to {settings.AUTH_USER_MODEL}."
+            f"settings.AUTH_USER_MODEL is set to '{settings.AUTH_USER_MODEL}'."
             " The user model must inherit DCFAbstractUser. "
             " You should create a subclass of DCFAbstractUser and set settings.AUTH_USER_MODEL to the class."
             f" {User} does not inherit DCFAbstractUser."
