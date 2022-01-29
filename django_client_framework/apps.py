@@ -33,6 +33,8 @@ class DefaultApp(AppConfig):
 
 def post_migrate(*args: Any, **kwargs: Any) -> None:
     from .permissions import default_groups, default_users
+    from .permissions.site_permission import _get_permission_for_model
 
+    _get_permission_for_model.cache_clear()
     default_groups.setup()
     default_users.setup()
