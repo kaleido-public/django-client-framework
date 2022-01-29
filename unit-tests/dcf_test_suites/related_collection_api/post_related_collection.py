@@ -4,13 +4,12 @@ from dcf_test_app.models import Brand, Product
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from django_client_framework.models import get_user_model
-from django_client_framework.permissions import default_users
+from django_client_framework.permissions import default_users, reset_permissions
 
 
 class TestPost(TestCase):
     def setUp(self) -> None:
-        User = get_user_model()
+        reset_permissions()
         self.superuser = default_users.root
         self.superuser_client = APIClient()
         self.superuser_client.force_authenticate(self.superuser)

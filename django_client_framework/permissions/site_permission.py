@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from functools import reduce
+from functools import lru_cache, reduce
 from logging import getLogger
 from operator import concat
 from typing import Any, Iterable, List, Optional, Sequence, Type, TypeVar, cast
@@ -31,6 +31,16 @@ M = TypeVar("M", bound=DCFModel)
 
 
 def get_permission_for_model(
+    shortcut: str,
+    model: Type[m.Model],
+    *,
+    field_name: str | None,
+) -> DCFPermission:
+    return _get_permission_for_model(shortcut, model, field_name=field_name)
+
+
+@lru_cache
+def _get_permission_for_model(
     shortcut: str,
     model: Type[m.Model],
     *,
@@ -375,6 +385,7 @@ def _check_model_for_user(
 
 def clear_permissions() -> None:
     LOG.info("clearing permissions...")
+    _get_permission_for_model.cache_clear()
     with transaction.atomic():
         DCFPermission.objects.all().delete()
         UserObjectPermission.objects.all().delete()
@@ -386,6 +397,7 @@ def reset_permissions(
 ) -> None:
     # set user self permission
     # must be done after all default users are added
+    _get_permission_for_model.cache_clear()
     total_model_count = len(for_classes)
     current_model_count = 0
     for model in for_classes:

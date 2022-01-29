@@ -8,6 +8,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.db import models as m
 from django.db.models.manager import Manager
 from django.dispatch import receiver
+
 from .abstract.model import DCFModel
 
 LOG = getLogger(__name__)

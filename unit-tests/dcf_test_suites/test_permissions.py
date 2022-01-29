@@ -6,11 +6,13 @@ from django_client_framework.permissions import (
     add_perms_shortcut,
     filter_queryset_by_perms_shortcut,
     has_perms_shortcut,
+    reset_permissions,
 )
 
 
 class TestHasPermission(TestCase):
     def setUp(self) -> None:
+        reset_permissions()
         self.user = get_user_model().objects.create()
         self.product = Product.objects.create()
 
@@ -53,6 +55,7 @@ class TestHasPermission(TestCase):
 
 class TestAddPermissions(TestCase):
     def setUp(self) -> None:
+        reset_permissions()
         self.user = get_user_model().objects.create()
         self.product = Product.objects.create()
 
@@ -87,6 +90,7 @@ class TestAddPermissions(TestCase):
 
 class TestAddFilterByPermissions(TestCase):
     def setUp(self) -> None:
+        reset_permissions()
         self.user = get_user_model().objects.create()
 
     def test_filter_simple_object_permission(self) -> None:

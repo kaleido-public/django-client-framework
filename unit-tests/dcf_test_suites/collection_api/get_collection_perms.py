@@ -61,6 +61,7 @@ class GetPerms(TestCase):
 
 class TestAnonymous(TestCase):
     def setUp(self) -> None:
+        p.reset_permissions()
         self.user_client = APIClient()
 
     def test_get_anonymous(self) -> None:

@@ -10,6 +10,7 @@ User = get_dcf_user_model()
 
 class TestPaginationPerms(TestCase):
     def setUp(self) -> None:
+        p.reset_permissions()
         self.user = User.objects.create(username="testuser")
         self.user_client = APIClient()
         self.user_client.force_authenticate(self.user)
