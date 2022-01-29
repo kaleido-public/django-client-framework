@@ -1,4 +1,5 @@
-from black import Any
+from typing import *
+
 from django.apps import AppConfig
 from django.db.models import signals
 

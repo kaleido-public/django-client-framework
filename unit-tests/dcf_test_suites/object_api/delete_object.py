@@ -1,15 +1,16 @@
 from dcf_test_app.models import Product
-
-from django_client_framework.models import get_dcf_user_model
-from django_client_framework.permissions import default_users
-
-User = get_dcf_user_model()
 from django.test import TestCase
 from rest_framework.test import APIClient
+
+from django_client_framework.models import get_dcf_user_model
+from django_client_framework.permissions import default_users, reset_permissions
+
+User = get_dcf_user_model()
 
 
 class TestDeleteObject(TestCase):
     def setUp(self) -> None:
+        reset_permissions()
         self.user = default_users.root
         self.user_client = APIClient()
         self.user_client.force_authenticate(self.user)

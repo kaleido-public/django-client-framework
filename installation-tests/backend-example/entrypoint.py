@@ -40,6 +40,8 @@ django_client_framework.settings.install(
     MIDDLEWARE,
     AUTHENTICATION_BACKENDS
 )
+
+AUTH_USER_MODEL = "common.User"
 """
     settings.write_text(new_content)
 
