@@ -5,7 +5,12 @@ from typing import *
 from django.db.models import CASCADE, CharField, ForeignKey
 
 from django_client_framework.api import register_api_model
-from django_client_framework.models import AccessControlled, DCFModel, Serializable
+from django_client_framework.models import (
+    AccessControlled,
+    DCFAbstractUser,
+    DCFModel,
+    Serializable,
+)
 from django_client_framework.permissions import add_perms_shortcut, default_groups
 from django_client_framework.serializers import DCFModelSerializer
 
@@ -55,3 +60,7 @@ class ProductSerializer(DCFModelSerializer):
     class Meta:
         model = Product
         fields = ["id", "type", "created_at", "barcode", "brand_id"]
+
+
+class User(DCFModel, DCFAbstractUser):
+    pass
