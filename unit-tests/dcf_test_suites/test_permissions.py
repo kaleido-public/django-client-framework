@@ -76,13 +76,13 @@ class TestAddPermissions(TestCase):
         for uop in UserObjectPermission.objects.all():
             self.assertEqual(uop.user, self.user)
             self.assertEqual(uop.content_object, self.product)
-            self.assertTrue(uop.permission.codename.endswith("_barcode"))
+            self.assertEqual(uop.permission.field_name, "barcode")
 
     def test_add_model_permission(self) -> None:
         add_perms_shortcut(self.user, Product, "rwcd", field_name="barcode")
-        self.assertEqual(self.user.user_permissions.count(), 4)
-        for perm in self.user.user_permissions.all():
-            self.assertTrue(perm.codename.endswith("_barcode"))
+        self.assertEqual(self.user.model_permissions.count(), 4)
+        for perm in self.user.model_permissions.all():
+            self.assertEqual(perm.field_name, "barcode")
 
 
 class TestAddFilterByPermissions(TestCase):

@@ -38,7 +38,13 @@ class AccessControlled(DjangoModel, IAccessControlled[T]):
             raise NotImplementedError()
 
         def reset_perms(self, instance: _T) -> None:
-            cast(Any, instance).userobjectpermissions.all().delete()
+            from ..object_permissions import UserObjectPermission
+
+            UserObjectPermission.objects.filter(
+                permission__model_name=instance._meta.model_name,
+                permission__app_name=instance._meta.app_label,
+                object_pk=instance.pk,
+            ).delete()
             self.add_perms(instance)
 
     @classmethod

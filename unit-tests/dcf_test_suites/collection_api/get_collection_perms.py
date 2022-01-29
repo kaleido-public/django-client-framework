@@ -1,14 +1,17 @@
 from dcf_test_app.models import Brand, Product
-from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 
 from django_client_framework import permissions as p
+from django_client_framework.models import get_dcf_user_model
+from django_client_framework.permissions import default_groups
+
+User = get_dcf_user_model()
 
 
 class GetPerms(TestCase):
     def setUp(self) -> None:
-        self.user = User.objects.create_user(username="testuser")
+        self.user = User.objects.create(username="testuser")
         self.user_client = APIClient()
         self.user_client.force_authenticate(self.user)
         self.br1 = Brand.objects.create(name="br1")
@@ -54,3 +57,15 @@ class GetPerms(TestCase):
             {"barcode": "pr2", "brand_id": str(self.br2.id), "id": str(self.pr2.id)},
             objects[0],
         )
+
+
+class TestAnonymous(TestCase):
+    def setUp(self) -> None:
+        self.user_client = APIClient()
+
+    def test_get_anonymous(self) -> None:
+        p.set_perms_shortcut(default_groups.anyone, Product, "r")
+        Product.objects.create()
+        resp = self.user_client.get("/product")
+        self.assertEqual(200, resp.status_code)
+        self.assertEqual(1, resp.json()["objects_count"])

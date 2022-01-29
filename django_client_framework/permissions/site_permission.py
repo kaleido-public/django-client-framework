@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from functools import lru_cache, reduce
+from functools import reduce
 from logging import getLogger
 from operator import concat
 from typing import Any, Iterable, List, Optional, Sequence, Type, TypeVar, cast
 
 from deprecation import deprecated
-from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import models as m
 from django.db import transaction
@@ -15,7 +14,14 @@ from django.db.models.query import QuerySet
 
 from django_client_framework.models.abstract.model import DCFModel, IDCFModel
 
-from ..models import AccessControlled, GroupObjectPermission, UserObjectPermission
+from ..models import (
+    AccessControlled,
+    DCFAbstractUser,
+    DCFPermission,
+    GroupObjectPermission,
+    UserGroup,
+    UserObjectPermission,
+)
 from .groups import default_groups
 
 LOG = getLogger(__name__)
@@ -29,7 +35,7 @@ def get_permission_for_model(
     model: Type[m.Model],
     *,
     field_name: str | None,
-) -> Permission:
+) -> DCFPermission:
     """
     Returns permission object for model and field.
     """
@@ -46,19 +52,18 @@ def get_permission_for_model(
             raise AttributeError(
                 f'field named "{field_name}" not found on model {model}'
             )
-        p, _created = Permission.objects.get_or_create(
-            content_type=c, codename=f"{action}_{model._meta.model_name}_{field_name}"
-        )
-    else:
-        p, _created = Permission.objects.get_or_create(
-            content_type=c, codename=f"{action}_{model._meta.model_name}"
-        )
+    p, _created = DCFPermission.objects.get_or_create(
+        app_name=model._meta.app_label,
+        model_name=model._meta.model_name,
+        action=action,
+        field_name=field_name,
+    )
     return p
 
 
 def filter_queryset_by_perms_shortcut(
     perms: str,
-    identity: AbstractUser | Group,
+    identity: DCFAbstractUser | UserGroup,
     queryset: QuerySet[M],
     field_name: str | None = None,
 ) -> QuerySet[M]:
@@ -89,7 +94,7 @@ def filter_queryset_by_perms_shortcut(
     every nodes in the input P nodes via one of the determined GOP nodes, or is
     directly connected to P.
     """
-    required_permissions: List[List[Permission]] = []
+    required_permissions: List[List[DCFPermission]] = []
     for s in perms:
         any_of = [get_permission_for_model(s, queryset.model, field_name=None)]
         if field_name is not None:
@@ -98,10 +103,10 @@ def filter_queryset_by_perms_shortcut(
             )
         required_permissions.append(any_of)
 
-    if isinstance(identity, Group):
+    if isinstance(identity, UserGroup):
         return _filter_for_groups(
             required_permissions,
-            Group.objects.filter(pk__in=[identity.pk, default_groups.anyone.pk]),
+            UserGroup.objects.filter(pk__in=[identity.pk, default_groups.anyone.pk]),
             queryset,
         )
     else:
@@ -110,7 +115,7 @@ def filter_queryset_by_perms_shortcut(
         qs_user = _filter_for_user(required_permissions, identity, queryset)
         qs_grp = _filter_for_groups(
             required_permissions,
-            Group.objects.filter(
+            UserGroup.objects.filter(
                 pk__in=[
                     *identity.groups.values_list("pk", flat=True),
                     default_groups.anyone.pk,
@@ -124,8 +129,8 @@ def filter_queryset_by_perms_shortcut(
 
 
 def _filter_for_groups(
-    required_perms: Sequence[Sequence[Permission]],
-    groups: QuerySet[Group],
+    required_perms: Sequence[Sequence[DCFPermission]],
+    groups: QuerySet[UserGroup],
     queryset: QuerySet[M],
 ) -> QuerySet[M]:
     """Build a query for filtering by permission (in conjunctive normal
@@ -138,20 +143,20 @@ def _filter_for_groups(
     check_gop = False
     for pls in required_perms:
         # if user has model level permission then remove the corresponding GOP.
-        if groups.filter(permissions__in=pls).exists():
+        if groups.filter(model_permissions__in=pls).exists():
             gops = gops.exclude(permission__in=pls)  # shouldn't hit db
         else:
             check_gop = True
     if check_gop:
         # should hit db once for fetching gops
-        return queryset.filter(groupobjectpermissions__in=gops)
+        return queryset.filter(id__in=gops.values_list("object_pk"))
     else:
         return queryset
 
 
 def _filter_for_user(
-    required_perms: Sequence[Sequence[Permission]],
-    user: AbstractUser,
+    required_perms: Sequence[Sequence[DCFPermission]],
+    user: DCFAbstractUser,
     queryset: QuerySet[M],
 ) -> QuerySet[M]:
     """Build a query for filtering by permission (in conjunctive normal
@@ -164,19 +169,19 @@ def _filter_for_user(
     check_gop = False
     for pls in required_perms:
         # if user has model level permission then remove the corresponding UOP.
-        if user.user_permissions.filter(id__in=[p.id for p in pls]).exists():
+        if user.model_permissions.filter(id__in=[p.pk for p in pls]).exists():
             uops = uops.exclude(permission__in=pls)  # shouldn't hit db
         else:
             check_gop = True
     if check_gop:
         # should hit db once for fetching uops
-        return queryset.filter(userobjectpermissions__in=uops)
+        return queryset.filter(id__in=uops.values_list("object_pk"))
     else:
         return queryset
 
 
 def add_perms_shortcut(
-    identity: AbstractUser | Group,
+    identity: DCFAbstractUser | UserGroup,
     instance: Type[m.Model] | m.Model | QuerySet,
     perms: str,
     field_name: Optional[str] = None,
@@ -216,17 +221,17 @@ def add_perms_shortcut(
 
 
 def _add_for_queryset(
-    identity: AbstractUser | Group,
+    identity: DCFAbstractUser | UserGroup,
     queryset: QuerySet,
-    perms: Iterable[Permission],
+    perms: Iterable[DCFPermission],
 ) -> None:
-    if isinstance(identity, Group):
+    if isinstance(identity, UserGroup):
         GroupObjectPermission.objects.bulk_create(
             [
                 GroupObjectPermission(
                     group=identity,
                     permission=p,
-                    content_object=o,
+                    object_pk=o.id,
                 )
                 for o in queryset
                 for p in perms
@@ -239,7 +244,7 @@ def _add_for_queryset(
                 UserObjectPermission(
                     user=identity,  # type:ignore
                     permission=p,
-                    content_object=o,
+                    object_pk=o.id,
                 )
                 for o in queryset
                 for p in perms
@@ -249,18 +254,18 @@ def _add_for_queryset(
 
 
 def _add_for_model(
-    identity: AbstractUser | Group,
-    perms: Iterable[Permission],
+    identity: DCFAbstractUser | UserGroup,
+    perms: Iterable[DCFPermission],
 ) -> None:
-    if isinstance(identity, Group):
-        identity.permissions.add(*perms)
+    if isinstance(identity, UserGroup):
+        identity.model_permissions.add(*perms)
     else:
-        identity.user_permissions.add(*perms)
+        identity.model_permissions.add(*perms)
 
 
 @deprecated(details="use add_perms_shortcut(...) instead")
 def set_perms_shortcut(
-    identity: AbstractUser | Group,
+    identity: DCFAbstractUser | UserGroup,
     model_or_instance_or_queryset: Type[m.Model] | m.Model | QuerySet,
     perms: str,
     field_name: Optional[str] = None,
@@ -271,7 +276,7 @@ def set_perms_shortcut(
 
 
 def has_perms_shortcut(
-    identity: AbstractUser | Group,
+    identity: DCFAbstractUser | UserGroup,
     instance: Type[m.Model] | m.Model | QuerySet,
     perms: str,
     field_name: Optional[str] = None,
@@ -290,7 +295,7 @@ def has_perms_shortcut(
         model = instance.model
     else:
         raise TypeError(instance)
-    required_permissions: List[List[Permission]] = []
+    required_permissions: List[List[DCFPermission]] = []
     for s in perms:
         any_of = [get_permission_for_model(s, model, field_name=None)]
         if field_name is not None:
@@ -298,7 +303,7 @@ def has_perms_shortcut(
         required_permissions.append(any_of)
 
     if isinstance(instance, ModelBase):
-        if isinstance(identity, AbstractUser):
+        if isinstance(identity, DCFAbstractUser):
             return (
                 _user_has_superpower(identity)
                 or _check_model_for_groups(
@@ -314,7 +319,7 @@ def has_perms_shortcut(
                     required_permissions,
                 )
             )
-        elif isinstance(identity, Group):
+        elif isinstance(identity, UserGroup):
             return _check_model_for_groups(
                 identity,
                 required_permissions,
@@ -337,28 +342,32 @@ def has_perms_shortcut(
         return input_queryset.count() == result_queryset.count()
 
 
-def _user_has_superpower(user: AbstractUser) -> bool:
-    return user.is_superuser and user.is_active
+def _user_has_superpower(user: DCFAbstractUser) -> bool:
+    from .users import default_users
+
+    return user.id == default_users.root.id
 
 
 def _check_model_for_groups(
-    group: Group | QuerySet[Group], perms: List[List[Permission]]
+    group: UserGroup | QuerySet[UserGroup], perms: List[List[DCFPermission]]
 ) -> bool:
-    if isinstance(group, Group):
+    if isinstance(group, UserGroup):
         return all(
             [
-                group.permissions.filter(pk__in=[p.pk for p in ps]).exists()
+                group.model_permissions.filter(pk__in=[p.pk for p in ps]).exists()
                 for ps in perms
             ]
         )
     else:
-        return all([group.filter(permissions__in=ps).exists() for ps in perms])
+        return all([group.filter(model_permissions__in=ps).exists() for ps in perms])
 
 
-def _check_model_for_user(user: AbstractUser, perms: List[List[Permission]]) -> bool:
+def _check_model_for_user(
+    user: DCFAbstractUser, perms: List[List[DCFPermission]]
+) -> bool:
     return all(
         [
-            user.user_permissions.filter(id__in=[p.id for p in pls]).exists()
+            user.model_permissions.filter(id__in=[p.pk for p in pls]).exists()
             for pls in perms
         ]
     )
@@ -367,7 +376,7 @@ def _check_model_for_user(user: AbstractUser, perms: List[List[Permission]]) -> 
 def clear_permissions() -> None:
     LOG.info("clearing permissions...")
     with transaction.atomic():
-        Permission.objects.all().delete()
+        DCFPermission.objects.all().delete()
         UserObjectPermission.objects.all().delete()
         GroupObjectPermission.objects.all().delete()
 
