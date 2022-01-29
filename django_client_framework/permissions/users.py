@@ -1,7 +1,6 @@
 from typing import Any, Callable, Dict, TypeVar
 
-from ..models import get_user_model
-from ..models.abstract.user import DCFAbstractUser
+from ..models.abstract.user import DCFAbstractUser, get_dcf_user_model
 
 T = TypeVar("T", bound="DCFAbstractUser")
 
@@ -21,19 +20,25 @@ def do_nothing(user: DCFAbstractUser) -> None:
 
 class DefaultUsers:
 
-    usernames: Dict[str, Callable[[Any], None]] = {}
+    usernames: Dict[str, Callable[[Any], None]] = {
+        "root": do_nothing,
+        "anonymous": do_nothing,
+    }
+    root: DCFAbstractUser
     anonymous: DCFAbstractUser
 
     def __getattr__(self, name: str) -> DCFAbstractUser:
+
         if name in self.usernames:
-            return get_user_model().objects.get_or_create(username=name)[0]
+            User = get_dcf_user_model()
+            return User.objects.get_or_create(username=name)[0]
         else:
             raise AttributeError(f"{name} is not a default user")
 
     def setup(self) -> None:
-        DefaultUsers.usernames.setdefault("anonymous", do_nothing)
+        User = get_dcf_user_model()
         for name, config_func in self.usernames.items():
-            user = get_user_model().objects.get_or_create(username=name)[0]
+            user = User.objects.get_or_create(username=name)[0]
             config_func(user)
 
 

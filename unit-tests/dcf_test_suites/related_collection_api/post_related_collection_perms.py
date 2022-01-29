@@ -5,12 +5,13 @@ from rest_framework.test import APIClient
 from django_client_framework import permissions as p
 from django_client_framework.models import get_user_model
 
+User = get_user_model()
+
 
 class TestPostPerms(TestCase):
     """POSTing to the related collection api creates new relations."""
 
     def setUp(self) -> None:
-        User = get_user_model()
         self.user = User.objects.create(username="testuser")
         self.user_client = APIClient()
         self.user_client.force_authenticate(self.user)

@@ -22,6 +22,7 @@ sh: alpine-base
 
 .PHONY: reset
 reset:
+	-cd ../django_client_framework/migrations && git clean -xdi
 	-cd dcf_test_app/migrations && git clean -xdi
 	poetry run ./manage.py makemigrations
 

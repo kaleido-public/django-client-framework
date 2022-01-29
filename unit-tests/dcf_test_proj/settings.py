@@ -33,11 +33,10 @@ ALLOWED_HOSTS: List[str] = []
 
 # Application definition
 
+AUTH_USER_MODEL = "dcf_test_app.User"
 INSTALLED_APPS = [
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "dcf_test_app",

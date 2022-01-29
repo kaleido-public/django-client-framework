@@ -1,33 +1,28 @@
 from typing import Any, Type, TypeVar, cast
 
 from deprecation import deprecated
-from django.contrib.auth import get_user_model as django_get_user_model
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.db.models import *
-
-from django_client_framework.models.abstract.user import DCFAbstractUser
 
 from .abstract import (
     AccessControlled,
+    DCFAbstractUser,
     DCFModel,
     DjangoModel,
     RateLimited,
     Searchable,
     Serializable,
+    get_dcf_user_model,
+    get_user_model,
 )
 from .fields import UniqueForeignKey
 from .lookup import *
-from .object_permissions import GroupObjectPermission, UserObjectPermission
+from .object_permissions import (
+    DCFPermission,
+    GroupObjectPermission,
+    UserGroup,
+    UserObjectPermission,
+)
 from .search_feature import SearchFeature
-
-
-@deprecated("Prefer get_dcf_user_model()")
-def get_user_model() -> Type[DCFAbstractUser]:
-    return cast(Any, django_get_user_model())
-
-
-def get_dcf_user_model() -> Type[DCFAbstractUser]:
-    return cast(Any, django_get_user_model())
 
 
 def check_integrity() -> None:

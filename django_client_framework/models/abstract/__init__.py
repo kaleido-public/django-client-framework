@@ -3,7 +3,7 @@ from .model import DCFModel, DjangoModel
 from .rate_limited import RateLimited
 from .searchable import Searchable
 from .serializable import Serializable
-from .user import DCFAbstractUser
+from .user import DCFAbstractUser, get_dcf_user_model, get_user_model
 
 
 def check_integrity() -> None:

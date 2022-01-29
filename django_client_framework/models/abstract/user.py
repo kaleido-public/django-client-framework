@@ -1,52 +1,33 @@
 from __future__ import annotations
 
-from typing import Any, Generic, Optional, TypeVar
+from typing import Type, TypeVar
 
-from django.contrib.auth.models import AbstractUser as DjangoAbstractUser
-from django.contrib.auth.models import UserManager
+from django.apps import apps
+from django.conf import settings
+from django.contrib.auth.models import AbstractBaseUser
+from django.db.models import CharField, EmailField, ManyToManyField
 from django.db.models.options import Options
+from django.utils.translation import gettext_lazy as _
 
+from ..object_permissions import DCFPermission, UserGroup
 from .model import IDCFModel, __implements__
 
-T = TypeVar("T", bound=DjangoAbstractUser)
+T = TypeVar("T", bound="DCFAbstractUser")
 
 
-class DCFUserManager(UserManager, Generic[T]):
-    def create_user(
-        self,
-        username: str,
-        email: Optional[str] = None,
-        password: Optional[str] = None,
-        **extra_fields: Any,
-    ) -> T:
-        return super().create_user(
-            username=username,
-            email=email,
-            password=password,
-            **extra_fields,
-        )
-
-    def create_superuser(
-        self,
-        username: str,
-        email: Optional[str] = None,
-        password: Optional[str] = None,
-        **extra_fields: Any,
-    ) -> T:
-        return super().create_superuser(
-            username=username,
-            email=email,
-            password=password,
-            **extra_fields,
-        )
-
-
-class DCFAbstractUser(DjangoAbstractUser, __implements__, IDCFModel[T]):
+class DCFAbstractUser(AbstractBaseUser, __implements__, IDCFModel[T]):
     class Meta:
         abstract = True
 
-    objects: DCFUserManager[T]
     _meta: Options[T]  # type: ignore
+    model_permissions = ManyToManyField(DCFPermission)
+    groups = ManyToManyField(UserGroup)
+
+    username = CharField(_("username"), max_length=64, blank=False, unique=True)
+    email = EmailField(_("email address"), blank=True)
+
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "username"
 
     @classmethod
     def get_anonymous(cls) -> T:
@@ -59,5 +40,9 @@ class DCFAbstractUser(DjangoAbstractUser, __implements__, IDCFModel[T]):
         return f"<{self.__class__.__name__}: {self.pk}>"
 
 
-DjangoAbstractUser.__str__ = DCFAbstractUser.__str__  # type: ignore
-DjangoAbstractUser.__str__ = DCFAbstractUser.__repr__  # type: ignore
+def get_dcf_user_model() -> Type[DCFAbstractUser]:
+    return apps.get_model(settings.AUTH_USER_MODEL, require_ready=False)
+
+
+def get_user_model() -> Type[DCFAbstractUser]:
+    return get_dcf_user_model()  # type: ignore
