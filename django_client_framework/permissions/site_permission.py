@@ -6,7 +6,6 @@ from operator import concat
 from typing import Any, Iterable, List, Optional, Sequence, Type, TypeVar, cast
 
 from deprecation import deprecated
-from django.contrib.contenttypes.models import ContentType
 from django.db import models as m
 from django.db import transaction
 from django.db.models.base import ModelBase
@@ -56,7 +55,6 @@ def _get_permission_for_model(
         "d": "delete",
     }
     action = action_shortcuts[shortcut]
-    c = ContentType.objects.get_for_model(model, for_concrete_model=False)
     if field_name:
         if not model._meta.get_field(field_name):
             raise AttributeError(

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from logging import getLogger
-from typing import Any, Generic, Type, TypeVar, cast
+from typing import Any, Generic, Type, TypeVar
 
 from django.db.models import Model as DjangoModel
 from django.db.models.manager import BaseManager

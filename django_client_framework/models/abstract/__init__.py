@@ -7,7 +7,8 @@ from .user import DCFAbstractUser, get_dcf_user_model, get_user_model
 
 
 def check_integrity() -> None:
-    from . import access_controlled, serializable
+    from . import access_controlled, serializable, user
 
     access_controlled.check_integrity()
     serializable.check_integrity()
+    user.check_integrity()

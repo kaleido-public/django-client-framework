@@ -3,13 +3,11 @@ from dcf_test_app.models.brand import Brand
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from django_client_framework.models import get_dcf_user_model
 from django_client_framework.permissions import default_users
 
 
 class Test404(TestCase):
     def setUp(self) -> None:
-        User = get_dcf_user_model()
         self.superuser = default_users.root
         self.superuser_client = APIClient()
         self.superuser_client.force_authenticate(self.superuser)
