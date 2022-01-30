@@ -12,7 +12,11 @@ from django.core.exceptions import FieldDoesNotExist
 from django.db.models.base import Model
 from django.db.models.fields import Field
 from django.db.models.fields.related import ForeignKey, ManyToManyField
-from django.db.models.fields.reverse_related import ManyToManyRel, ManyToOneRel
+from django.db.models.fields.reverse_related import (
+    ManyToManyRel,
+    ManyToOneRel,
+    OneToOneRel,
+)
 from django.db.models.query import QuerySet
 from django.http.request import QueryDict
 from django.http.response import HttpResponse
@@ -348,7 +352,7 @@ class BaseModelAPI(GenericAPIView):
         if field is None:
             return QuerySet().none()
         elif isinstance(
-            field, ForeignKey
+            field, (ForeignKey, OneToOneRel)
         ):  # eg. Product.brand_id, or Product.brand (object)
             field_val = getattr(model_object, field_name)
             if isinstance(field_val, Model):
