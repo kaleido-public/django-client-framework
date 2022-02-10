@@ -23,6 +23,7 @@ from rest_framework.validators import UniqueValidator
 from django_client_framework.exceptions import ValidationError
 from django_client_framework.models.abstract.model import __implements__
 from django_client_framework.models.abstract.serializable import D
+from django_client_framework.models.abstract.user import DCFAbstractUser
 
 from .serializer import DCFSerializer, IDCFSerializer, T
 
@@ -101,6 +102,7 @@ class DCFModelSerializer(
         context: Any = {},
         prefer_cache: bool = False,
         locale: Optional[str] = None,
+        request_user: Optional[DCFAbstractUser] = None,
     ) -> None:
         super().__init__(
             instance=instance,
@@ -112,6 +114,7 @@ class DCFModelSerializer(
             context=context,
             prefer_cache=prefer_cache,
             locale=locale,
+            request_user=request_user,
         )
 
     instance: Optional[T]

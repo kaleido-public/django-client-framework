@@ -40,7 +40,7 @@ from .. import exceptions as e
 from ..models.abstract.rate_limited import RateLimited
 from ..models.abstract.serializable import ISerializable
 from ..permissions.site_permission import has_perms_shortcut
-from ..serializers import DCFSerializer
+from ..serializers import DCFSerializer, SerializerContext
 from .filter_backend import DCFFilterBackend
 
 LOG = getLogger(__name__)
@@ -125,6 +125,10 @@ class BaseModelAPI(GenericAPIView):
     @property
     def version(self) -> str | None:
         return getattr(self, "kwargs", {}).get("version")
+
+    @property
+    def locale(self) -> str | None:
+        return getattr(self, "kwargs", {}).get("locale")
 
     @cached_property
     def __name_to_model(self) -> Dict[str, Type[ISerializable]]:
@@ -253,16 +257,13 @@ class BaseModelAPI(GenericAPIView):
                 if not model.objects.filter(pk=pk).exists():
                     raise NotFound(f"Not Found: {model.__name__} ({pk})")
 
-    def get_serializer_context(self) -> Dict[str, Any]:
-        context = super().get_serializer_context()
-        view = context.get("view")
-        locale = None
-        if kwargs := getattr(view, "kwargs"):
-            locale = kwargs.get("locale")
+    def get_serializer_context(self) -> SerializerContext:  # type:ignore[override]
+        context = cast(SerializerContext, super().get_serializer_context())
         context.update(
             {
                 "version": self.version,
-                "locale": locale,
+                "locale": self.locale,
+                "request_user": self.user_object,
             }
         )
         return context

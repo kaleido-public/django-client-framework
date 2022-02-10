@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+from functools import cached_property
 from typing import *
 
 from deprecation import deprecated
+from rest_framework.request import Request
 from rest_framework.serializers import Serializer as DRFSerializer
 from rest_framework.serializers import empty
+from rest_framework.views import APIView
 
 from ..models.abstract.model import IDCFModel
 from ..models.abstract.serializable import D, Serializable, T
+from ..models.abstract.user import DCFAbstractUser
+from ..permissions.users import default_users
 
 T1 = TypeVar("T1", bound=IDCFModel, covariant=True)
 D1 = TypeVar("D1", covariant=True)
@@ -16,6 +21,14 @@ D1 = TypeVar("D1", covariant=True)
 class IDCFSerializer(Generic[T1, D1]):
     def to_serializer(self) -> DCFSerializer:
         return cast(DCFSerializer, self)
+
+
+class SerializerContext(TypedDict):
+    version: str | None
+    locale: str | None
+    request_user: DCFAbstractUser
+    request: Request
+    view: APIView
 
 
 class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
@@ -32,10 +45,12 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
         read_only: bool = False,
         partial: bool = False,
         source: Optional[str] = None,
-        context: Any = {},
         prefer_cache: bool = False,
+        context: Optional[SerializerContext] = None,
+        request_user: Optional[DCFAbstractUser] = None,
         locale: Optional[str] = None,
     ) -> None:
+        _context = dict(context) if context is not None else {}
         super().__init__(
             instance=instance,
             data=data,
@@ -43,11 +58,25 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
             read_only=read_only,
             source=source,  # type: ignore
             partial=partial,
-            context=context,
+            context=_context,
         )
+        self.__context = context
         self.prefer_cache = prefer_cache
-        self.locale = locale or context.get("locale")
-        context["locale"] = self.locale
+        self.locale = locale or _context.get("locale")
+        self._request_user = request_user
+
+    @cached_property
+    def request_user(self) -> DCFAbstractUser:
+        return (
+            self._request_user
+            or self.context.get("request_user")
+            or (
+                getattr(self.context["view"], "user", None)
+                if self.context.get("view", None)
+                else None
+            )
+            or default_users.anonymous
+        )
 
     @deprecated(details="Use self.locale instead", deprecated_in="1.2.1")
     def get_locale(self) -> str | None:
@@ -66,7 +95,7 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
         if isinstance(instance, Serializable):
             return instance.cached_json(
                 version=self.context.get("version"),
-                context=self.context,
+                context=self.__context,
                 # Forces Serializable to use this serialzer. If the cache
                 # doesn't exist, .to_representation() will be called by
                 # Serializable.
