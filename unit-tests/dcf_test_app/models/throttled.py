@@ -7,7 +7,7 @@ from django.db.models.query import QuerySet
 from django_client_framework.api import register_api_model
 from django_client_framework.models import DCFModel, RateLimited, Serializable
 from django_client_framework.models.abstract.user import DCFAbstractUser
-from django_client_framework.serializers import DCFModelSerializer
+from django_client_framework.serializers import DCFModelSerializer, SerializerContext
 
 
 @register_api_model
@@ -17,7 +17,7 @@ class ThrottledModel(DCFModel, Serializable, RateLimited):
 
     @classmethod
     def get_serializer_class(
-        cls, version: str | None, context: Any
+        cls, version: str | None, context: SerializerContext | None
     ) -> Type[ThrottledModelSerializer]:
         return ThrottledModelSerializer
 
@@ -28,7 +28,7 @@ class ThrottledModel(DCFModel, Serializable, RateLimited):
             user: DCFAbstractUser,
             action: str,
             version: str | None,
-            context: Dict[str, Any],
+            context: SerializerContext | None,
         ) -> str:
             return "10/min"
 

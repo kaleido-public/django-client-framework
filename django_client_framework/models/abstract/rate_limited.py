@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Dict, Optional, Type
+from typing import *
 
 from rest_framework.request import Request
 from rest_framework.throttling import SimpleRateThrottle
@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from django.db.models import QuerySet
 
     from ...api import BaseModelAPI
+    from ...serializers.serializer import SerializerContext
     from .user import DCFAbstractUser
 
 
@@ -34,7 +35,7 @@ class RateLimited:
             user: DCFAbstractUser,
             action: str,
             version: str | None,
-            context: Dict[str, Any],
+            context: SerializerContext | None,
         ) -> str:
             raise NotImplementedError(
                 f"{self.model}.RateManager must overwrite .get_rate_limit(...)"
@@ -56,7 +57,7 @@ class RateLimited:
             ipid: str,
             action: str,
             version: str | None,
-            context: Dict[str, Any],
+            context: SerializerContext | None,
         ) -> str:
             return str(hash((queryset.model, user, ipid, action)))
 

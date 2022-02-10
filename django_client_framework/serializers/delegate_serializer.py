@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Dict, Optional, Type
+from typing import *
 
 from django.utils.functional import cached_property
 
 from django_client_framework.models.abstract.serializable import D
 
 from .. import exceptions as e
-from .serializer import DCFSerializer, T
+from .serializer import DCFSerializer, SerializerContext, T
 
 LOG = getLogger(__name__)
 
@@ -22,7 +22,7 @@ class DelegateSerializer(DCFSerializer[T, D]):
         self,
         instance: Optional[T] = None,
         data: Optional[D] = None,
-        context: Dict[str, Any] = {},
+        context: Optional[SerializerContext] = None,
         **kwargs: Any,
     ) -> None:
         self.is_read = self.is_create = self.is_update = False
