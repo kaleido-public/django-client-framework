@@ -37,14 +37,14 @@ def dcf_exception_handler(error: Any, context: Any) -> HttpResponse | None:
                 status=400,
             )
         if isinstance(error.detail, dict):
+            fields = {k: " ".join(flatten_to_list(v)) for k, v in error.detail.items()}
+            non_field = fields.pop("non_field", "")
             return JsonResponse(
                 {
                     "code": "validation_error",
                     "message": "The provided input is invalid.",
-                    "fields": {
-                        k: " ".join(flatten_to_list(v)) for k, v in error.detail.items()
-                    },
-                    "non_field": "",
+                    "fields": fields,
+                    "non_field": non_field,
                 },
                 status=400,
             )
