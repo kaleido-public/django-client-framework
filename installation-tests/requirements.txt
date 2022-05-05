@@ -9,3 +9,4 @@ django-guardian
 ipromise
 deprecation
 schema
+tzdata

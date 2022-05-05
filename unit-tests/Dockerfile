@@ -8,7 +8,7 @@ COPY ./README.md                /_work/README.md
 COPY ./django_client_framework  /_work/django_client_framework
 COPY ./unit-tests               /_work/unit-tests
 
-RUN pip3 install /_work
-ENV PYTHONPATH /_work
+RUN pip3 install poetry
+RUN poetry install
 
 WORKDIR /_work/unit-tests
