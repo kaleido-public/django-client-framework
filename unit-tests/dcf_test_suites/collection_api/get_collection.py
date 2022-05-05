@@ -145,12 +145,16 @@ class TestPagination(TestCase):
     def test_extend_past_page(self) -> None:
         resp = self.superuser_client.get("/product?_page=4")
         data = resp.json()
-        self.assertDictContainsSubset({"general_errors": ["Invalid page."]}, data)
+        self.assertDictContainsSubset(
+            {"message": "Invalid page.", "code": "not_found"}, data
+        )
 
     def test_extend_past_page_with_limit(self) -> None:
         resp = self.superuser_client.get("/product?_limit=40&_page=4")
         data = resp.json()
-        self.assertDictContainsSubset({"general_errors": ["Invalid page."]}, data)
+        self.assertDictContainsSubset(
+            {"message": "Invalid page.", "code": "not_found"}, data
+        )
 
     def test_key_name_array_filled_empty(self) -> None:
         resp = self.superuser_client.get(

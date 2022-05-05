@@ -1,3 +1,4 @@
+import schema
 from uuid import UUID
 
 from dcf_test_app.models import Brand, Product
@@ -31,16 +32,21 @@ class TestPostCollection(TestCase):
 
     def test_post_with_invalid_id(self) -> None:
         assert Product.objects.count() == 0
-
-        resp = self.superuser_client.post("/product", {"id": "1"})
-        self.assertEqual(400, resp.status_code)
-        self.assertEqual("invalid", resp.json()["id"][0]["code"])
-
-        resp = self.superuser_client.post("/product", {"id": 1})
-        self.assertEqual(400, resp.status_code)
-        self.assertEqual("invalid", resp.json()["id"][0]["code"])
-
-        self.assertEquals(0, Product.objects.count())
+        for item in ["1", 1]:
+            resp = self.superuser_client.post("/product", {"id": item})
+            self.assertEqual(400, resp.status_code)
+            data = resp.json()
+            schema.Schema(
+                {
+                    "code": "validation_error",
+                    "message": str,
+                    "fields": {
+                        "id": str,
+                    },
+                    "non_field": str,
+                },
+            ).validate(data)
+            self.assertEquals(0, Product.objects.count())
 
     def test_post_with_duplicate_id(self) -> None:
         self.assertEquals(0, Product.objects.count())
@@ -57,7 +63,16 @@ class TestPostCollection(TestCase):
         self.assertEquals(0, Product.objects.count())
         self.assertEqual(400, resp.status_code)
         data = resp.json()
-        self.assertEqual("invalid", data["xxxxxx"][0]["code"])
+        schema.Schema(
+            {
+                "code": "validation_error",
+                "message": str,
+                "fields": {
+                    "xxxxxx": str,
+                },
+                "non_field": str,
+            },
+        ).validate(data)
 
     def test_post_invalid_fk(self) -> None:
         self.assertEquals(0, Product.objects.count())

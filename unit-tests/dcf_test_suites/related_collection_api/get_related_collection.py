@@ -122,7 +122,7 @@ class TestPagination(TestCase):
         resp = self.superuser_client.get(f"/brand/{self.br2.id}/products?_page=2")
         data = resp.json()
         self.assertDictContainsSubset(
-            {"general_errors": ["Invalid page."]},
+            {"message": "Invalid page.", "code": "not_found"},
             data,
             resp.content,
         )
@@ -133,7 +133,7 @@ class TestPagination(TestCase):
         )
         data = resp.json()
         self.assertDictContainsSubset(
-            {"general_errors": ["Invalid page."]},
+            {"message": "Invalid page.", "code": "not_found"},
             data,
             resp.content,
         )

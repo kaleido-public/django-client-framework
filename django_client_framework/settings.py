@@ -77,7 +77,7 @@ def install(
     REST_FRAMEWORK.update(
         {
             "EXCEPTION_HANDLER": "django_client_framework.exceptions.handlers.dcf_exception_handler",
-            "NON_FIELD_ERRORS_KEY": "general_errors",
+            "NON_FIELD_ERRORS_KEY": "non_field",
         }
     )
     AUTHENTICATION_BACKENDS += []

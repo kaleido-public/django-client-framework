@@ -34,7 +34,10 @@ class TestRetrieve(TestCase):
         self.assertEqual(404, resp.status_code, resp.content)
         data = resp.json()
         self.assertDictContainsSubset(
-            {"general_errors": [f"Not Found: Brand ({UUID(int=23)})"]},
+            {
+                "message": f"Not Found: Brand ({UUID(int=23)})",
+                "code": "not_found",
+            },
             data,
             data,
         )
@@ -47,9 +50,11 @@ class TestRetrieve(TestCase):
         )
         self.assertEqual(400, resp.status_code, resp.content)
         data = resp.json()
-        self.assertEqual(
-            data["general_errors"],
-            [
-                f"Expected an object pk in the request body, but received list: ['{UUID(int=23)}', '{UUID(int=24)}']"
-            ],
+        self.assertDictContainsSubset(
+            {
+                "message": f"Expected an object pk in the request body, but received list: ['{UUID(int=23)}', '{UUID(int=24)}']",
+                "code": "parse_error",
+            },
+            data,
+            data,
         )
