@@ -9,6 +9,7 @@ from django_client_framework.models.abstract.serializable import D
 
 from .. import exceptions as e
 from .serializer import DCFSerializer, SerializerContext, T
+from django_client_framework.exceptions import ValidationError
 
 LOG = getLogger(__name__)
 
@@ -217,8 +218,16 @@ class DelegateSerializer(DCFSerializer[T, D]):
 
     @cached_property
     def delegate(self) -> DCFSerializer[T, D]:
-        if ret := self.get_delegate():
-            return ret
+        try:
+            if ret := self.get_delegate():
+                return ret
+        except ValidationError as e:
+            raise e
+        except Exception as e:
+            raise ValueError(
+                f"An exception occurred when trying to determine the delegate: {e}\n"
+                f"Current class: {self.__class__}.\n"
+            )
         else:
             raise NotImplementedError("Unable to decide delegate")
 
