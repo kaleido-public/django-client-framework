@@ -1,4 +1,5 @@
 from uuid import UUID
+
 import schema
 from dcf_test_app.models import Brand, Product
 from django.test import TestCase
