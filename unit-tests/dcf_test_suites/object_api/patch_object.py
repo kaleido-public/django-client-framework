@@ -1,5 +1,5 @@
 from uuid import UUID
-
+import schema
 from dcf_test_app.models import Brand, Product
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -41,4 +41,13 @@ class TestPatchObject(TestCase):
             {"xxxxx": "product_2", "brand_id": str(self.br.id)},
         )
         data = resp.json()
-        self.assertEqual("invalid", data["xxxxx"][0]["code"])
+        schema.Schema(
+            {
+                "code": "validation_error",
+                "message": str,
+                "fields": {
+                    "xxxxx": str,
+                },
+                "non_field": str,
+            },
+        ).validate(data)
