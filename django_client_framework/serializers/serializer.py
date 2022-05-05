@@ -31,11 +31,21 @@ class SerializerContext(TypedDict):
     view: APIView
 
 
+class DCFSerializerMeta:
+    required_fields: List[str] = []
+    fields: List[str] = []
+    deprecated: Dict[str, str] = {}
+    partial_update: bool = True
+
+
 class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
     # Every attribute / method in this class must also be added to the
     # DelegateSerializer, otherwise the DelegateSerializer breaks.
 
     instance: Optional[T]
+
+    class Meta(DCFSerializerMeta):
+        pass
 
     def __init__(
         self,

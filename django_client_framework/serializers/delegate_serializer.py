@@ -148,16 +148,17 @@ class DelegateSerializer(DCFSerializer[T, D]):
         initial_data: Dict[str, Any],
         prevalidated_data: Optional[Dict[str, Any]],
     ) -> DCFSerializer[T, D]:
-        return self.get_update_delegate_class(
+        cls = self.get_update_delegate_class(
             instance=instance,
             initial_data=initial_data,
             prevalidated_data=prevalidated_data,
-        )(
+        )
+        return cls(
             **{  # type:ignore
                 "instance": self.instance,
                 "data": self.initial_data,
                 "context": self.serializer_context,
-                "partial": True,
+                "partial": cls.Meta.partial_update,
                 **self.serializer_kwargs,
             }
         )

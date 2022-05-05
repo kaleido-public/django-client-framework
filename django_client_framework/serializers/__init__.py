@@ -4,7 +4,7 @@ from rest_framework.serializers import *
 from .delegate_serializer import DelegateSerializer
 from .fields import *
 from .model_serializer import DCFModelSerializer, generate_jsonschema
-from .serializer import DCFSerializer, SerializerContext
+from .serializer import DCFSerializer, SerializerContext, DCFSerializerMeta
 
 
 def check_integrity() -> None:
