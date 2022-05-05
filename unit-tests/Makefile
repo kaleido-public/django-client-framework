@@ -8,8 +8,8 @@ default:
 .PHONY: ci
 ci: alpine-base
 	docker-compose run --rm unit-tests-ci bash -c " \
-		./manage.py makemigrations &&\
-		./manage.py test --no-input -v2 -p '*.py' \
+		poetry run ./manage.py makemigrations &&\
+		poetry run ./manage.py test --no-input -v2 -p '*.py' \
 	"
 
 .PHONY: alpine-base

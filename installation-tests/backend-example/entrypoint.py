@@ -3,7 +3,7 @@ import os
 import shutil
 import unittest
 from pathlib import Path
-from subprocess import CompletedProcess, Popen, SubprocessError, run
+from subprocess import CompletedProcess, Popen, run
 from typing import Any
 
 from schema import Schema
@@ -34,14 +34,15 @@ REST_FRAMEWORK = {{}}
 AUTHENTICATION_BACKENDS = []
 INSTALLED_APPS += ["dcf_backend_example.common"]
 
+AUTH_USER_MODEL = "common.User"
+DEBUG = True
+
 django_client_framework.settings.install(
     INSTALLED_APPS,
     REST_FRAMEWORK,
     MIDDLEWARE,
     AUTHENTICATION_BACKENDS
 )
-
-AUTH_USER_MODEL = "common.User"
 """
     settings.write_text(new_content)
 
@@ -260,10 +261,7 @@ class Test(unittest.TestCase):
             self.query_brand()
             self.query_brand_product_list()
             zip_package()
-
-        except SubprocessError:
-            exit(1)
-
+            server.terminate()
         finally:
             if server:
                 server.terminate()
