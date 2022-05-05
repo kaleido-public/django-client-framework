@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>class RateLimited extends AbstractDCFModel &mdash; Django Client Framework 1.1.x documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Django Client Framework
+          </a>
+              <div class="version">
+                1.1.x
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction to the Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Backend API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client-refs/index.html">Client Libraries Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modify-this-document.html">Modify this documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Django Client Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><cite>class</cite> RateLimited <cite>extends AbstractDCFModel</cite></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/backend-refs/models/RateLimited.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="class-ratelimited-extends-abstractdcfmodel">
+<span id="ratelimited"></span><h1><cite>class</cite> RateLimited <cite>extends AbstractDCFModel</cite><a class="headerlink" href="#class-ratelimited-extends-abstractdcfmodel" title="Permalink to this headline"></a></h1>
+<blockquote>
+<div><div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">RateLimited</span>
+</pre></div>
+</div>
+<p>This base model class provides customization to the api rate limit.</p>
+</div></blockquote>
+<div class="section" id="class-ratemanager">
+<h2><cite>class</cite> RateManager<a class="headerlink" href="#class-ratemanager" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>A nested class in <a class="reference internal" href="#ratelimited">RateLimited</a>.</p>
+</div></blockquote>
+<div class="section" id="method-get-rate-self-queryset-user-action-version-context-str">
+<h3><cite>method</cite> get_rate <cite>(self, queryset, user, action, version, context) -&gt; str</cite><a class="headerlink" href="#method-get-rate-self-queryset-user-action-version-context-str" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>Parameters</dt><dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">queryset</span></code></dt><dd><p>The current resource being accessed.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">user</span></code></dt><dd><p>The current authenticated user. Same as <code class="docutils literal notranslate"><span class="pre">context[&quot;request&quot;].user</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">action</span></code></dt><dd><p>One of <code class="docutils literal notranslate"><span class="pre">read</span></code>, <code class="docutils literal notranslate"><span class="pre">write</span></code>, <code class="docutils literal notranslate"><span class="pre">create</span></code>, <code class="docutils literal notranslate"><span class="pre">delete</span></code></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">version</span></code></dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">&lt;version:str&gt;</span></code> url path parameter of the current route, or <code class="docutils literal notranslate"><span class="pre">&quot;default&quot;</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">context</span></code></dt><dd><p>See <a href="#id1"><span class="problematic" id="id2">`Context`_</span></a>.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns</dt><dd><p>A string in the format of <cite>number/period</cite>, where the <cite>number</cite> is how
+many times the request is allowed, and the <cite>period</cite> is one of <code class="docutils literal notranslate"><span class="pre">day</span></code>,
+<code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">sec</span></code>.
+Examples: <code class="docutils literal notranslate"><span class="pre">&quot;3600/day&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;60/min&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;1/sec&quot;</span></code></p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="method-get-record-key-self-queryset-user-ipid-action-version-context-str">
+<h3><cite>method</cite> get_record_key <cite>(self, queryset, user, ipid, action, version, context) -&gt; str</cite><a class="headerlink" href="#method-get-record-key-self-queryset-user-ipid-action-version-context-str" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl>
+<dt>Parameters</dt><dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">ipid</span></code></dt><dd><p>A string that uniquely identifies the IP address of the current
+user. This is not necessarily the IP address.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns</dt><dd><p>A key used to identify the same request. Each time a request is
+processed, a timestamp is recorded with the key. When the next request
+of the same key comes in, the timestamp is checked against the allowed
+frequency.</p>
+<p>By default, returns <code class="docutils literal notranslate"><span class="pre">hash([queryset.model,</span> <span class="pre">user,</span> <span class="pre">ip,</span> <span class="pre">action])</span></code>.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Yu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

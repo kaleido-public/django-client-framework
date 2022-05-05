@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>REST API Endpoints &mdash; Django Client Framework 1.1.x documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Django Client Framework
+          </a>
+              <div class="version">
+                1.1.x
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction to the Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend-refs/index.html">Backend API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../client-refs/index.html">Client Libraries Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modify-this-document.html">Modify this documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Django Client Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>REST API Endpoints</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/intro/rest-api-endpoints.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="rest-api-endpoints">
+<span id="supported-rest-api"></span><h1>REST API Endpoints<a class="headerlink" href="#rest-api-endpoints" title="Permalink to this headline"></a></h1>
+<p>There are four types of routes:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><a class="reference internal" href="#collection-api"><span class="std std-ref">Collection API</span></a>, <cite>eg. /product</cite></p></li>
+<li><p><a class="reference internal" href="#object-api"><span class="std std-ref">Object API</span></a>, <cite>eg. /product/&lt;id&gt;</cite></p></li>
+<li><p><a class="reference internal" href="#related-collection-api"><span class="std std-ref">Related Collection API</span></a>, <cite>eg. /brand/&lt;id&gt;/products</cite></p></li>
+<li><p><a class="reference internal" href="#related-object-api"><span class="std std-ref">Related Object API</span></a>, <cite>eg. /product/&lt;id&gt;/brand</cite></p></li>
+</ol>
+</div></blockquote>
+<p>The following HTTP methods are supported for each type of routes:</p>
+<div class="section" id="collection-api">
+<span id="id1"></span><h2>Collection API<a class="headerlink" href="#collection-api" title="Permalink to this headline"></a></h2>
+<div class="section" id="get-lists-objects">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span></code>: lists objects<a class="headerlink" href="#get-lists-objects" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>Accepted query parameters:</dt><dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">_page</span></code></dt><dd><p>An integer indicating which page to display</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">_limit</span></code></dt><dd><p>An integer indicating how many results per page to include</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">_order_by</span></code></dt><dd><p>This is handled by Django’s <a class="reference external" href="https://docs.djangoproject.com/en/4.0/ref/models/querysets/#order-by">.order_by()</a> QuerySet API. Adding <code class="docutils literal notranslate"><span class="pre">-</span></code> before the key name sorts the property in the reverse order. Use <code class="docutils literal notranslate"><span class="pre">,</span></code> to join multiple keys.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&lt;property&gt;[__&lt;transformer&gt;...][__&lt;lookup&gt;]</span></code></dt><dd><p>Any key names are handled by <a class="reference external" href="https://docs.djangoproject.com/en/4.0/ref/models/querysets">Django’s QuerySet API</a>. Keys such as <code class="docutils literal notranslate"><span class="pre">id__in[]</span></code> are passed to
+<a class="reference external" href="https://docs.djangoproject.com/en/4.0/ref/models/querysets/#filter">.filter()</a>. See
+<a class="reference external" href="https://docs.djangoproject.com/en/4.0/ref/models/querysets/#field-lookups">Django’s Field lookups</a>.
+Any value of the list/array type must have <code class="docutils literal notranslate"><span class="pre">[]</span></code> appended after the
+key name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>For more examples of the Collection API query parameters, see
+<a class="reference internal" href="#collection-api-pagination"><span class="std std-ref">Pagination</span></a> and <a class="reference internal" href="#collection-api-filtering"><span class="std std-ref">Filtering</span></a>.</p>
+</div>
+<dl>
+<dt>Example:</dt><dd><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>GET /product
+    ?id__in<span class="o">[]=</span>id1,id2
+    <span class="p">&amp;</span><span class="nv">_page</span><span class="o">=</span><span class="m">1</span>
+    <span class="p">&amp;</span><span class="nv">_order_by</span><span class="o">=</span>-id
+
+<span class="c1"># Alternatively, separate id__in[] for each array element</span>
+GET /product
+    ?id__in<span class="o">[]=</span>id1
+    <span class="p">&amp;</span>id__in<span class="o">[]=</span>id2
+    <span class="p">&amp;</span><span class="nv">_page</span><span class="o">=</span><span class="m">1</span>
+    <span class="p">&amp;</span><span class="nv">_order_by</span><span class="o">=</span>-id
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="post-creates-an-object">
+<h3><code class="docutils literal notranslate"><span class="pre">POST</span></code>: creates an object<a class="headerlink" href="#post-creates-an-object" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl>
+<dt>Accepted JSON body:</dt><dd><p>A dictionary accepted by the model’s serializer.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">product</span>
+
+<span class="p">{</span>
+    <span class="n">barcode</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="object-api">
+<span id="id2"></span><h2>Object API<a class="headerlink" href="#object-api" title="Permalink to this headline"></a></h2>
+<div class="section" id="get-retrieves-an-object">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span></code>: retrieves an object<a class="headerlink" href="#get-retrieves-an-object" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl>
+<dt>Accepted query parameters:</dt><dd><p>Same as the <a class="reference internal" href="#collection-api"><span class="std std-ref">Collection API</span></a>. The response is <cite>404
+Not Found</cite> if the filtered result is empty.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">product</span><span class="o">/</span><span class="mi">1370</span><span class="n">f589</span><span class="o">-</span><span class="mi">6</span><span class="n">a45</span><span class="o">-</span><span class="mi">4</span><span class="n">a25</span><span class="o">-</span><span class="mi">8</span><span class="n">b77</span><span class="o">-</span><span class="n">c28c98b8b98b</span>
+
+<span class="p">{</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;product&quot;</span><span class="p">,</span>
+    <span class="n">barcode</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="patch-updates-an-object">
+<h3><code class="docutils literal notranslate"><span class="pre">PATCH</span></code>: updates an object<a class="headerlink" href="#patch-updates-an-object" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl>
+<dt>Accepted JSON body:</dt><dd><p>A dictionary accepted by the model’s serializer.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PATCH</span> <span class="o">/</span><span class="n">product</span><span class="o">/</span><span class="mi">1370</span><span class="n">f589</span><span class="o">-</span><span class="mi">6</span><span class="n">a45</span><span class="o">-</span><span class="mi">4</span><span class="n">a25</span><span class="o">-</span><span class="mi">8</span><span class="n">b77</span><span class="o">-</span><span class="n">c28c98b8b98b</span>
+
+<span class="p">{</span>
+    <span class="n">barcode</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="related-collection-api">
+<span id="id3"></span><h2>Related Collection API<a class="headerlink" href="#related-collection-api" title="Permalink to this headline"></a></h2>
+<div class="section" id="get-lists-related-objects">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span></code>: lists related objects<a class="headerlink" href="#get-lists-related-objects" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl>
+<dt>Accepted query parameters:</dt><dd><p>Same as the <a class="reference internal" href="#collection-api"><span class="std std-ref">Collection API</span></a>.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">brand</span><span class="o">/</span><span class="mi">1370</span><span class="n">f589</span><span class="o">-</span><span class="mi">6</span><span class="n">a45</span><span class="o">-</span><span class="mi">4</span><span class="n">a25</span><span class="o">-</span><span class="mi">8</span><span class="n">b77</span><span class="o">-</span><span class="n">c28c98b8b98b</span><span class="o">/</span><span class="n">products</span>
+
+<span class="p">{</span>
+    <span class="s2">&quot;limit&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;objects_count&quot;</span> <span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="s2">&quot;page&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;pages_count&quot;</span> <span class="p">:</span> <span class="mi">15</span>
+    <span class="s2">&quot;objects&quot;</span> <span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;product&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="post-creates-a-relation">
+<h3><code class="docutils literal notranslate"><span class="pre">POST</span></code>: creates a relation<a class="headerlink" href="#post-creates-a-relation" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl>
+<dt>Accepted JSON body:</dt><dd><p>A list of object ids.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">brand</span><span class="o">/&lt;</span><span class="n">brand_id</span><span class="o">&gt;/</span><span class="n">products</span>
+
+<span class="p">[</span><span class="s2">&quot;32453b61-6718-45bf-bccb-d866cdd3ddad&quot;</span><span class="p">,</span> <span class="s2">&quot;662c99ee-5a65-4e39-ac3a-2836aa52b3ed&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="delete-removes-a-relation">
+<h3><code class="docutils literal notranslate"><span class="pre">DELETE</span></code>: removes a relation<a class="headerlink" href="#delete-removes-a-relation" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>Accepted JSON body:</dt><dd><p>A list of object ids.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="patch-sets-a-set-of-relations">
+<h3><code class="docutils literal notranslate"><span class="pre">PATCH</span></code>: sets a set of relations<a class="headerlink" href="#patch-sets-a-set-of-relations" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl>
+<dt>Accepted JSON body:</dt><dd><p>A list of object ids.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">PATCH</span> <span class="o">/</span><span class="nx">brand</span><span class="o">/</span><span class="mf">662</span><span class="nx">c99ee</span><span class="o">-</span><span class="mf">5</span><span class="nx">a65</span><span class="o">-</span><span class="mf">4e39</span><span class="o">-</span><span class="nx">ac3a</span><span class="o">-</span><span class="mf">2836</span><span class="nx">aa52b3ed</span><span class="o">/</span><span class="nx">products</span>
+
+<span class="p">[]</span> <span class="c1">// unlink all relations</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="related-object-api">
+<span id="id4"></span><h2>Related Object API<a class="headerlink" href="#related-object-api" title="Permalink to this headline"></a></h2>
+<div class="section" id="get-retrieves-a-related-object">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span></code>: retrieves a related object<a class="headerlink" href="#get-retrieves-a-related-object" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl>
+<dt>Accepted query parameters:</dt><dd><p>Same as the <a class="reference internal" href="#object-api"><span class="std std-ref">Object API</span></a>.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">product</span><span class="o">/</span><span class="mi">1370</span><span class="n">f589</span><span class="o">-</span><span class="mi">6</span><span class="n">a45</span><span class="o">-</span><span class="mi">4</span><span class="n">a25</span><span class="o">-</span><span class="mi">8</span><span class="n">b77</span><span class="o">-</span><span class="n">c28c98b8b98b</span><span class="o">/</span><span class="n">brand</span>
+
+<span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;brand&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="patch-sets-a-related-object">
+<h3><code class="docutils literal notranslate"><span class="pre">PATCH</span></code>: sets a related object<a class="headerlink" href="#patch-sets-a-related-object" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><dl>
+<dt>Accepted JSON body:</dt><dd><p>A object id, or <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PATCH</span> <span class="o">/</span><span class="n">products</span><span class="o">/</span><span class="mi">662</span><span class="n">c99ee</span><span class="o">-</span><span class="mi">5</span><span class="n">a65</span><span class="o">-</span><span class="mf">4e39</span><span class="o">-</span><span class="n">ac3a</span><span class="o">-</span><span class="mi">2836</span><span class="n">aa52b3ed</span><span class="o">/</span><span class="n">brand</span>
+
+<span class="s2">&quot;32453b61-6718-45bf-bccb-d866cdd3ddad&quot;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="pagination-collection-apis">
+<span id="collection-api-pagination"></span><h2>Pagination (Collection APIs)<a class="headerlink" href="#pagination-collection-apis" title="Permalink to this headline"></a></h2>
+<p>Both collection APIs (regular and related) support pagination by these query parameters:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">_limit</span></code></dt><dd><p>An integer to specify how many objects to return per page.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">_page</span></code></dt><dd><p>An integer to specify the page number. The first page is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">_order</span></code></dt><dd><p>A pattern that matches <code class="docutils literal notranslate"><span class="pre">[-]&lt;property&gt;,</span> <span class="pre">[-]&lt;property&gt;,</span> <span class="pre">...</span></code>. For
+example, <code class="docutils literal notranslate"><span class="pre">id,</span> <span class="pre">-username</span></code>. The collection is sorted by the first
+property in an increasing order, then the other properties are tie
+breakers in that order. When <code class="docutils literal notranslate"><span class="pre">-</span></code> is before a property name, it means
+to sort by that property in the decreasing order.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Server responses:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;objects&quot;</span> <span class="p">:</span> <span class="p">[</span>
+        <span class="o">&lt;</span><span class="n">model_objects</span><span class="o">&gt;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;limit&quot;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s2">&quot;objects_count&quot;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s2">&quot;page&quot;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s2">&quot;pages_count&quot;</span> <span class="p">:</span> <span class="nb">int</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">objects</span></code></dt><dd><p>The list of objects.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">limit</span></code></dt><dd><p>This is just an echo of the <code class="docutils literal notranslate"><span class="pre">_limit</span></code> provided in the request.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">objects_count</span></code></dt><dd><p>Total number of objects found in all pages.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">page</span></code></dt><dd><p>Current page number. Starts from <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pages_count</span></code></dt><dd><p>Total number of pages.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="filtering-collection-apis">
+<span id="collection-api-filtering"></span><h2>Filtering (Collection APIs)<a class="headerlink" href="#filtering-collection-apis" title="Permalink to this headline"></a></h2>
+<p>The collection API (regular and related) support filtering objects by most
+properties. There are five types of properties: number, string, datetime,
+foreign key and reverse foreign key.</p>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">&lt;property&gt;[__&lt;lookup&gt;]</span></code> to filter the objects. The
+<code class="docutils literal notranslate"><span class="pre">__&lt;lookup&gt;</span></code> is optional. For example, for the <cite>CartItem</cite> model,
+<code class="docutils literal notranslate"><span class="pre">quantity__gte=2</span></code> filters the object where the <code class="docutils literal notranslate"><span class="pre">quantity</span></code> property is
+<cite>greater than or equal to</cite> <code class="docutils literal notranslate"><span class="pre">2</span></code>. When the lookup part is left out, it is the
+same as <code class="docutils literal notranslate"><span class="pre">&lt;property&gt;__eq</span></code>, which is <cite>exactly equal</cite>.</p>
+<div class="section" id="number-property">
+<span id="id5"></span><h3>Number property<a class="headerlink" href="#number-property" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><p>The supported lookup are:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__eq</span></code></dt>
+<dd class="field-odd"><p><cite>(default)</cite> Equal to. This is the default if <code class="docutils literal notranslate"><span class="pre">__&lt;lookup&gt;</span></code> if omitted.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__ne</span></code></dt>
+<dd class="field-even"><p>Not equal to.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__gte</span></code></dt>
+<dd class="field-odd"><p>Greater than or equal to.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__lte</span></code></dt>
+<dd class="field-even"><p>Less than or equal to.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__gt</span></code></dt>
+<dd class="field-odd"><p>Greater than.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__lt</span></code></dt>
+<dd class="field-even"><p>Less than.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__range[]=a,b</span></code></dt>
+<dd class="field-odd"><p>Between <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>, inclusive.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__in[]</span></code></dt>
+<dd class="field-even"><p>Equal to any number in the list. Eg. <code class="docutils literal notranslate"><span class="pre">__in[]=1,2,3</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__isnull=true</span></code></dt>
+<dd class="field-odd"><p>Is null.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="string-property">
+<h3>String property<a class="headerlink" href="#string-property" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><p>The supported lookup are:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__exact</span></code></dt>
+<dd class="field-odd"><p><cite>(default)</cite> Equal to. This is the default if <code class="docutils literal notranslate"><span class="pre">__&lt;lookup&gt;</span></code> if omitted.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__iexact</span></code></dt>
+<dd class="field-even"><p>Equal to, case-insensitive.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__contains</span></code></dt>
+<dd class="field-odd"><p>String contains a substring.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__icontains</span></code></dt>
+<dd class="field-even"><p>String contains a substring, case-insensitive.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__startswith</span></code></dt>
+<dd class="field-odd"><p>String that starts with a prefix</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__endswith</span></code></dt>
+<dd class="field-even"><p>String that ends with a prefix</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__istartswith</span></code></dt>
+<dd class="field-odd"><p>String that starts with a prefix, case-insensitive.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__iendswith</span></code></dt>
+<dd class="field-even"><p>String that ends with a prefix, case-insensitive.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__regex</span></code></dt>
+<dd class="field-odd"><p>String that matches the regex.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__iregex</span></code></dt>
+<dd class="field-even"><p>String that matches the regex, case-insensitive.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__in[]</span></code></dt>
+<dd class="field-odd"><p>Equal to any string in the list. Eg. <code class="docutils literal notranslate"><span class="pre">__in[]=abc,def,ghi</span></code>.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__isnull=true</span></code></dt>
+<dd class="field-even"><p>Is null.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="datetime-property">
+<h3>Datetime property<a class="headerlink" href="#datetime-property" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><p>The following lookups are supported, when supplied values in the format of
+ISO 8601, for example, <code class="docutils literal notranslate"><span class="pre">2022-01-14T12:03:03.899967-05:00</span></code>.</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__eq</span></code></dt>
+<dd class="field-odd"><p><cite>(default)</cite> Equal to. This is the default if <code class="docutils literal notranslate"><span class="pre">__&lt;lookup&gt;</span></code> if omitted.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__ne</span></code></dt>
+<dd class="field-even"><p>Not equal to.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__gte</span></code></dt>
+<dd class="field-odd"><p>Later than or equal to (greater than or equal to).</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__lte</span></code></dt>
+<dd class="field-even"><p>Earlier than or equal to (less than or equal to).</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__gt</span></code></dt>
+<dd class="field-odd"><p>Later than (greater than).</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__lt</span></code></dt>
+<dd class="field-even"><p>Earlier than (less than).</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__range[]=a,b</span></code></dt>
+<dd class="field-odd"><p>Between <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>, inclusive.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__in[]</span></code></dt>
+<dd class="field-even"><p>Equal to any number in the list. Eg. <code class="docutils literal notranslate"><span class="pre">__in[]=&quot;2022-01-14T12:03:03.899967-05:00&quot;,&quot;2022-01-14T12:03:03.899967-05:00&quot;</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__isnull=true</span></code></dt>
+<dd class="field-odd"><p>Is null.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>In addition to straight lookups, you can extract values such as the year,
+the month, the date, using <cite>transformers</cite>. After transforming the value, the
+output is a number that can be further chained by a lookup of the
+<a class="reference internal" href="#number-property"><span class="std std-ref">Number property</span></a>.</p>
+<p>For example, by using the transformer <code class="docutils literal notranslate"><span class="pre">__year</span></code>, you can filter objects
+that are created between <code class="docutils literal notranslate"><span class="pre">2020</span></code> and <code class="docutils literal notranslate"><span class="pre">2021</span></code> by using
+<code class="docutils literal notranslate"><span class="pre">__year__range[]=2020,2021</span></code>.</p>
+<p>The full syntax is <code class="docutils literal notranslate"><span class="pre">&lt;property&gt;[__&lt;transformer&gt;][__&lt;lookup&gt;]</span></code>.</p>
+<p>Supported transformers are:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__year</span></code></dt>
+<dd class="field-odd"><p>Year as an integer.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__month</span></code></dt>
+<dd class="field-even"><p>Month as an integer between <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">12</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__day</span></code></dt>
+<dd class="field-odd"><p>Day of the month as an integer.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__week</span></code></dt>
+<dd class="field-even"><p>Week of the year as an integer.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__week_day</span></code></dt>
+<dd class="field-odd"><p>Day of the week as an integer, between <cite>1`</cite> and <code class="docutils literal notranslate"><span class="pre">7</span></code>.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__quarter</span></code></dt>
+<dd class="field-even"><p>Quarter of the year as an integer, between <cite>1`</cite> and <code class="docutils literal notranslate"><span class="pre">4</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__hour</span></code></dt>
+<dd class="field-odd"><p>Hour of the day as an integer, between <cite>0`</cite> and <code class="docutils literal notranslate"><span class="pre">23</span></code>.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__minute</span></code></dt>
+<dd class="field-even"><p>Minute of the hour as an integer, between <cite>0`</cite> and <code class="docutils literal notranslate"><span class="pre">59</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__second</span></code></dt>
+<dd class="field-odd"><p>Minute of the minute as an integer, between <cite>0`</cite> and <code class="docutils literal notranslate"><span class="pre">59</span></code>.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="foreign-key-property">
+<h3>Foreign key property<a class="headerlink" href="#foreign-key-property" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><p>The supported lookup are:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__exact</span></code></dt>
+<dd class="field-odd"><p><cite>(default)</cite> Equal to. This is the default if <code class="docutils literal notranslate"><span class="pre">__&lt;lookup&gt;</span></code> if omitted.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__in[]</span></code></dt>
+<dd class="field-even"><p>Equal to any id in the list. Eg. <code class="docutils literal notranslate"><span class="pre">__in[]=346ed90a-2360-4c44-801d-9623b3a1059a,0332daeb-e4b9-46e3-bf8a-0469ff54d1d0</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__isnull=true</span></code></dt>
+<dd class="field-odd"><p>Is null.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="look-up-through-related-objects">
+<h3>Look up through related objects<a class="headerlink" href="#look-up-through-related-objects" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><p>In addition to look up by the current model’s properties, if the object has
+a related object, you can also filter the current model by the related
+object’s properties. For example, you can filter <cite>Product</cite> by the
+<cite>ProdutGroup</cite>’s name.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/api/v1/product?productgroup__name__istartswith=abc
+</pre></div>
+</div>
+<p>All lookup methods above are also supported. The look up can be arbitrarily
+deep. The supported syntax in general is
+<code class="docutils literal notranslate"><span class="pre">&lt;property&gt;[__&lt;property&gt;...][__&lt;lookup&gt;]</span></code>.</p>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Yu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+version: "3"
+services:
+  unit-tests-ci:
+    build:
+      context: ..
+      dockerfile: unit-tests/Dockerfile
+    image: unit-tests-ci

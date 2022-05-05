@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction to the Framework &mdash; Django Client Framework 1.1.x documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/tabs.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Backend API Reference" href="../backend-refs/index.html" />
+    <link rel="prev" title="Table of Contents" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Django Client Framework
+          </a>
+              <div class="version">
+                1.1.x
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction to the Framework</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#an-overview-of-the-framework">An Overview of the Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started-with-the-backend">Getting Started with the Backend</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installation-with-pip3-git">Installation with pip3+git</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configure-django-s-settings-py-file">Configure Django’s settings.py file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-routing-handlers-to-urls-py">Add routing handlers to <code class="docutils literal notranslate"><span class="pre">urls.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-a-serializable-model">Add a Serializable model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#make-an-accesscontrolled-model">Make an AccessControlled model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#query-objects-via-http-requests">Query objects via HTTP requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#query-relational-objects-via-http">Query relational objects via HTTP</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-starting-with-client-libraries">Getting Starting with Client Libraries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-client-libraries">Install client libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#define-a-model-class">Define a model class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#retrieve-a-model-object">Retrieve a model object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#retrieve-a-relational-object">Retrieve a relational object</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rest-api-endpoints">REST API Endpoints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#collection-api">Collection API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#get-lists-objects"><code class="docutils literal notranslate"><span class="pre">GET</span></code>: lists objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#post-creates-an-object"><code class="docutils literal notranslate"><span class="pre">POST</span></code>: creates an object</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#object-api">Object API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#get-retrieves-an-object"><code class="docutils literal notranslate"><span class="pre">GET</span></code>: retrieves an object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#patch-updates-an-object"><code class="docutils literal notranslate"><span class="pre">PATCH</span></code>: updates an object</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#related-collection-api">Related Collection API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#get-lists-related-objects"><code class="docutils literal notranslate"><span class="pre">GET</span></code>: lists related objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#post-creates-a-relation"><code class="docutils literal notranslate"><span class="pre">POST</span></code>: creates a relation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#delete-removes-a-relation"><code class="docutils literal notranslate"><span class="pre">DELETE</span></code>: removes a relation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#patch-sets-a-set-of-relations"><code class="docutils literal notranslate"><span class="pre">PATCH</span></code>: sets a set of relations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#related-object-api">Related Object API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#get-retrieves-a-related-object"><code class="docutils literal notranslate"><span class="pre">GET</span></code>: retrieves a related object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#patch-sets-a-related-object"><code class="docutils literal notranslate"><span class="pre">PATCH</span></code>: sets a related object</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pagination-collection-apis">Pagination (Collection APIs)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filtering-collection-apis">Filtering (Collection APIs)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#number-property">Number property</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#string-property">String property</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#datetime-property">Datetime property</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#foreign-key-property">Foreign key property</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#look-up-through-related-objects">Look up through related objects</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#permission-concepts-and-management">Permission Concepts and Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#types-of-permissions">Types of permissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#levels-of-permissions">Levels of permissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#default-users">Default users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#default-groups">Default groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#permissions-for-api-endpoints">Permissions for API Endpoints</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Collection API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">Object API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-collection-apis">Related Collection APIs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">Related Object API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#api-rate-limiting">API Rate Limiting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../backend-refs/index.html">Backend API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../client-refs/index.html">Client Libraries Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modify-this-document.html">Modify this documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Django Client Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Introduction to the Framework</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/intro/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="introduction-to-the-framework">
+<h1>Introduction to the Framework<a class="headerlink" href="#introduction-to-the-framework" title="Permalink to this headline"></a></h1>
+<div class="section" id="an-overview-of-the-framework">
+<h2>An Overview of the Framework<a class="headerlink" href="#an-overview-of-the-framework" title="Permalink to this headline"></a></h2>
+<p>Django Client Framework is meant to work with the famous python server framework
+<a class="reference external" href="https://www.djangoproject.com">Django</a>, and its popular REST API library,
+<a class="reference external" href="https://www.django-rest-framework.org">Django Rest Framework</a>.</p>
+<p>The Django Client Framework includes client libraries in multiple languages,
+which enables frontend developers to query the database using native programming
+languages, without having to worry about the communication details at the REST
+API level.</p>
+<p>For instance, when a <cite>Product</cite> model is defined in Django:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+   <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>With the Django Client Framework, a corresponding model in the frontend language
+is defined.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button><button aria-controls="panel-0-RGFydA==" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-RGFydA==" name="RGFydA==" role="tab" tabindex="-1">Dart</button><button aria-controls="panel-0-S290bGlu" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-S290bGlu" name="S290bGlu" role="tab" tabindex="-1">Kotlin</button><button aria-controls="panel-0-U3dpZnQ=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-U3dpZnQ=" name="U3dpZnQ=" role="tab" tabindex="-1">Swift</button></div><div aria-labelledby="tab-0-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+   <span class="nx">barcode</span>: <span class="kt">str</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-RGFydA==" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-RGFydA==" name="RGFydA==" role="tabpanel" tabindex="0"><div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">CartItem</span> <span class="kd">extends</span> <span class="n">Model</span> <span class="p">{</span>
+   <span class="kd">static</span> <span class="kd">final</span> <span class="n">objects</span> <span class="o">=</span> <span class="n">CollectionManager</span><span class="p">(</span><span class="n">CartItem</span><span class="p">);</span>
+
+   <span class="kt">String</span> <span class="kd">get</span> <span class="n">barcode</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;barcode&quot;</span><span class="p">];</span>
+   <span class="kd">set</span> <span class="n">barcode</span><span class="p">(</span><span class="kt">String</span> <span class="n">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;barcode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-S290bGlu" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-S290bGlu" name="S290bGlu" role="tabpanel" tabindex="0"><div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">Product</span><span class="p">(</span>
+   <span class="kd">val</span> <span class="nv">barcode</span><span class="p">:</span> <span class="kt">String</span>
+<span class="p">):</span> <span class="n">Model</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-U3dpZnQ=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-U3dpZnQ=" name="U3dpZnQ=" role="tabpanel" tabindex="0"><div class="highlight-swift notranslate"><div class="highlight"><pre><span></span><span class="kd">struct</span> <span class="nc">Product</span><span class="p">:</span> <span class="n">Model</span> <span class="p">{</span>
+   <span class="kd">var</span> <span class="nv">barcode</span><span class="p">:</span> <span class="nb">String</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></div>
+<p>Then to query get a Product object in the frontend, you can use the API provided
+by the Django Client Framework, which is extremely similar to the Django’s:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-1-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button><button aria-controls="panel-1-RGFydA==" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-1-RGFydA==" name="RGFydA==" role="tab" tabindex="-1">Dart</button><button aria-controls="panel-1-S290bGlu" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-1-S290bGlu" name="S290bGlu" role="tab" tabindex="-1">Kotlin</button><button aria-controls="panel-1-U3dpZnQ=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-1-U3dpZnQ=" name="U3dpZnQ=" role="tab" tabindex="-1">Swift</button></div><div aria-labelledby="tab-1-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-1-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">results</span>: <span class="kt">PageResult</span><span class="o">&lt;</span><span class="nx">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">page</span><span class="p">()</span>
+<span class="kd">let</span> <span class="nx">product</span>: <span class="kt">Product</span> <span class="o">=</span> <span class="nx">results</span><span class="p">[</span><span class="mf">0</span><span class="p">]</span>
+<span class="nx">product</span><span class="p">.</span><span class="nx">barcode</span> <span class="o">=</span> <span class="s2">&quot;xxyy&quot;</span>
+<span class="k">await</span> <span class="nx">product</span><span class="p">.</span><span class="nx">save</span><span class="p">()</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-RGFydA==" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-1-RGFydA==" name="RGFydA==" role="tabpanel" tabindex="0"><div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">PageResult</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="kd">await</span> <span class="n">Product</span><span class="p">.</span><span class="n">objects</span><span class="p">.</span><span class="n">page</span><span class="p">();</span>
+<span class="kd">final</span> <span class="nl">product:</span> <span class="n">Product</span> <span class="o">=</span> <span class="n">results</span><span class="p">.</span><span class="n">objects</span><span class="p">[</span><span class="m">0</span><span class="p">];</span>
+<span class="n">product</span><span class="p">.</span><span class="n">props</span><span class="p">.</span><span class="n">barcode</span> <span class="o">=</span> <span class="s2">&quot;xxyy&quot;</span><span class="p">;</span>
+<span class="kd">await</span> <span class="n">product</span><span class="p">.</span><span class="n">save</span><span class="p">();</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-S290bGlu" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-1-S290bGlu" name="S290bGlu" role="tabpanel" tabindex="0"><div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="kd">val</span> <span class="nv">result</span><span class="p">:</span> <span class="n">PageResult</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">Product</span><span class="p">.</span><span class="na">objects</span><span class="p">.</span><span class="na">page</span><span class="p">()</span>
+<span class="kd">val</span> <span class="nv">product</span><span class="p">:</span> <span class="n">Product</span> <span class="o">=</span> <span class="n">results</span><span class="o">[</span><span class="m">0</span><span class="o">]</span>
+<span class="n">product</span><span class="p">.</span><span class="na">barcode</span> <span class="o">=</span> <span class="s">&quot;xxyy&quot;</span>
+<span class="n">product</span><span class="p">.</span><span class="na">save</span><span class="p">()</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-U3dpZnQ=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-1-U3dpZnQ=" name="U3dpZnQ=" role="tabpanel" tabindex="0"><div class="highlight-swift notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nv">results</span><span class="p">:</span> <span class="n">PageResult</span><span class="p">&lt;</span><span class="n">Product</span><span class="p">&gt;</span> <span class="p">=</span> <span class="k">try</span> <span class="n">Product</span><span class="p">.</span><span class="n">objects</span><span class="p">.</span><span class="n">page</span><span class="p">().</span><span class="k">await</span><span class="p">()</span>
+<span class="kd">let</span> <span class="nv">product</span><span class="p">:</span> <span class="n">Product</span> <span class="p">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">product</span><span class="p">.</span><span class="n">barcode</span> <span class="p">=</span> <span class="s">&quot;xxyy&quot;</span>
+<span class="n">product</span><span class="p">.</span><span class="n">save</span><span class="p">().</span><span class="k">await</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Django Client Framework has two components, the frontend libraries,
+and the backend API server based on Django. You need to install both components
+into your project.</p>
+</div>
+<p>Internally, a communication protocol based on REST API is used between the
+frontend and the backend. The protocol is considered an internal detail of the
+Django Client Framework, and you should not need to worry about it.</p>
+<img alt="../_images/overview1.jpg" src="../_images/overview1.jpg" />
+</div>
+<div class="section" id="getting-started-with-the-backend">
+<h2>Getting Started with the Backend<a class="headerlink" href="#getting-started-with-the-backend" title="Permalink to this headline"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This guide assumes that you are familiar with Django. Before starting, you
+may want to go through Django’s tutorial first:
+<a class="reference external" href="https://docs.djangoproject.com/en/3.2/">https://docs.djangoproject.com/en/3.2/</a></p>
+</div>
+<div class="section" id="installation-with-pip3-git">
+<h3>Installation with pip3+git<a class="headerlink" href="#installation-with-pip3-git" title="Permalink to this headline"></a></h3>
+<p>Django Client Framework (Django) requires <code class="docutils literal notranslate"><span class="pre">python3.8+</span></code> and <code class="docutils literal notranslate"><span class="pre">Django</span> <span class="pre">3.0+</span></code>. To
+install Django Client Framework from the GitHub repository:</p>
+<dl>
+<dt>With <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</dt><dd><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install git+https://github.com/kaleido-public/django-client-framework.git@staging
+</pre></div>
+</div>
+</dd>
+<dt>With <code class="docutils literal notranslate"><span class="pre">poetry</span></code>:</dt><dd><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry add git+https://github.com/kaleido-public/django-client-framework.git@staging
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="configure-django-s-settings-py-file">
+<h3>Configure Django’s settings.py file<a class="headerlink" href="#configure-django-s-settings-py-file" title="Permalink to this headline"></a></h3>
+<p>In <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> for your Django app, simply add <em>at the end of the file</em>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">django_client_framework.settings</span>
+<span class="n">django_client_framework</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">install</span><span class="p">(</span>
+    <span class="n">INSTALLED_APPS</span><span class="p">,</span>
+    <span class="n">REST_FRAMEWORK</span><span class="p">,</span>
+    <span class="n">MIDDLEWARE</span><span class="p">,</span>
+    <span class="n">AUTHENTICATION_BACKENDS</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The line must be added after where the <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code>, <code class="docutils literal notranslate"><span class="pre">REST_FRAMEWORK</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MIDDLEWARE</span></code> and <code class="docutils literal notranslate"><span class="pre">AUTHENTICATION_BACKENDS</span></code> global variables are defined,
+because the <code class="docutils literal notranslate"><span class="pre">.install()</span></code> function modifies these variables by reference.</p>
+</div>
+<p>An example of the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file is as follows:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">django_client_framework.settings</span>
+
+<span class="c1"># ... other configs</span>
+
+<span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;django.contrib.admin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sessions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.staticfiles&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;django.middleware.security.SecurityMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sessions.middleware.SessionMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.middleware.common.CommonMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.middleware.csrf.CsrfViewMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.messages.middleware.MessageMiddleware&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.middleware.clickjacking.XFrameOptionsMiddleware&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">REST_FRAMEWORK</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># .. your settings</span>
+<span class="p">}</span>
+
+<span class="n">AUTHENTICATION_BACKENDS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># .. your settings</span>
+<span class="p">]</span>
+
+<span class="c1"># Add this line</span>
+<span class="n">django_client_framework</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">install</span><span class="p">(</span>
+    <span class="n">INSTALLED_APPS</span><span class="p">,</span>
+    <span class="n">REST_FRAMEWORK</span><span class="p">,</span>
+    <span class="n">MIDDLEWARE</span><span class="p">,</span>
+    <span class="n">AUTHENTICATION_BACKENDS</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="add-routing-handlers-to-urls-py">
+<h3>Add routing handlers to <code class="docutils literal notranslate"><span class="pre">urls.py</span></code><a class="headerlink" href="#add-routing-handlers-to-urls-py" title="Permalink to this headline"></a></h3>
+<p>Next, append Django Client Framework’s API route handlers to your app’s
+<code class="docutils literal notranslate"><span class="pre">urls.py</span></code> file:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">include</span>
+<span class="kn">import</span> <span class="nn">django_client_framework.api.urls</span>
+
+<span class="n">app_name</span> <span class="o">=</span> <span class="s2">&quot;myapp&quot;</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span> <span class="c1"># other routes</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&lt;str:locale&gt;/api/&lt;str:version&gt;&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">django_client_framework</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">urls</span><span class="p">))</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.urlpatterns</span></code> variable provided by the Django Client Framework is just
+a list of routes and handlers. You can append this variable to your
+urlpatterns list flexiably. Internally, the <code class="docutils literal notranslate"><span class="pre">.urlpatterns</span></code> is defined as
+follows:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># django_client_framework.api.urls.urlpatterns</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&lt;str:model&gt;&quot;</span><span class="p">,</span> <span class="n">ModelCollectionAPI</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model_collection&quot;</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&lt;str:model&gt;/&lt;int:pk&gt;&quot;</span><span class="p">,</span> <span class="n">ModelObjectAPI</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model_object&quot;</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span>
+        <span class="s2">&quot;&lt;str:model&gt;/&lt;int:pk&gt;/&lt;str:target_field&gt;&quot;</span><span class="p">,</span>
+        <span class="n">ModelFieldAPI</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model_field&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="add-a-serializable-model">
+<h3>Add a Serializable model<a class="headerlink" href="#add-a-serializable-model" title="Permalink to this headline"></a></h3>
+<p>To add a model, create a model that extends from
+<code class="docutils literal notranslate"><span class="pre">django_client_framework.models.Serializable</span></code>. For instance:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
+
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">):</span>
+    <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Serializable</span></code> class requires <code class="docutils literal notranslate"><span class="pre">Product</span></code> to implement a class method
+named <code class="docutils literal notranslate"><span class="pre">.get_serializer_class()</span></code>, which should return a <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code>
+class. This class is responsible for converting back and forth betwen a JSON
+object and a class object, ie, serialization and deserialization.</p>
+<p>To define a <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code> for <code class="docutils literal notranslate"><span class="pre">Product</span></code>, create another class that
+inherits from <code class="docutils literal notranslate"><span class="pre">DCFModelSerializer</span></code>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
+
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<p><cite>DCFModelSerializer</cite> is a subclass of <cite>ModelSerializer</cite> in Django Rest
+Framework. Always use <cite>DCFModelSerializer</cite>, or the APIs don’t work!</p>
+</div>
+<p>Finally, we return this class from the <code class="docutils literal notranslate"><span class="pre">.get_serializer_class()</span></code> method. The final code
+looks like this:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
+
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">):</span>
+    <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ProductSerializer</span>
+
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now you can run migration to apply the new model.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 ./manage.py makemigrations
+python3 ./manage.py migrate
+</pre></div>
+</div>
+</div>
+<div class="section" id="make-an-accesscontrolled-model">
+<h3>Make an AccessControlled model<a class="headerlink" href="#make-an-accesscontrolled-model" title="Permalink to this headline"></a></h3>
+<p>Django Client Framework supports both model and object level authorizations. By
+default, all objects are only readable and writable only to superusers. Next, we
+will give the read permission to the anyone user group, so that the product list
+is publically visible to anyone visiting our site.</p>
+<p>To manage model permission, <code class="docutils literal notranslate"><span class="pre">Product</span></code> needs to extend the <code class="docutils literal notranslate"><span class="pre">AccessControlled</span></code>
+class, and overrides a class method named <code class="docutils literal notranslate"><span class="pre">.get_permissionmanager_class()</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">.get_permissionmanager_class()</span></code> class method should return a
+<code class="docutils literal notranslate"><span class="pre">PermissionManager</span></code> class that implements a method named <code class="docutils literal notranslate"><span class="pre">.add_perms(instance)</span></code>.
+The default implementation of <code class="docutils literal notranslate"><span class="pre">.get_permissionmanager_class()</span></code> looks for a class
+named <code class="docutils literal notranslate"><span class="pre">PermissionManager</span></code> in the model class.</p>
+<p>To give anyone the read permission to the Product model, we import the
+<code class="docutils literal notranslate"><span class="pre">default_groups.anyone</span></code> and <a class="reference internal" href="../backend-refs/permissions/index.html#add-perms-shortcut"><span class="std std-ref">add_perms_shortcut(…)</span></a> from <code class="docutils literal notranslate"><span class="pre">django_client_framework.permissions</span></code> and use
+them to set the permissions.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span><span class="p">,</span> <span class="n">add_perms_shortcut</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
+
+
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
+    <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ProductSerializer</span>
+
+    <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">add_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">):</span>
+            <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now to refresh the permission stored in the database, run this in Django shell:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 ./manage.py shell
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># inside shell</span>
+
+<span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">reset_permissions</span>
+
+<span class="n">reset_permissions</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Consider running <code class="docutils literal notranslate"><span class="pre">reset_permissions()</span></code> after the django migrations.</p>
+</div>
+</div>
+<div class="section" id="query-objects-via-http-requests">
+<h3>Query objects via HTTP requests<a class="headerlink" href="#query-objects-via-http-requests" title="Permalink to this headline"></a></h3>
+<p>We need to expose the <code class="docutils literal notranslate"><span class="pre">Product</span></code> model to the REST API by using the
+<code class="docutils literal notranslate"><span class="pre">&#64;register_api_model</span></code> decorator. Add <code class="docutils literal notranslate"><span class="pre">&#64;register_api_model</span></code> to the <cite>Product</cite>
+class.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span><span class="p">,</span> <span class="n">add_perms_shortcut</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.api</span> <span class="kn">import</span> <span class="n">register_api_model</span>
+
+<span class="nd">@register_api_model</span>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
+    <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ProductSerializer</span>
+
+    <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">add_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">):</span>
+            <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now that the <code class="docutils literal notranslate"><span class="pre">Product</span></code> model is correctly configured, you can create a
+<code class="docutils literal notranslate"><span class="pre">Product</span></code> object in Django and visit in via the REST API.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 ./manage.py shell
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># inside shell</span>
+<span class="kn">from</span> <span class="nn">.product</span> <span class="kn">import</span> <span class="n">Product</span>
+
+<span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">barcode</span><span class="o">=</span><span class="s2">&quot;xxyy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Start the django development server:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 ./manage.py runserver <span class="c1"># Starting development server at http://127.0.0.1:8000/</span>
+</pre></div>
+</div>
+<p>To visit the list of products, send a GET request to this url:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/product/
+
+<span class="c1">#   {</span>
+<span class="c1">#       pages_count: 1,</span>
+<span class="c1">#       objects_count: 1,</span>
+<span class="c1">#       limit: 50,</span>
+<span class="c1">#       page: 1,</span>
+<span class="c1">#       objects: [ {id: &quot;...&quot;, barcode: &quot;xxyy&quot;} ],</span>
+<span class="c1">#   }</span>
+</pre></div>
+</div>
+<p>To visit the specific product, send a GET request to this url:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/product/&lt;id&gt;
+
+<span class="c1"># {id: &quot;...&quot;, barcode: &quot;xxyy&quot;}</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Besides retrieving the object, creation, deleting, and modifications are
+also supported through POST, DELETE, PUT REST requests respectively.</p>
+</div>
+</div>
+<div class="section" id="query-relational-objects-via-http">
+<h3>Query relational objects via HTTP<a class="headerlink" href="#query-relational-objects-via-http" title="Permalink to this headline"></a></h3>
+<p>The Django model system allows you to define relational data. For instance, we
+can add the <code class="docutils literal notranslate"><span class="pre">Brand</span></code> class in Django. A brand can have multiple products.
+Conversely, a product is made by one brand.</p>
+<p>Therefore, we define the two classes as follows:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.models</span> <span class="kn">import</span> <span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.serializers</span> <span class="kn">import</span> <span class="n">DCFModelSerializer</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span><span class="p">,</span> <span class="n">add_perms_shortcut</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.api</span> <span class="kn">import</span> <span class="n">register_api_model</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">CharField</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">CASCADE</span>
+
+
+<span class="nd">@register_api_model</span>
+<span class="k">class</span> <span class="nc">Brand</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">BrandSerializer</span>
+
+    <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">add_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">brand</span><span class="p">):</span>
+            <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">brand</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">BrandSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Brand</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@register_api_model</span>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Serializable</span><span class="p">,</span> <span class="n">AccessControlled</span><span class="p">):</span>
+    <span class="n">barcode</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+    <span class="n">brand</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;Brand&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;products&quot;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ProductSerializer</span>
+
+    <span class="k">class</span> <span class="nc">PermissionManager</span><span class="p">(</span><span class="n">AccessControlled</span><span class="o">.</span><span class="n">PermissionManager</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">add_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">):</span>
+            <span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ProductSerializer</span><span class="p">(</span><span class="n">DCFModelSerializer</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Product</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;barcode&quot;</span><span class="p">,</span> <span class="s2">&quot;brand_id&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>After applying migrations, add a <code class="docutils literal notranslate"><span class="pre">Product</span></code> object, and a <code class="docutils literal notranslate"><span class="pre">Brand</span></code> object:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">nike</span> <span class="o">=</span> <span class="n">Brand</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nike&quot;</span><span class="p">)</span>
+<span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">barcode</span><span class="o">=</span><span class="s2">&quot;xxyy&quot;</span><span class="p">,</span> <span class="n">brand</span><span class="o">=</span><span class="n">nike</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now to retrieve the <code class="docutils literal notranslate"><span class="pre">Product</span></code> object, send a GET request:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/product/&lt;id&gt;
+<span class="c1"># {id: &quot;...&quot;, barcode: &quot;xxyy&quot;, brand_id: &quot;...&quot;}</span>
+</pre></div>
+</div>
+<p>Now to query the product’s brand, send a GET request to this url:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/product/&lt;id&gt;/brand
+<span class="c1"># {id: &quot;...&quot;, name: &quot;nike&quot;}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The above query is the same as the query below, which returns the same brand
+object.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/brand/&lt;brand-id&gt;
+<span class="c1"># {id: &quot;...&quot;, name: &quot;nike&quot;}</span>
+</pre></div>
+</div>
+</div>
+<p>Conversely, we can retrieve all products of the brand:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:8000/brand/&lt;brand-id&gt;/products
+
+<span class="c1">#   {</span>
+<span class="c1">#       pages_count: 1,</span>
+<span class="c1">#       objects_count: 1,</span>
+<span class="c1">#       limit: 50,</span>
+<span class="c1">#       page: 1,</span>
+<span class="c1">#       objects: [ {id: &quot;...&quot;, barcode: &quot;xxyy&quot;} ],</span>
+<span class="c1">#       next:null,</span>
+<span class="c1">#       previous:null</span>
+<span class="c1">#   }</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The last part of the url, <code class="docutils literal notranslate"><span class="pre">/products</span></code>, comes from the
+<code class="docutils literal notranslate"><span class="pre">related_name=&quot;products&quot;</span></code> argument when defining the brand <cite>ForeignKey</cite>
+field on <code class="docutils literal notranslate"><span class="pre">Product</span></code>. This is the same <code class="docutils literal notranslate"><span class="pre">.related_name</span></code> in Django that allows
+you to write</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">Brand</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">products__in</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="getting-starting-with-client-libraries">
+<h2>Getting Starting with Client Libraries<a class="headerlink" href="#getting-starting-with-client-libraries" title="Permalink to this headline"></a></h2>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>This tutorial follows the previous tutorial “<a class="reference internal" href="#getting-started-with-the-backend">Getting Started with the
+Backend</a>”. In this section, we assume the <cite>Product</cite> and <cite>Brand</cite> models are
+correctly set up.</p>
+</div>
+<p>Instead of sending HTTP requests manually to query the backend REST API,
+Django Client Framework’s client libraries support quering the backend in
+frontend’s native programming language, with a set of APIs that are similar to
+Django’s <cite>QuerySet</cite>.</p>
+<div class="section" id="install-client-libraries">
+<h3>Install client libraries<a class="headerlink" href="#install-client-libraries" title="Permalink to this headline"></a></h3>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-2-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button><button aria-controls="panel-2-RGFydA==" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-2-RGFydA==" name="RGFydA==" role="tab" tabindex="-1">Dart</button></div><div aria-labelledby="tab-2-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-2-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># With npm</span>
+npm install django-client-framework
+
+<span class="c1"># Or with yarn</span>
+yarn add django-client-framework
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-RGFydA==" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-2-RGFydA==" name="RGFydA==" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># With Dart</span>
+dart pub add django-client-framework --git-url<span class="o">=</span>https://github.com/kaleido-public/django-client-framework-dart.git
+
+<span class="c1"># Or with Flutter</span>
+flutter pub add django-client-framework --git-url<span class="o">=</span>https://github.com/kaleido-public/django-client-framework-dart.git
+</pre></div>
+</div>
+</div></div>
+</div>
+<div class="section" id="define-a-model-class">
+<h3>Define a model class<a class="headerlink" href="#define-a-model-class" title="Permalink to this headline"></a></h3>
+<p>Since a <cite>Product</cite> model is defined at the Django backend, we need to define a
+<cite>Product</cite> model that mirrors the backend in the frontend language.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A more accurate statement is that the <cite>Product</cite> model in the frontend
+mirrors the <cite>ProductSerializer</cite> in the backend. This is because a serializer
+can support fields that doesn’t exist on the model, for instance, through
+the <cite>SerializerMethodField</cite>.</p>
+</div>
+<p>Similar to the Django models, the <cite>Product</cite> model in the frontend should also
+extend the <a class="reference internal" href="../client-refs/index.html#model"><span class="std std-ref">class Model</span></a> base class.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-3-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button><button aria-controls="panel-3-RGFydA==" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-3-RGFydA==" name="RGFydA==" role="tab" tabindex="-1">Dart</button></div><div aria-labelledby="tab-3-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-3-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span> <span class="nx">Model</span><span class="p">,</span> <span class="nx">CollectionManager</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;django-client-framework&quot;</span>
+
+<span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
+    <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="nx">brand_id?</span>: <span class="kt">number</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-3-RGFydA==" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-3-RGFydA==" name="RGFydA==" role="tabpanel" tabindex="0"><div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="s1">&#39;package:django_client_framework/django_client_framework.dart&#39;</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nc">Product</span> <span class="kd">extends</span> <span class="n">Model</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="n">objects</span> <span class="o">=</span> <span class="n">CollectionManager</span><span class="p">(</span><span class="n">Product</span><span class="p">);</span>
+
+    <span class="nd">@override</span>
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">id</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">];</span>
+
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">barcode</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;barcode&quot;</span><span class="p">];</span>
+    <span class="kd">set</span> <span class="n">barcode</span><span class="p">(</span><span class="kt">String</span> <span class="n">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;barcode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">brandID</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;brand_id&quot;</span><span class="p">];</span>
+    <span class="kd">set</span> <span class="n">brandID</span><span class="p">(</span><span class="kt">String</span> <span class="n">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;brand_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+<div class="section" id="retrieve-a-model-object">
+<h3>Retrieve a model object<a class="headerlink" href="#retrieve-a-model-object" title="Permalink to this headline"></a></h3>
+<p>To retrieve a <cite>Product</cite> instance, we use the <cite>CollectionManager</cite> class. To
+retrieve an instance of the <cite>CollectionManager</cite>, you can either create it
+yourself, or access it through tbe <cite>.objects</cite> static member on the <cite>Product</cite>
+class.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-4-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-4-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button></div><div aria-labelledby="tab-4-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-4-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span> <span class="nx">Ajax</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;django-client-framework&quot;</span>
+
+<span class="nx">Ajax</span><span class="p">.</span><span class="nx">url_prefix</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8000&quot;</span>
+
+<span class="kd">let</span> <span class="nx">page</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">page</span><span class="p">({})</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">page</span><span class="p">)</span>
+
+<span class="cm">/*</span>
+<span class="cm">    PageResult {</span>
+<span class="cm">        page: 1,</span>
+<span class="cm">        limit: 50,</span>
+<span class="cm">        pages_count: 1,</span>
+<span class="cm">        objects_count: 1,</span>
+<span class="cm">        objects: [ Product { id: &quot;...&quot;, barcode: &#39;xxyy&#39;, brand_id: &quot;...&quot; } ]</span>
+<span class="cm">    }</span>
+<span class="cm">*/</span>
+</pre></div>
+</div>
+</div></div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Besides retrieving object, the client libraries also support methods that
+modify and delete objects. See the full set of APIs here. [todo]</p>
+</div>
+</div>
+<div class="section" id="retrieve-a-relational-object">
+<h3>Retrieve a relational object<a class="headerlink" href="#retrieve-a-relational-object" title="Permalink to this headline"></a></h3>
+<p>First, we first add a <cite>Brand</cite> model:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-5-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-5-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button><button aria-controls="panel-5-RGFydA==" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-5-RGFydA==" name="RGFydA==" role="tab" tabindex="-1">Dart</button></div><div aria-labelledby="tab-5-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-5-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span> <span class="nx">Model</span><span class="p">,</span> <span class="nx">CollectionManager</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;django-client-framework&quot;</span>
+
+<span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
+    <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="nx">brand_id?</span>: <span class="kt">number</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">Brand</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">)</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
+    <span class="nx">name</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-5-RGFydA==" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-5-RGFydA==" name="RGFydA==" role="tabpanel" tabindex="0"><div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="s1">&#39;package:django_client_framework/django_client_framework.dart&#39;</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nc">Product</span> <span class="kd">extends</span> <span class="n">Model</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="n">objects</span> <span class="o">=</span> <span class="n">CollectionManager</span><span class="p">(</span><span class="n">Product</span><span class="p">);</span>
+
+    <span class="nd">@override</span>
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">id</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">];</span>
+
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">barcode</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;barcode&quot;</span><span class="p">];</span>
+    <span class="kd">set</span> <span class="n">barcode</span><span class="p">(</span><span class="kt">String</span> <span class="n">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;barcode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">brandID</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;brand_id&quot;</span><span class="p">];</span>
+    <span class="kd">set</span> <span class="n">brandID</span><span class="p">(</span><span class="kt">String</span> <span class="n">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;brand_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">Brand</span> <span class="kd">extends</span> <span class="n">Model</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="n">objects</span> <span class="o">=</span> <span class="n">CollectionManager</span><span class="p">(</span><span class="n">Brand</span><span class="p">);</span>
+
+    <span class="nd">@override</span>
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">id</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">];</span>
+
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">name</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">];</span>
+    <span class="kd">set</span> <span class="n">name</span><span class="p">(</span><span class="kt">String</span> <span class="n">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></div>
+<p>To access the <cite>Brand</cite> object on the product, we add a brand field of the
+<cite>RelatedObjectManager</cite> type to <cite>Product</cite>, and a products field of the
+<cite>RelatedCollectionManager</cite> type to <cite>Brand</cite>.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-6-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-6-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button><button aria-controls="panel-6-RGFydA==" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-6-RGFydA==" name="RGFydA==" role="tab" tabindex="-1">Dart</button></div><div aria-labelledby="tab-6-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-6-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span> <span class="nx">Model</span><span class="p">,</span> <span class="nx">CollectionManager</span><span class="p">,</span> <span class="nx">RelatedObjectManager</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;django-client-framework&quot;</span>
+
+<span class="kd">class</span> <span class="nx">Product</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">)</span>
+    <span class="nx">get</span> <span class="nx">brand</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="ow">new</span> <span class="nx">RelatedObjectManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s2">&quot;brand&quot;</span><span class="p">)</span> <span class="p">}</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
+    <span class="nx">barcode</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="nx">brand_id?</span>: <span class="kt">number</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">Brand</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="k">static</span> <span class="k">readonly</span> <span class="nx">objects</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">CollectionManager</span><span class="p">(</span><span class="nx">Brand</span><span class="p">)</span>
+    <span class="nx">get</span> <span class="nx">products</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="ow">new</span> <span class="nx">RelatedCollectionManager</span><span class="p">(</span><span class="nx">Product</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s2">&quot;products&quot;</span><span class="p">)</span> <span class="p">}</span>
+    <span class="nx">id</span><span class="o">!:</span> <span class="kt">string</span>
+    <span class="nx">name</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-6-RGFydA==" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-6-RGFydA==" name="RGFydA==" role="tabpanel" tabindex="0"><div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="s1">&#39;package:django_client_framework/django_client_framework.dart&#39;</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nc">Product</span> <span class="kd">extends</span> <span class="n">Model</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="n">objects</span> <span class="o">=</span> <span class="n">CollectionManager</span><span class="p">(</span><span class="n">Product</span><span class="p">);</span>
+
+    <span class="nd">@override</span>
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">id</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">];</span>
+
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">barcode</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;barcode&quot;</span><span class="p">];</span>
+    <span class="kd">set</span> <span class="n">barcode</span><span class="p">(</span><span class="kt">String</span> <span class="n">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;barcode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">brandID</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;brand_id&quot;</span><span class="p">];</span>
+    <span class="kd">set</span> <span class="n">brandID</span><span class="p">(</span><span class="kt">String</span> <span class="n">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;brand_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+
+    <span class="n">RelatedObjectManager</span><span class="o">&lt;</span><span class="n">Brand</span><span class="p">,</span> <span class="n">Product</span><span class="o">&gt;</span> <span class="kd">get</span> <span class="n">brand</span> <span class="o">=&gt;</span>
+        <span class="n">RelatedObjectManager</span><span class="p">(</span><span class="n">Brand</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s1">&#39;brand&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">Brand</span> <span class="kd">extends</span> <span class="n">Model</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="n">objects</span> <span class="o">=</span> <span class="n">CollectionManager</span><span class="p">(</span><span class="n">Brand</span><span class="p">);</span>
+
+    <span class="nd">@override</span>
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">id</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">];</span>
+
+    <span class="kt">String</span> <span class="kd">get</span> <span class="n">name</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">];</span>
+    <span class="kd">set</span> <span class="n">name</span><span class="p">(</span><span class="kt">String</span> <span class="n">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></div>
+<p>We can retrieve the product, then get the brand object off the product:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-7-VHlwZVNjcmlwdA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-7-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tab" tabindex="0">TypeScript</button><button aria-controls="panel-7-RGFydA==" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-7-RGFydA==" name="RGFydA==" role="tab" tabindex="-1">Dart</button></div><div aria-labelledby="tab-7-VHlwZVNjcmlwdA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-7-VHlwZVNjcmlwdA==" name="VHlwZVNjcmlwdA==" role="tabpanel" tabindex="0"><div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="p">{</span> <span class="nx">Ajax</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;django-client-framework&quot;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Product</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;./models&quot;</span>
+
+<span class="nx">Ajax</span><span class="p">.</span><span class="nx">url_prefix</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8000&quot;</span>
+
+<span class="kd">let</span> <span class="nx">product</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Product</span><span class="p">.</span><span class="nx">objects</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span> <span class="nx">id</span><span class="o">:</span> <span class="s2">&quot;...&quot;</span> <span class="p">})</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">product</span><span class="p">)</span>
+<span class="c1">// Product { id: &quot;...&quot;, barcode: &#39;xxyy&#39;, brand_id: &quot;...&quot; }</span>
+
+<span class="kd">let</span> <span class="nx">nike</span> <span class="o">=</span> <span class="nx">product</span><span class="p">.</span><span class="nx">brand</span><span class="p">.</span><span class="nx">get</span><span class="p">()</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">nike</span><span class="p">)</span>
+<span class="c1">// Brand { id: &quot;...&quot;, name: &#39;nike&#39; }</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-7-RGFydA==" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-7-RGFydA==" name="RGFydA==" role="tabpanel" tabindex="0"><div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="s1">&#39;package:django_client_framework/django_client_framework.dart&#39;</span><span class="p">;</span>
+
+<span class="n">ajax</span><span class="p">.</span><span class="n">endpoints</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">APIEndpoint</span><span class="p">(</span>
+        <span class="nl">scheme:</span> <span class="s2">&quot;http&quot;</span><span class="p">,</span>
+        <span class="nl">host:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="nl">urlPrefix:</span> <span class="s2">&quot;en/api/v1/&quot;</span><span class="p">,</span>
+        <span class="nl">port:</span> <span class="m">8000</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">];</span>
+
+<span class="kd">final</span> <span class="n">product</span> <span class="o">=</span> <span class="kd">await</span> <span class="n">Product</span><span class="p">.</span><span class="n">objects</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nl">id:</span> <span class="s2">&quot;...&quot;</span><span class="p">);</span>
+<span class="c1">// Product { id: &quot;...&quot;, barcode: &#39;xxyy&#39;, brand_id: &quot;...&quot; }</span>
+
+<span class="kd">final</span> <span class="n">nike</span> <span class="o">=</span> <span class="kd">await</span> <span class="n">product</span><span class="p">.</span><span class="n">brand</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+<span class="c1">// Brand { id: &quot;...&quot;, name: &#39;nike&#39; }</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="section" id="rest-api-endpoints">
+<span id="supported-rest-api"></span><h2>REST API Endpoints<a class="headerlink" href="#rest-api-endpoints" title="Permalink to this headline"></a></h2>
+<p>There are four types of routes:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><a class="reference internal" href="rest-api-endpoints.html#collection-api"><span class="std std-ref">Collection API</span></a>, <cite>eg. /product</cite></p></li>
+<li><p><a class="reference internal" href="rest-api-endpoints.html#object-api"><span class="std std-ref">Object API</span></a>, <cite>eg. /product/&lt;id&gt;</cite></p></li>
+<li><p><a class="reference internal" href="rest-api-endpoints.html#related-collection-api"><span class="std std-ref">Related Collection API</span></a>, <cite>eg. /brand/&lt;id&gt;/products</cite></p></li>
+<li><p><a class="reference internal" href="rest-api-endpoints.html#related-object-api"><span class="std std-ref">Related Object API</span></a>, <cite>eg. /product/&lt;id&gt;/brand</cite></p></li>
+</ol>
+</div></blockquote>
+<p>The following HTTP methods are supported for each type of routes:</p>
+<div class="section" id="collection-api">
+<span id="id1"></span><h3>Collection API<a class="headerlink" href="#collection-api" title="Permalink to this headline"></a></h3>
+<div class="section" id="get-lists-objects">
+<h4><code class="docutils literal notranslate"><span class="pre">GET</span></code>: lists objects<a class="headerlink" href="#get-lists-objects" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl class="simple">
+<dt>Accepted query parameters:</dt><dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">_page</span></code></dt><dd><p>An integer indicating which page to display</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">_limit</span></code></dt><dd><p>An integer indicating how many results per page to include</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">_order_by</span></code></dt><dd><p>This is handled by Django’s <a class="reference external" href="https://docs.djangoproject.com/en/4.0/ref/models/querysets/#order-by">.order_by()</a> QuerySet API. Adding <code class="docutils literal notranslate"><span class="pre">-</span></code> before the key name sorts the property in the reverse order. Use <code class="docutils literal notranslate"><span class="pre">,</span></code> to join multiple keys.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&lt;property&gt;[__&lt;transformer&gt;...][__&lt;lookup&gt;]</span></code></dt><dd><p>Any key names are handled by <a class="reference external" href="https://docs.djangoproject.com/en/4.0/ref/models/querysets">Django’s QuerySet API</a>. Keys such as <code class="docutils literal notranslate"><span class="pre">id__in[]</span></code> are passed to
+<a class="reference external" href="https://docs.djangoproject.com/en/4.0/ref/models/querysets/#filter">.filter()</a>. See
+<a class="reference external" href="https://docs.djangoproject.com/en/4.0/ref/models/querysets/#field-lookups">Django’s Field lookups</a>.
+Any value of the list/array type must have <code class="docutils literal notranslate"><span class="pre">[]</span></code> appended after the
+key name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>For more examples of the Collection API query parameters, see
+<a class="reference internal" href="rest-api-endpoints.html#collection-api-pagination"><span class="std std-ref">Pagination</span></a> and <a class="reference internal" href="rest-api-endpoints.html#collection-api-filtering"><span class="std std-ref">Filtering</span></a>.</p>
+</div>
+<dl>
+<dt>Example:</dt><dd><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>GET /product
+    ?id__in<span class="o">[]=</span>id1,id2
+    <span class="p">&amp;</span><span class="nv">_page</span><span class="o">=</span><span class="m">1</span>
+    <span class="p">&amp;</span><span class="nv">_order_by</span><span class="o">=</span>-id
+
+<span class="c1"># Alternatively, separate id__in[] for each array element</span>
+GET /product
+    ?id__in<span class="o">[]=</span>id1
+    <span class="p">&amp;</span>id__in<span class="o">[]=</span>id2
+    <span class="p">&amp;</span><span class="nv">_page</span><span class="o">=</span><span class="m">1</span>
+    <span class="p">&amp;</span><span class="nv">_order_by</span><span class="o">=</span>-id
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="post-creates-an-object">
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span></code>: creates an object<a class="headerlink" href="#post-creates-an-object" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt>Accepted JSON body:</dt><dd><p>A dictionary accepted by the model’s serializer.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">product</span>
+
+<span class="p">{</span>
+    <span class="n">barcode</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="object-api">
+<span id="id2"></span><h3>Object API<a class="headerlink" href="#object-api" title="Permalink to this headline"></a></h3>
+<div class="section" id="get-retrieves-an-object">
+<h4><code class="docutils literal notranslate"><span class="pre">GET</span></code>: retrieves an object<a class="headerlink" href="#get-retrieves-an-object" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt>Accepted query parameters:</dt><dd><p>Same as the <a class="reference internal" href="rest-api-endpoints.html#collection-api"><span class="std std-ref">Collection API</span></a>. The response is <cite>404
+Not Found</cite> if the filtered result is empty.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">product</span><span class="o">/</span><span class="mi">1370</span><span class="n">f589</span><span class="o">-</span><span class="mi">6</span><span class="n">a45</span><span class="o">-</span><span class="mi">4</span><span class="n">a25</span><span class="o">-</span><span class="mi">8</span><span class="n">b77</span><span class="o">-</span><span class="n">c28c98b8b98b</span>
+
+<span class="p">{</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;product&quot;</span><span class="p">,</span>
+    <span class="n">barcode</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="patch-updates-an-object">
+<h4><code class="docutils literal notranslate"><span class="pre">PATCH</span></code>: updates an object<a class="headerlink" href="#patch-updates-an-object" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt>Accepted JSON body:</dt><dd><p>A dictionary accepted by the model’s serializer.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PATCH</span> <span class="o">/</span><span class="n">product</span><span class="o">/</span><span class="mi">1370</span><span class="n">f589</span><span class="o">-</span><span class="mi">6</span><span class="n">a45</span><span class="o">-</span><span class="mi">4</span><span class="n">a25</span><span class="o">-</span><span class="mi">8</span><span class="n">b77</span><span class="o">-</span><span class="n">c28c98b8b98b</span>
+
+<span class="p">{</span>
+    <span class="n">barcode</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="related-collection-api">
+<span id="id3"></span><h3>Related Collection API<a class="headerlink" href="#related-collection-api" title="Permalink to this headline"></a></h3>
+<div class="section" id="get-lists-related-objects">
+<h4><code class="docutils literal notranslate"><span class="pre">GET</span></code>: lists related objects<a class="headerlink" href="#get-lists-related-objects" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt>Accepted query parameters:</dt><dd><p>Same as the <a class="reference internal" href="rest-api-endpoints.html#collection-api"><span class="std std-ref">Collection API</span></a>.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">brand</span><span class="o">/</span><span class="mi">1370</span><span class="n">f589</span><span class="o">-</span><span class="mi">6</span><span class="n">a45</span><span class="o">-</span><span class="mi">4</span><span class="n">a25</span><span class="o">-</span><span class="mi">8</span><span class="n">b77</span><span class="o">-</span><span class="n">c28c98b8b98b</span><span class="o">/</span><span class="n">products</span>
+
+<span class="p">{</span>
+    <span class="s2">&quot;limit&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;objects_count&quot;</span> <span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="s2">&quot;page&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;pages_count&quot;</span> <span class="p">:</span> <span class="mi">15</span>
+    <span class="s2">&quot;objects&quot;</span> <span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;product&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="post-creates-a-relation">
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span></code>: creates a relation<a class="headerlink" href="#post-creates-a-relation" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt>Accepted JSON body:</dt><dd><p>A list of object ids.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">brand</span><span class="o">/&lt;</span><span class="n">brand_id</span><span class="o">&gt;/</span><span class="n">products</span>
+
+<span class="p">[</span><span class="s2">&quot;32453b61-6718-45bf-bccb-d866cdd3ddad&quot;</span><span class="p">,</span> <span class="s2">&quot;662c99ee-5a65-4e39-ac3a-2836aa52b3ed&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="delete-removes-a-relation">
+<h4><code class="docutils literal notranslate"><span class="pre">DELETE</span></code>: removes a relation<a class="headerlink" href="#delete-removes-a-relation" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl class="simple">
+<dt>Accepted JSON body:</dt><dd><p>A list of object ids.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="patch-sets-a-set-of-relations">
+<h4><code class="docutils literal notranslate"><span class="pre">PATCH</span></code>: sets a set of relations<a class="headerlink" href="#patch-sets-a-set-of-relations" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt>Accepted JSON body:</dt><dd><p>A list of object ids.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">PATCH</span> <span class="o">/</span><span class="nx">brand</span><span class="o">/</span><span class="mf">662</span><span class="nx">c99ee</span><span class="o">-</span><span class="mf">5</span><span class="nx">a65</span><span class="o">-</span><span class="mf">4e39</span><span class="o">-</span><span class="nx">ac3a</span><span class="o">-</span><span class="mf">2836</span><span class="nx">aa52b3ed</span><span class="o">/</span><span class="nx">products</span>
+
+<span class="p">[]</span> <span class="c1">// unlink all relations</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="related-object-api">
+<span id="id4"></span><h3>Related Object API<a class="headerlink" href="#related-object-api" title="Permalink to this headline"></a></h3>
+<div class="section" id="get-retrieves-a-related-object">
+<h4><code class="docutils literal notranslate"><span class="pre">GET</span></code>: retrieves a related object<a class="headerlink" href="#get-retrieves-a-related-object" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt>Accepted query parameters:</dt><dd><p>Same as the <a class="reference internal" href="rest-api-endpoints.html#object-api"><span class="std std-ref">Object API</span></a>.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">product</span><span class="o">/</span><span class="mi">1370</span><span class="n">f589</span><span class="o">-</span><span class="mi">6</span><span class="n">a45</span><span class="o">-</span><span class="mi">4</span><span class="n">a25</span><span class="o">-</span><span class="mi">8</span><span class="n">b77</span><span class="o">-</span><span class="n">c28c98b8b98b</span><span class="o">/</span><span class="n">brand</span>
+
+<span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;brand&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xxyy&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="patch-sets-a-related-object">
+<h4><code class="docutils literal notranslate"><span class="pre">PATCH</span></code>: sets a related object<a class="headerlink" href="#patch-sets-a-related-object" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt>Accepted JSON body:</dt><dd><p>A object id, or <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p>
+</dd>
+<dt>Example:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PATCH</span> <span class="o">/</span><span class="n">products</span><span class="o">/</span><span class="mi">662</span><span class="n">c99ee</span><span class="o">-</span><span class="mi">5</span><span class="n">a65</span><span class="o">-</span><span class="mf">4e39</span><span class="o">-</span><span class="n">ac3a</span><span class="o">-</span><span class="mi">2836</span><span class="n">aa52b3ed</span><span class="o">/</span><span class="n">brand</span>
+
+<span class="s2">&quot;32453b61-6718-45bf-bccb-d866cdd3ddad&quot;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="pagination-collection-apis">
+<span id="collection-api-pagination"></span><h3>Pagination (Collection APIs)<a class="headerlink" href="#pagination-collection-apis" title="Permalink to this headline"></a></h3>
+<p>Both collection APIs (regular and related) support pagination by these query parameters:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">_limit</span></code></dt><dd><p>An integer to specify how many objects to return per page.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">_page</span></code></dt><dd><p>An integer to specify the page number. The first page is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">_order</span></code></dt><dd><p>A pattern that matches <code class="docutils literal notranslate"><span class="pre">[-]&lt;property&gt;,</span> <span class="pre">[-]&lt;property&gt;,</span> <span class="pre">...</span></code>. For
+example, <code class="docutils literal notranslate"><span class="pre">id,</span> <span class="pre">-username</span></code>. The collection is sorted by the first
+property in an increasing order, then the other properties are tie
+breakers in that order. When <code class="docutils literal notranslate"><span class="pre">-</span></code> is before a property name, it means
+to sort by that property in the decreasing order.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Server responses:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;objects&quot;</span> <span class="p">:</span> <span class="p">[</span>
+        <span class="o">&lt;</span><span class="n">model_objects</span><span class="o">&gt;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;limit&quot;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s2">&quot;objects_count&quot;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s2">&quot;page&quot;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s2">&quot;pages_count&quot;</span> <span class="p">:</span> <span class="nb">int</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">objects</span></code></dt><dd><p>The list of objects.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">limit</span></code></dt><dd><p>This is just an echo of the <code class="docutils literal notranslate"><span class="pre">_limit</span></code> provided in the request.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">objects_count</span></code></dt><dd><p>Total number of objects found in all pages.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">page</span></code></dt><dd><p>Current page number. Starts from <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pages_count</span></code></dt><dd><p>Total number of pages.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="filtering-collection-apis">
+<span id="collection-api-filtering"></span><h3>Filtering (Collection APIs)<a class="headerlink" href="#filtering-collection-apis" title="Permalink to this headline"></a></h3>
+<p>The collection API (regular and related) support filtering objects by most
+properties. There are five types of properties: number, string, datetime,
+foreign key and reverse foreign key.</p>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">&lt;property&gt;[__&lt;lookup&gt;]</span></code> to filter the objects. The
+<code class="docutils literal notranslate"><span class="pre">__&lt;lookup&gt;</span></code> is optional. For example, for the <cite>CartItem</cite> model,
+<code class="docutils literal notranslate"><span class="pre">quantity__gte=2</span></code> filters the object where the <code class="docutils literal notranslate"><span class="pre">quantity</span></code> property is
+<cite>greater than or equal to</cite> <code class="docutils literal notranslate"><span class="pre">2</span></code>. When the lookup part is left out, it is the
+same as <code class="docutils literal notranslate"><span class="pre">&lt;property&gt;__eq</span></code>, which is <cite>exactly equal</cite>.</p>
+<div class="section" id="number-property">
+<span id="id5"></span><h4>Number property<a class="headerlink" href="#number-property" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><p>The supported lookup are:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__eq</span></code></dt>
+<dd class="field-odd"><p><cite>(default)</cite> Equal to. This is the default if <code class="docutils literal notranslate"><span class="pre">__&lt;lookup&gt;</span></code> if omitted.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__ne</span></code></dt>
+<dd class="field-even"><p>Not equal to.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__gte</span></code></dt>
+<dd class="field-odd"><p>Greater than or equal to.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__lte</span></code></dt>
+<dd class="field-even"><p>Less than or equal to.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__gt</span></code></dt>
+<dd class="field-odd"><p>Greater than.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__lt</span></code></dt>
+<dd class="field-even"><p>Less than.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__range[]=a,b</span></code></dt>
+<dd class="field-odd"><p>Between <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>, inclusive.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__in[]</span></code></dt>
+<dd class="field-even"><p>Equal to any number in the list. Eg. <code class="docutils literal notranslate"><span class="pre">__in[]=1,2,3</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__isnull=true</span></code></dt>
+<dd class="field-odd"><p>Is null.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="string-property">
+<h4>String property<a class="headerlink" href="#string-property" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><p>The supported lookup are:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__exact</span></code></dt>
+<dd class="field-odd"><p><cite>(default)</cite> Equal to. This is the default if <code class="docutils literal notranslate"><span class="pre">__&lt;lookup&gt;</span></code> if omitted.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__iexact</span></code></dt>
+<dd class="field-even"><p>Equal to, case-insensitive.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__contains</span></code></dt>
+<dd class="field-odd"><p>String contains a substring.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__icontains</span></code></dt>
+<dd class="field-even"><p>String contains a substring, case-insensitive.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__startswith</span></code></dt>
+<dd class="field-odd"><p>String that starts with a prefix</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__endswith</span></code></dt>
+<dd class="field-even"><p>String that ends with a prefix</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__istartswith</span></code></dt>
+<dd class="field-odd"><p>String that starts with a prefix, case-insensitive.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__iendswith</span></code></dt>
+<dd class="field-even"><p>String that ends with a prefix, case-insensitive.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__regex</span></code></dt>
+<dd class="field-odd"><p>String that matches the regex.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__iregex</span></code></dt>
+<dd class="field-even"><p>String that matches the regex, case-insensitive.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__in[]</span></code></dt>
+<dd class="field-odd"><p>Equal to any string in the list. Eg. <code class="docutils literal notranslate"><span class="pre">__in[]=abc,def,ghi</span></code>.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__isnull=true</span></code></dt>
+<dd class="field-even"><p>Is null.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="datetime-property">
+<h4>Datetime property<a class="headerlink" href="#datetime-property" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><p>The following lookups are supported, when supplied values in the format of
+ISO 8601, for example, <code class="docutils literal notranslate"><span class="pre">2022-01-14T12:03:03.899967-05:00</span></code>.</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__eq</span></code></dt>
+<dd class="field-odd"><p><cite>(default)</cite> Equal to. This is the default if <code class="docutils literal notranslate"><span class="pre">__&lt;lookup&gt;</span></code> if omitted.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__ne</span></code></dt>
+<dd class="field-even"><p>Not equal to.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__gte</span></code></dt>
+<dd class="field-odd"><p>Later than or equal to (greater than or equal to).</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__lte</span></code></dt>
+<dd class="field-even"><p>Earlier than or equal to (less than or equal to).</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__gt</span></code></dt>
+<dd class="field-odd"><p>Later than (greater than).</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__lt</span></code></dt>
+<dd class="field-even"><p>Earlier than (less than).</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__range[]=a,b</span></code></dt>
+<dd class="field-odd"><p>Between <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>, inclusive.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__in[]</span></code></dt>
+<dd class="field-even"><p>Equal to any number in the list. Eg. <code class="docutils literal notranslate"><span class="pre">__in[]=&quot;2022-01-14T12:03:03.899967-05:00&quot;,&quot;2022-01-14T12:03:03.899967-05:00&quot;</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__isnull=true</span></code></dt>
+<dd class="field-odd"><p>Is null.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>In addition to straight lookups, you can extract values such as the year,
+the month, the date, using <cite>transformers</cite>. After transforming the value, the
+output is a number that can be further chained by a lookup of the
+<a class="reference internal" href="rest-api-endpoints.html#number-property"><span class="std std-ref">Number property</span></a>.</p>
+<p>For example, by using the transformer <code class="docutils literal notranslate"><span class="pre">__year</span></code>, you can filter objects
+that are created between <code class="docutils literal notranslate"><span class="pre">2020</span></code> and <code class="docutils literal notranslate"><span class="pre">2021</span></code> by using
+<code class="docutils literal notranslate"><span class="pre">__year__range[]=2020,2021</span></code>.</p>
+<p>The full syntax is <code class="docutils literal notranslate"><span class="pre">&lt;property&gt;[__&lt;transformer&gt;][__&lt;lookup&gt;]</span></code>.</p>
+<p>Supported transformers are:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__year</span></code></dt>
+<dd class="field-odd"><p>Year as an integer.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__month</span></code></dt>
+<dd class="field-even"><p>Month as an integer between <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">12</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__day</span></code></dt>
+<dd class="field-odd"><p>Day of the month as an integer.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__week</span></code></dt>
+<dd class="field-even"><p>Week of the year as an integer.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__week_day</span></code></dt>
+<dd class="field-odd"><p>Day of the week as an integer, between <cite>1`</cite> and <code class="docutils literal notranslate"><span class="pre">7</span></code>.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__quarter</span></code></dt>
+<dd class="field-even"><p>Quarter of the year as an integer, between <cite>1`</cite> and <code class="docutils literal notranslate"><span class="pre">4</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__hour</span></code></dt>
+<dd class="field-odd"><p>Hour of the day as an integer, between <cite>0`</cite> and <code class="docutils literal notranslate"><span class="pre">23</span></code>.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__minute</span></code></dt>
+<dd class="field-even"><p>Minute of the hour as an integer, between <cite>0`</cite> and <code class="docutils literal notranslate"><span class="pre">59</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__second</span></code></dt>
+<dd class="field-odd"><p>Minute of the minute as an integer, between <cite>0`</cite> and <code class="docutils literal notranslate"><span class="pre">59</span></code>.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="foreign-key-property">
+<h4>Foreign key property<a class="headerlink" href="#foreign-key-property" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><p>The supported lookup are:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__exact</span></code></dt>
+<dd class="field-odd"><p><cite>(default)</cite> Equal to. This is the default if <code class="docutils literal notranslate"><span class="pre">__&lt;lookup&gt;</span></code> if omitted.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">__in[]</span></code></dt>
+<dd class="field-even"><p>Equal to any id in the list. Eg. <code class="docutils literal notranslate"><span class="pre">__in[]=346ed90a-2360-4c44-801d-9623b3a1059a,0332daeb-e4b9-46e3-bf8a-0469ff54d1d0</span></code>.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">__isnull=true</span></code></dt>
+<dd class="field-odd"><p>Is null.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="look-up-through-related-objects">
+<h4>Look up through related objects<a class="headerlink" href="#look-up-through-related-objects" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><p>In addition to look up by the current model’s properties, if the object has
+a related object, you can also filter the current model by the related
+object’s properties. For example, you can filter <cite>Product</cite> by the
+<cite>ProdutGroup</cite>’s name.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/api/v1/product?productgroup__name__istartswith=abc
+</pre></div>
+</div>
+<p>All lookup methods above are also supported. The look up can be arbitrarily
+deep. The supported syntax in general is
+<code class="docutils literal notranslate"><span class="pre">&lt;property&gt;[__&lt;property&gt;...][__&lt;lookup&gt;]</span></code>.</p>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="permission-concepts-and-management">
+<span id="id6"></span><h2>Permission Concepts and Management<a class="headerlink" href="#permission-concepts-and-management" title="Permalink to this headline"></a></h2>
+<p>Django Client Framework supports four levels of permissions: <cite>model</cite>, <cite>object</cite>,
+<cite>model field</cite>, and <cite>object field</cite>. There are four types of permissions: <cite>read</cite>,
+<cite>write</cite>, <cite>create</cite>, <cite>delete</cite>. The framework also supports <cite>user</cite> and <cite>group</cite>. A
+user can be added to multiple groups. A permission can be given to a <cite>user</cite> or a
+<cite>group</cite>. All users in a group obtain the permissions that are assigned to the
+group. By default, all users and groups have no permissions assigned.</p>
+<p>The framework uses a deterministic permission model. This means instead of
+assigning user permissions dynamically as your web service runs, the permissions
+are determined during django data migrations. You must design the permission
+structure depending on the user and object relations.</p>
+<div class="section" id="types-of-permissions">
+<h3>Types of permissions<a class="headerlink" href="#types-of-permissions" title="Permalink to this headline"></a></h3>
+<p>There are four types of permissions: <cite>read</cite>, <cite>write</cite>, <cite>create</cite>, <cite>delete</cite>. These
+permissions are checked when users access the REST API. In particular, when
+accessing the model collection, the model object, and the related object APIs,
+the permissions allow for the following HTTP methods:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">read</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">GET</span></code></p>
+</dd>
+<dt class="field-even">write</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">PATCH</span></code></p>
+</dd>
+<dt class="field-odd">create</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">POST</span></code> and <code class="docutils literal notranslate"><span class="pre">PUT</span></code></p>
+</dd>
+<dt class="field-even">delete</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">DELETE</span></code></p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="levels-of-permissions">
+<h3>Levels of permissions<a class="headerlink" href="#levels-of-permissions" title="Permalink to this headline"></a></h3>
+<p>There are four levels of permissions: <cite>model</cite>, <cite>object</cite>, <cite>model field</cite>, and
+<cite>object field</cite>. In terms of inclusion, <code class="docutils literal notranslate"><span class="pre">model</span> <span class="pre">&gt;</span> <span class="pre">object</span> <span class="pre">&gt;</span> <span class="pre">model</span> <span class="pre">field</span> <span class="pre">&gt;</span> <span class="pre">object</span>
+<span class="pre">field</span></code>.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Model permission</dt><dd><p>When assigning permissions to a model, the permissions apply to all
+objects of the model class. For instance, you can assign the read
+permission for the <code class="docutils literal notranslate"><span class="pre">Product</span></code> class to the <code class="docutils literal notranslate"><span class="pre">anyone</span></code> group so that all
+products are readable to any user.</p>
+</dd>
+<dt>Object permission</dt><dd><p>When assigning permissions to an object, the permissions only affects
+the object but not the others. For instance, you can assign the write
+permission for a <cite>User</cite> object to itself, so that any user can modify
+their own personal data.</p>
+</dd>
+<dt>Model field permission</dt><dd><p>Instead of assigning permissions to a model, in which case the
+permissions apply to all fields on the model, you can also allow the
+permission to a particular field of the model. For instance, you may
+want to give user the read-only permission to a model, except for a
+particular field, which can be both read and written.</p>
+</dd>
+<dt>Object field permission</dt><dd><p>Similar to model field permission except the permission is assgined to
+one object instead of all.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="default-users">
+<h3>Default users<a class="headerlink" href="#default-users" title="Permalink to this headline"></a></h3>
+<p>The framework comes with a default user named <cite>AnonymousUser</cite>. This is a dummy
+user object that’s used to assign permissions to any anonymous user. The user
+can be accessed by <code class="docutils literal notranslate"><span class="pre">django_client_framework.permissions.default_users.anonymous</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since in most applications, the permissions for the anonymous user are most
+likely a subset of any other user, you should consider assigning the
+permissions to the <code class="docutils literal notranslate"><span class="pre">default_groups.anyone</span></code> group instead.</p>
+</div>
+<p>You can add custom default users that are required by your application using the
+<code class="docutils literal notranslate"><span class="pre">&#64;register_default_user</span></code> decorator.</p>
+</div>
+<div class="section" id="default-groups">
+<h3>Default groups<a class="headerlink" href="#default-groups" title="Permalink to this headline"></a></h3>
+<p>The framework comes with a default group named <cite>anyone</cite>. This is a dummy group
+object that includes all users, including the <cite>anonymous</cite> user. The user can be
+accessed by <code class="docutils literal notranslate"><span class="pre">django_client_framework.permissions.default_groups.anyone</span></code>.</p>
+<p>You can also add custom default groups that are required by your application
+using the <code class="docutils literal notranslate"><span class="pre">&#64;register_default_group</span></code> decorator.</p>
+<dl>
+<dt>Example</dt><dd><div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Product</span><span class="p">,</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django_client_framework.permissions</span> <span class="kn">import</span> <span class="n">default_groups</span>
+
+<span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">default_groups</span><span class="o">.</span><span class="n">anyone</span><span class="p">,</span> <span class="n">Product</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;example_user&quot;</span><span class="p">)</span>
+<span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+<span class="n">add_perms_shortcut</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="s2">&quot;rw&quot;</span><span class="p">,</span> <span class="s2">&quot;first_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="permissions-for-api-endpoints">
+<h3>Permissions for API Endpoints<a class="headerlink" href="#permissions-for-api-endpoints" title="Permalink to this headline"></a></h3>
+<p>The permission system has the following designs:</p>
+<blockquote>
+<div><p>1. A <code class="docutils literal notranslate"><span class="pre">PermissionDenied</span></code> exception can be raised from anywhere of the
+application. A <code class="docutils literal notranslate"><span class="pre">PermissionDenied</span></code> exception can optionally include four
+attributes: the <cite>model</cite>, the <cite>instance</cite>, the <cite>field</cite>, and the <cite>action</cite>,
+depending on the context of what user is accessing. When <code class="docutils literal notranslate"><span class="pre">DEBUG=False</span></code> in
+<code class="docutils literal notranslate"><span class="pre">settings.py</span></code>, if user’s modification action raises <code class="docutils literal notranslate"><span class="pre">PermissionDenied</span></code>
+and user has no <code class="docutils literal notranslate"><span class="pre">read</span></code> permission to the context, the server responds with
+a <code class="docutils literal notranslate"><span class="pre">404</span> <span class="pre">Not</span> <span class="pre">Found</span></code> instead. This is for hiding the existence of an object
+whenever possible.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">handling</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">user</span> <span class="n">cannot</span> <span class="n">read</span> <span class="n">instance</span> <span class="n">field</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NotFound</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">original</span> <span class="n">PermissionDenied</span> <span class="n">exception</span>
+</pre></div>
+</div>
+<p>2. When modifying a related object relation, (eg. modifying a <cite>product</cite>’s
+<cite>brand</cite>), the user must have the <code class="docutils literal notranslate"><span class="pre">write</span></code> permission for all the following
+three kinds of fields:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>the relation field on the parent object (eg. the <cite>product</cite> instance’s <code class="docutils literal notranslate"><span class="pre">.brand</span></code> field)</p></li>
+<li><p>the reverse relation field of the old related object if not <code class="docutils literal notranslate"><span class="pre">None</span></code> (eg. the old <cite>brand</cite> instance’s <code class="docutils literal notranslate"><span class="pre">.products</span></code> field, in order to remove the original relation)</p></li>
+<li><p>the reverse relation field of the new related object if not <code class="docutils literal notranslate"><span class="pre">None</span></code> (eg. the new <cite>brand</cite> instance’s <code class="docutils literal notranslate"><span class="pre">.products</span></code> field, in order to add the new relation)</p></li>
+</ul>
+</div></blockquote>
+<p>Similarly, when adding or removing objects in a relation collection, (eg.
+adding to or removing from a <cite>brand</cite>’s <cite>products</cite> set), the user must have
+the <code class="docutils literal notranslate"><span class="pre">write</span></code> permission for all the following three kinds of fields:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>the relation field on the parent object (eg. the <cite>brand</cite> instance’s <code class="docutils literal notranslate"><span class="pre">.products</span></code> field)</p></li>
+<li><p>the reverse relation field of the old related objects (eg, the <code class="docutils literal notranslate"><span class="pre">.brand</span></code> field for every old <cite>product</cite> being removed from the <cite>brand</cite>’s <code class="docutils literal notranslate"><span class="pre">.products</span></code> set)</p></li>
+<li><p>the reverse relation field of the new related objects (eg, the <code class="docutils literal notranslate"><span class="pre">.brand</span></code> field for every new <cite>proudct</cite> being added to the <cite>brand</cite>’s <code class="docutils literal notranslate"><span class="pre">.products</span></code> set)</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p>The permission system affects the REST API request handlers. For each type of
+requests, the handling algorithm is as the following:</p>
+<div class="section" id="id7">
+<h4>Collection API<a class="headerlink" href="#id7" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt><code class="docutils literal notranslate"><span class="pre">GET</span></code></dt><dd><p>When visiting a model collection, only objects that the authenticated
+user has permission to view are displayed. If the user has no <code class="docutils literal notranslate"><span class="pre">read</span></code>
+permission to any object of the model, then the result is an empty list.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">each</span> <span class="nb">object</span> <span class="n">of</span> <span class="n">the</span> <span class="n">model</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">read</span> <span class="nb">object</span><span class="p">:</span>
+        <span class="n">include</span> <span class="nb">object</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">page</span> <span class="n">result</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">exclude</span> <span class="nb">object</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">page</span> <span class="n">result</span>
+        <span class="n">include</span> <span class="n">a</span> <span class="n">message</span> <span class="s2">&quot;some results are hidden&quot;</span>
+
+<span class="n">respond</span> <span class="mi">200</span> <span class="n">OK</span> <span class="k">with</span> <span class="n">the</span> <span class="n">filtered</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">objects</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">POST</span></code></dt><dd><p>When creating an object, the authenticated user must have the <code class="docutils literal notranslate"><span class="pre">create</span></code>
+permission to the model class, and the <code class="docutils literal notranslate"><span class="pre">write</span></code> permission to each
+related object; otherwise, the server responses with a <code class="docutils literal notranslate"><span class="pre">403</span> <span class="pre">Permission</span>
+<span class="pre">Denied</span></code> error. In addition, if the user has the <code class="docutils literal notranslate"><span class="pre">read</span></code> permission to
+the object created, then the server responses with the <code class="docutils literal notranslate"><span class="pre">code</span> <span class="pre">201</span></code> and
+the created data; otherwise, the server responses with <code class="docutils literal notranslate"><span class="pre">code</span> <span class="pre">201</span></code> and
+a message saying <cite>the object is created but you have no permission to
+view it</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">create</span> <span class="nb">object</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">each</span> <span class="n">relation</span> <span class="n">field</span> <span class="n">of</span> <span class="n">the</span> <span class="nb">object</span> <span class="n">being</span> <span class="n">posted</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="n">cannot</span> <span class="n">write</span> <span class="n">to</span> <span class="n">the</span> <span class="n">reverse</span> <span class="n">relation</span> <span class="n">field</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">related</span> <span class="nb">object</span><span class="p">,</span> <span class="n">reverse</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">)</span>
+    <span class="n">create</span> <span class="n">the</span> <span class="nb">object</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">read</span> <span class="n">the</span> <span class="n">created</span> <span class="nb">object</span><span class="p">:</span>
+        <span class="n">respond</span> <span class="mi">201</span> <span class="n">OK</span> <span class="k">with</span> <span class="n">the</span> <span class="n">created</span> <span class="nb">object</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">respond</span> <span class="mi">200</span> <span class="n">OK</span> <span class="k">with</span> <span class="n">message</span> <span class="s2">&quot;the object is created but you have no permission to view it&quot;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="id8">
+<h4>Object API<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt><code class="docutils literal notranslate"><span class="pre">GET</span></code></dt><dd><p>When visiting a model object, the object is only displayed if the
+authenticated user has the <cite>object-level</cite> <code class="docutils literal notranslate"><span class="pre">read</span></code> permission.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">read</span> <span class="nb">object</span><span class="p">:</span>
+    <span class="n">respond</span> <span class="mi">200</span> <span class="n">OK</span> <span class="k">with</span> <span class="nb">object</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PATCH</span></code></dt><dd><p>When updating a model object, the authenticated user must have the
+<cite>field-level</cite> <code class="docutils literal notranslate"><span class="pre">write</span></code> permissions for each field that is modified.
+When the object is updated, if the user has the <code class="docutils literal notranslate"><span class="pre">read</span></code> permission,
+then the server responses with <code class="docutils literal notranslate"><span class="pre">200</span> <span class="pre">OK</span></code> and the object data; otherwise
+the server responses with <code class="docutils literal notranslate"><span class="pre">200</span> <span class="pre">OK</span></code> and a message saying <cite>the object is
+updated but you have no permission to view it</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">each</span> <span class="n">field</span> <span class="n">being</span> <span class="n">modified</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">write</span> <span class="n">to</span> <span class="n">field</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">relation</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">FieldIsReadOnly</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">modify</span> <span class="n">field</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">read</span> <span class="nb">object</span><span class="p">:</span>
+    <span class="n">respond</span> <span class="mi">200</span> <span class="n">OK</span> <span class="k">with</span> <span class="n">updated</span> <span class="nb">object</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">respond</span> <span class="mi">200</span> <span class="n">OK</span> <span class="k">with</span> <span class="n">message</span> <span class="s2">&quot;the object is updated but you have no permission to view it&quot;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="related-collection-apis">
+<h4>Related Collection APIs<a class="headerlink" href="#related-collection-apis" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt><code class="docutils literal notranslate"><span class="pre">GET</span></code></dt><dd><p>The authenticated user must have the <cite>object-field-level</cite> <code class="docutils literal notranslate"><span class="pre">read</span></code>
+permission for the parent object (eg, being able to read the <cite>brand</cite>
+instance’s <code class="docutils literal notranslate"><span class="pre">.products</span></code> field). Among the set of related objects, only
+the ones to which the user has the <code class="docutils literal notranslate"><span class="pre">read</span></code> permission are displayed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">read</span> <span class="n">the</span> <span class="n">relation</span> <span class="n">field</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">each</span> <span class="n">related</span> <span class="nb">object</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">read</span> <span class="n">the</span> <span class="nb">object</span><span class="p">:</span>
+            <span class="n">include</span> <span class="n">the</span> <span class="nb">object</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exclude</span> <span class="n">the</span> <span class="nb">object</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">result</span>
+    <span class="n">respond</span> <span class="mi">200</span> <span class="n">OK</span> <span class="k">with</span> <span class="n">the</span> <span class="n">filtered</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">result</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">POST</span></code></dt><dd><p>The authenticated user must have the <cite>object-field-level</cite> <code class="docutils literal notranslate"><span class="pre">write</span></code>
+permissions for the parent object (ie, being able to write to the
+brand’s <code class="docutils literal notranslate"><span class="pre">.products</span></code> field). In addition, for each related objects
+being posted, the user must have the <cite>object-field-level</cite> <code class="docutils literal notranslate"><span class="pre">write</span></code>
+permission to the reverse field. (eg, being able to write to each
+product’s <code class="docutils literal notranslate"><span class="pre">.brand</span></code> field.) When the object relations are created, the
+result is displayed following the <code class="docutils literal notranslate"><span class="pre">GET</span></code> algorithm.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">write</span> <span class="n">to</span> <span class="n">the</span> <span class="n">relation</span> <span class="n">field</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">each</span> <span class="n">related</span> <span class="nb">object</span> <span class="n">to</span> <span class="n">be</span> <span class="n">posted</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">write</span> <span class="n">to</span> <span class="n">the</span> <span class="n">reverse</span> <span class="n">relation</span> <span class="n">field</span><span class="p">:</span>
+            <span class="n">create</span> <span class="n">the</span> <span class="n">relation</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">related</span> <span class="nb">object</span><span class="p">,</span> <span class="n">reverse</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">DELETE</span></code></dt><dd><p>This requires the same permissions as <code class="docutils literal notranslate"><span class="pre">POST</span></code> except the context is for
+deleting relations instead of creating.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">write</span> <span class="n">to</span> <span class="n">the</span> <span class="n">relation</span> <span class="n">field</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">each</span> <span class="n">related</span> <span class="nb">object</span> <span class="n">to</span> <span class="n">be</span> <span class="n">removed</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="n">write</span> <span class="n">to</span> <span class="n">the</span> <span class="n">reverse</span> <span class="n">relation</span> <span class="n">field</span><span class="p">:</span>
+            <span class="n">remove</span> <span class="n">the</span> <span class="n">relation</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">related</span> <span class="nb">object</span><span class="p">,</span> <span class="n">reverse</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PATCH</span></code></dt><dd><p>This is equivalent to <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> and <code class="docutils literal notranslate"><span class="pre">POST</span></code> combined.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">write</span> <span class="n">to</span> <span class="n">the</span> <span class="n">relation</span> <span class="n">field</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">each</span> <span class="n">related</span> <span class="nb">object</span> <span class="n">deleted</span> <span class="ow">or</span> <span class="n">posted</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="n">write</span> <span class="n">to</span> <span class="n">the</span> <span class="n">reverse</span> <span class="n">relation</span> <span class="n">field</span><span class="p">:</span>
+            <span class="n">remove</span> <span class="ow">or</span> <span class="n">create</span> <span class="n">the</span> <span class="n">relation</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">related</span> <span class="nb">object</span><span class="p">,</span> <span class="n">reverse</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="id9">
+<h4>Related Object API<a class="headerlink" href="#id9" title="Permalink to this headline"></a></h4>
+<blockquote>
+<div><dl>
+<dt><code class="docutils literal notranslate"><span class="pre">GET</span></code></dt><dd><p>The authenticated user must have the <cite>object-field-level</cite> <code class="docutils literal notranslate"><span class="pre">read</span></code>
+permission for the parent object (ie, being able to read the product
+instance’s <cite>.brand</cite> field), as well as the <cite>object-level</cite> <code class="docutils literal notranslate"><span class="pre">read</span></code>
+permission for the related object (ie, being able to read the <cite>brand</cite>
+object).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">read</span> <span class="n">the</span> <span class="n">parent</span> <span class="n">field</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">read</span> <span class="n">the</span> <span class="n">related</span> <span class="nb">object</span><span class="p">:</span>
+        <span class="n">respond</span> <span class="mi">200</span> <span class="n">OK</span> <span class="k">with</span> <span class="n">data</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">related</span> <span class="nb">object</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PATCH</span></code></dt><dd><p>The authenticated user must have the <cite>object-field</cite> level <code class="docutils literal notranslate"><span class="pre">write</span></code>
+permission for the parent object (ie, being able to write the
+<cite>product</cite>’s <code class="docutils literal notranslate"><span class="pre">.brand</span></code> field). In addition, for both the current and the
+new related object (unless <code class="docutils literal notranslate"><span class="pre">None</span></code>), the user must have the
+<cite>object-field</cite> level <code class="docutils literal notranslate"><span class="pre">write</span></code> permission for the reverse field (ie,
+being able to write the current and the new <cite>brand</cite>’s <code class="docutils literal notranslate"><span class="pre">.products</span></code>
+field).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">write</span> <span class="n">to</span> <span class="n">the</span> <span class="n">parent</span> <span class="n">field</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">both</span> <span class="n">the</span> <span class="n">current</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">new</span> <span class="n">related</span> <span class="nb">object</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">object</span> <span class="nb">object</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">write</span> <span class="n">to</span> <span class="n">the</span> <span class="n">reverse</span> <span class="n">field</span><span class="p">:</span>
+                <span class="n">create</span> <span class="n">relation</span>
+                <span class="k">if</span> <span class="n">user</span> <span class="n">can</span> <span class="n">read</span> <span class="n">the</span> <span class="n">related</span> <span class="nb">object</span><span class="p">:</span>
+                    <span class="n">respond</span> <span class="mi">200</span> <span class="n">OK</span> <span class="k">with</span> <span class="n">data</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">respond</span> <span class="mi">200</span> <span class="n">OK</span> <span class="k">with</span> <span class="n">message</span> <span class="s2">&quot;the relation is updated but you have no permission to view it&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">related</span> <span class="nb">object</span><span class="p">,</span> <span class="n">reverse</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">PermissionDenied</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="api-rate-limiting">
+<h2>API Rate Limiting<a class="headerlink" href="#api-rate-limiting" title="Permalink to this headline"></a></h2>
+<p>Each <cite>Model</cite> is a resource, and each <cite>create</cite>, <cite>read</cite>, <cite>update</cite>, <cite>delete</cite> is an
+<cite>action</cite>. The API rate limit is set on a per-resource, per-action, and per-ip
+address basis.</p>
+<p>If not specified, the default limit is 60 requests per minute for all resource
+actions from any IP. If the limit is exceeded, the response is <code class="docutils literal notranslate"><span class="pre">429</span> <span class="pre">Too</span> <span class="pre">Many</span>
+<span class="pre">Requets</span></code>.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">DCFModel</span><span class="p">,</span> <span class="n">RateLimited</span><span class="p">):</span>
+
+    <span class="k">class</span> <span class="nc">RateLimitManager</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">get_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="c1"># user is the current user identified by the API token, or None</span>
+            <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+                <span class="c1"># assuming there&#39;s a staff group</span>
+                <span class="n">is_staff</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">default_groups</span><span class="o">.</span><span class="n">staffs</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">is_staff</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="s2">&quot;120/min&quot;</span>
+            <span class="k">return</span> <span class="s2">&quot;60/min&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_ratelimitmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">RateLimitManager</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To set the default limit:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django_client_framework.api</span> <span class="kn">import</span> <span class="n">rate_limit</span>
+<span class="n">rate_limit</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;120/min&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Table of Contents" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../backend-refs/index.html" class="btn btn-neutral float-right" title="Backend API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Yu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

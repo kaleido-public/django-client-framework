@@ -1,0 +1,36 @@
+{
+  "python.linting.pylintEnabled": false,
+  "python.linting.mypyEnabled": true,
+  "python.linting.enabled": true,
+  "python.analysis.extraPaths": [
+    "/home/yuli/django-client-framework/tests/",
+    "/home/yuli/django-client-framework",
+    "./unit-tests"
+  ],
+  "python.analysis.stubPath": "./stubs",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportWildcardImportFromLibrary": "none",
+    "reportGeneralTypeIssues": "none"
+  },
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.mypy_cache": true,
+    "**/.venv/": true
+  },
+  "coverage-gutters.xmlname": "coverage.xml",
+  "git.ignoreLimitWarning": true,
+  "coverage-gutters.showLineCoverage": true,
+  "coverage-gutters.showRulerCoverage": true,
+  "coverage-gutters.showGutterCoverage": false,
+  "python.sortImports.path": "isort",
+  "mypy.configFile": "mypy.ini",
+  "mypy.targets": ["./django_client_framework"],
+  "python.linting.ignorePatterns": [
+    "**/site-packages/**/*.py",
+    ".vscode/*.py",
+    "**/*.pyi",
+    "**/stubs"
+  ],
+  "mypy.runUsingActiveInterpreter": true,
+  "python.analysis.diagnosticMode": "workspace"
+}

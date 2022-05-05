@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  server:
+    build: .
+    command: sh /entrypoint.bash
+    volumes:
+      - ../doc-src:/doc-src:ro
+      - ../pyproject.toml:/pyproject.toml:ro # for reading version
+      - ../docs:/_output # output
+    ports:
+      - "12800:80"

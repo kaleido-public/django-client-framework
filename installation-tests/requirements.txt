@@ -1,0 +1,12 @@
+setuptools
+djangorestframework
+django>=3.2
+jsonschema
+rfc3987
+strict-rfc3339
+psycopg2-binary
+django-guardian
+ipromise
+deprecation
+schema
+tzdata

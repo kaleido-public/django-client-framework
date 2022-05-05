@@ -1,0 +1,133 @@
+.sphinx-tabs {
+    margin-bottom: 24px;
+}
+
+.sphinx-tabs-panel {
+    border: 1px solid #e1e4e5;
+    border-top: none;
+    background-color: #f8f8f8;
+}
+
+.sphinx-tabs-panel:focus {
+    outline: none;
+}
+
+.rst-content .sphinx-tabs div[class^="highlight"] {
+    border: none;
+    margin-bottom: 0;
+}
+
+.rst-content div[class^="highlight"],
+.rst-content pre.literal-block {
+    border: 1px solid #e1e4e5;
+}
+
+.sphinx-tabs-tab[aria-selected="true"] {
+    border: 1px solid #e1e4e5;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #f8f8f8;
+    z-index: 2;
+}
+
+// Add indentation to classes
+.section[id^="class-"] {
+    > * {
+        margin-left: 2em;
+    }
+    > div[class^="highlight"] {
+        margin-left: 2em;
+    }
+    > {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin-left: 0;
+        }
+    }
+}
+
+.section[id^="module-"],
+.section[id^="func-"],
+.section[id^="file-"],
+.section[id^="method-"],
+.section[id^="static-"],
+.section[id^="classmethod-"],
+.section[id^="method-"],
+.section[id^="global-"],
+.section[id^="const-"],
+.section[id^="var-"],
+.section[id^="property-"],
+.section[id^="class-"] {
+    > {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            cite {
+                font-weight: lighter;
+                font-size: 65%;
+                font-family: monospace;
+            }
+            code {
+                display: none; // hide dedup code
+            }
+        }
+    }
+}
+
+.section[id^="module-"] {
+    > {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            &::after {
+                content: "";
+                display: block;
+                border-top: 1px solid #ddd;
+            }
+        }
+    }
+}
+
+nav {
+    a[href^="#class-"],
+    a[href^="#method-"],
+    a[href^="#static-"],
+    a[href^="#func-"],
+    a[href^="#property-"],
+    a[href^="#classproperty-"],
+    a[href^="#classmethod-"],
+    a[href^="#module-"],
+    a[href^="#const-"] {
+        white-space: nowrap;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        cite:first-of-type {
+            display: none;
+        }
+        cite {
+            font-size: 65%;
+            font-family: monospace;
+        }
+        code {
+            display: none;
+        }
+    }
+
+    a[href^="#func-"],
+    a[href^="#method-"],
+    a[href^="#classproperty-"],
+    a[href^="#classmethod-"] {
+        // &::after {
+        //   content: "(...)";
+        // }
+    }
+}

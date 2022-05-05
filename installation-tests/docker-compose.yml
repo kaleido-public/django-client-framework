@@ -1,0 +1,19 @@
+version: "3"
+services:
+  dcf-installation-tests-ubuntu-base:
+    build:
+      context: .
+      dockerfile: ubuntu-base.dockerfile
+    image: dcf-installation-tests-ubuntu-base
+
+  backend-example:
+    image: dcf-installation-tests-backend-example
+    build:
+      context: ../
+      dockerfile: ./installation-tests/backend-example/Dockerfile
+
+  ts-example:
+    image: dcf-installation-tests-ts-example
+    build:
+      context: ../
+      dockerfile: ./installation-tests/ts-example/Dockerfile
