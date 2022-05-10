@@ -8,7 +8,7 @@ from django.db.models.manager import Manager
 from django_client_framework import models as m
 from django_client_framework.api import register_api_model
 from django_client_framework.models import DCFModel, Serializable
-from django_client_framework.serializers.model_serializer import DCFModelSerializer
+from django_client_framework.serializers import DCFModelSerializer, DCFSerializerMeta
 
 from .brand import BrandSerializer
 
@@ -34,7 +34,7 @@ class Product(DCFModel["Product"], Serializable["Product", Any]):
 
 
 class ProductSerializer(DCFModelSerializer["Product", Any]):
-    class Meta:
+    class Meta(DCFSerializerMeta):
         model = Product
         fields = [
             "id",

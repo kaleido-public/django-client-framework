@@ -7,7 +7,7 @@ from django.db.models.manager import Manager
 
 from django_client_framework.api import register_api_model
 from django_client_framework.models import DCFModel, Serializable
-from django_client_framework.serializers import DCFModelSerializer
+from django_client_framework.serializers import DCFModelSerializer, DCFSerializerMeta
 
 if TYPE_CHECKING:
     from dcf_test_app.models.product import Product
@@ -30,7 +30,7 @@ class Brand(DCFModel["Brand"], Serializable):
 
 
 class BrandSerializer(DCFModelSerializer):
-    class Meta:
+    class Meta(DCFSerializerMeta):
         model = Brand
         fields = [
             "id",

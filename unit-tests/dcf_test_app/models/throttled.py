@@ -7,7 +7,11 @@ from django.db.models.query import QuerySet
 from django_client_framework.api import register_api_model
 from django_client_framework.models import DCFModel, RateLimited, Serializable
 from django_client_framework.models.abstract.user import DCFAbstractUser
-from django_client_framework.serializers import DCFModelSerializer, SerializerContext
+from django_client_framework.serializers import (
+    DCFModelSerializer,
+    DCFSerializerMeta,
+    SerializerContext,
+)
 
 
 @register_api_model
@@ -34,7 +38,7 @@ class ThrottledModel(DCFModel, Serializable, RateLimited):
 
 
 class ThrottledModelSerializer(DCFModelSerializer):
-    class Meta:
+    class Meta(DCFSerializerMeta):
         model = ThrottledModel
         fields = [
             "id",

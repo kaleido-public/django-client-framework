@@ -21,7 +21,7 @@ class UniqueForeignKey(OneToOneField[_M]):
         to: Type[_M] | str,
         on_delete: Any,
         to_field: Optional[str] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         return super().__init__(to, on_delete, to_field=None, **kwargs)  # type:ignore
 

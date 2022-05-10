@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from enum import Enum
 from functools import cached_property
 from typing import *
 
 from deprecation import deprecated
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.request import Request
 from rest_framework.serializers import Serializer as DRFSerializer
 from rest_framework.serializers import empty
@@ -31,11 +33,24 @@ class SerializerContext(TypedDict):
     view: APIView
 
 
+class DCFSerializerScope(Enum):
+    read = "read"
+    create = "create"
+    delete = "delete"
+    update = "update"
+
+
 class DCFSerializerMeta:
     required_fields: List[str] = []
     fields: List[str] = []
     deprecated: Dict[str, str] = {}
     partial_update: bool = True
+    scopes: List[DCFSerializerScope] = [
+        DCFSerializerScope.read,
+        DCFSerializerScope.create,
+        DCFSerializerScope.delete,
+        DCFSerializerScope.update,
+    ]
 
 
 class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
@@ -93,9 +108,13 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
         return self.context.get("locale")
 
     def update(self, instance: T, validated_data: Any) -> T:
+        if DCFSerializerScope.update not in self.Meta.scopes:
+            raise MethodNotAllowed("UPDATE (or update)")
         return super().update(instance, validated_data)
 
     def create(self, validated_data: Any) -> T:
+        if DCFSerializerScope.create not in self.Meta.scopes:
+            raise MethodNotAllowed("POST (or create)")
         return super().create(validated_data)
 
     def save(self, **kwargs: Any) -> T:
@@ -122,6 +141,8 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
         )
 
     def to_representation(self, instance: T) -> D:
+        if DCFSerializerScope.read not in self.Meta.scopes:
+            raise MethodNotAllowed("GET (or read)")
         if self.prefer_cache:
             return self.to_representation_cached(instance)
         else:
@@ -141,6 +162,8 @@ class DCFSerializer(IDCFSerializer[T, D], DRFSerializer):
             return data
 
     def delete(self, instance: T) -> None:
+        if DCFSerializerScope.delete not in self.Meta.scopes:
+            raise MethodNotAllowed("DELETE (or delete)")
         instance.delete()
 
     def create_obj(self) -> T:

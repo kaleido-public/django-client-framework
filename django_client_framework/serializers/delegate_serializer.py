@@ -5,11 +5,11 @@ from typing import *
 
 from django.utils.functional import cached_property
 
+from django_client_framework.exceptions import ValidationError
 from django_client_framework.models.abstract.serializable import D
 
 from .. import exceptions as e
 from .serializer import DCFSerializer, SerializerContext, T
-from django_client_framework.exceptions import ValidationError
 
 LOG = getLogger(__name__)
 

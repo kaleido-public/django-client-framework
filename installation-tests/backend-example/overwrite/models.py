@@ -10,7 +10,7 @@ from django_client_framework.models import (
     Serializable,
 )
 from django_client_framework.permissions import add_perms_shortcut, default_groups
-from django_client_framework.serializers import DCFModelSerializer
+from django_client_framework.serializers import DCFModelSerializer, DCFSerializerMeta
 
 
 @register_api_model
@@ -27,7 +27,7 @@ class Brand(DCFModel, Serializable, AccessControlled):
 
 
 class BrandSerializer(DCFModelSerializer):
-    class Meta:
+    class Meta(DCFSerializerMeta):
         model = Brand
         fields = ["id", "type", "created_at", "name"]
 
@@ -47,7 +47,7 @@ class Product(DCFModel, Serializable, AccessControlled):
 
 
 class ProductSerializer(DCFModelSerializer):
-    class Meta:
+    class Meta(DCFSerializerMeta):
         model = Product
         fields = ["id", "type", "created_at", "barcode", "brand_id"]
 
