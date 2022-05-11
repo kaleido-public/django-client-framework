@@ -22,7 +22,7 @@ def flatten_to_list(data: Any) -> List[str]:
     return general_errors
 
 
-def dcf_exception_handler(error: Any, context: Any) -> HttpResponse | None:
+def dcf_exception_handler(error: Exception, context: Any) -> HttpResponse | None:
     if isinstance(error, APIPermissionDenied):
         raise error
     if isinstance(error, ValidationError):
@@ -58,7 +58,7 @@ def dcf_exception_handler(error: Any, context: Any) -> HttpResponse | None:
             {"code": "not_found", "message": "The URL does not exist."}, status=404
         )
     else:
-        return JsonResponse({"code": "unknown", "message": str(error)}, status=500)
+        raise error
 
 
 class ConvertAPIExceptionToJsonResponse:
